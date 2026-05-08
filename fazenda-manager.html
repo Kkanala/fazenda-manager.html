@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#3B6D11">
+  <title>Fazenda Manager</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #3B6D11; --green-light: #EAF3DE; --green-mid: #639922;
+      --blue: #185FA5; --blue-light: #E6F1FB;
+      --amber: #854F0B; --amber-light: #FAEEDA;
+      --red: #A32D2D; --red-light: #FCEBEB;
+      --teal: #0F6E56; --teal-light: #E1F5EE;
+      --text: #1a1a1a; --text-muted: #5F5E5A; --text-hint: #999;
+      --bg: #ffffff; --bg-surface: #F8F7F4;
+      --border: rgba(0,0,0,0.12); --border-mid: rgba(0,0,0,0.22);
+      --radius-sm: 8px; --radius-md: 12px; --shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #f0ede8; --text-muted: #B4B2A9; --text-hint: #888;
+        --bg: #1c1c1a; --bg-surface: #252522;
+        --border: rgba(255,255,255,0.10); --border-mid: rgba(255,255,255,0.20);
+        --green-light: #173404; --blue-light: #042C53;
+        --amber-light: #412402; --red-light: #501313; --teal-light: #04342C;
+      }
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-surface); color: var(--text); min-height: 100vh; }
+
+    /* LOGIN */
+    #loginScreen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+    .login-logo { font-size: 56px; margin-bottom: 10px; }
+    .login-title { font-size: 26px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .login-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+    .login-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 24px; width: 100%; max-width: 380px; box-shadow: var(--shadow); }
+    .login-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .ltab { flex:1; padding:9px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:500; cursor:pointer; color:var(--text-muted); font-family:inherit; }
+    .ltab.on { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
+    .lform { display:flex; flex-direction:column; gap:12px; }
+    .lform input { padding:12px 14px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; background:var(--bg); color:var(--text); }
+    .lform input:focus { outline:none; border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(99,153,34,0.15); }
+    .btn-login { padding:13px; border:none; border-radius:var(--radius-sm); background:var(--green); color:white; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; transition:opacity .2s; }
+    .btn-login:active { opacity:.85; }
+    .div-or { text-align:center; color:var(--text-hint); font-size:13px; margin:4px 0; position:relative; }
+    .div-or::before,.div-or::after { content:''; position:absolute; top:50%; width:40%; height:.5px; background:var(--border-mid); }
+    .div-or::before { left:0; } .div-or::after { right:0; }
+    .btn-google { display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); font-size:15px; font-weight:500; cursor:pointer; font-family:inherit; }
+    .lerr { color:var(--red); font-size:13px; text-align:center; min-height:18px; }
+
+    /* APP */
+    #appScreen { display:none; padding-bottom:80px; }
+    .header { background:var(--bg); border-bottom:0.5px solid var(--border); padding:14px 16px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
+    .header h1 { font-size:17px; font-weight:700; color:var(--green); }
+    .header p { font-size:11px; color:var(--text-muted); margin-top:1px; }
+    .btn-out { padding:7px 14px; border:0.5px solid var(--border-mid); border-radius:20px; background:transparent; color:var(--text-muted); font-size:13px; cursor:pointer; font-family:inherit; }
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--bg); border-top:0.5px solid var(--border); display:flex; z-index:100; }
+    .nav-btn { flex:1; padding:10px 4px 12px; border:none; background:transparent; color:var(--text-muted); font-size:10px; font-weight:500; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; }
+    .nav-btn .icon { font-size:20px; }
+    .nav-btn.on { color:var(--green); }
+    .page { display:none; padding:12px; }
+    .page.on { display:block; }
+    .card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
+    .card-title { font-size:15px; font-weight:600; color:var(--text); margin-bottom:14px; }
+    label { display:block; font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px; margin-top:12px; text-transform:uppercase; letter-spacing:.4px; }
+    input,select,textarea { width:100%; padding:11px 13px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; background:var(--bg); color:var(--text); -webkit-appearance:none; appearance:none; }
+    input:focus,select:focus,textarea:focus { outline:none; border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(99,153,34,0.15); }
+    textarea { resize:vertical; min-height:68px; line-height:1.5; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .btn { display:block; width:100%; padding:13px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; color:var(--text); font-size:15px; font-weight:500; cursor:pointer; margin-top:12px; font-family:inherit; }
+    .btn-g { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
+    .btn-b { background:var(--blue-light); color:var(--blue); border-color:rgba(24,95,165,0.3); }
+    .btn-r { background:var(--red-light); color:var(--red); border-color:rgba(163,45,45,0.3); }
+    .btn-sm { width:auto; padding:6px 12px; font-size:12px; margin-top:0; display:inline-block; }
+    .tg { display:flex; gap:8px; margin-top:10px; }
+    .tb { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; color:var(--text-muted); font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; }
+    .tb.on-g { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
+    .tb.on-r { background:var(--red-light); color:var(--red); border-color:rgba(163,45,45,0.3); }
+    .item { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); }
+    .item-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .item-title { font-size:15px; font-weight:600; color:var(--text); flex:1; }
+    .item-meta { font-size:13px; color:var(--text-muted); margin-top:5px; line-height:1.4; }
+    .item-actions { display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:0.5px solid var(--border); }
+    .badge { display:inline-block; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .bg { background:var(--green-light); color:var(--green); }
+    .bb { background:var(--blue-light); color:var(--blue); }
+    .ba { background:var(--amber-light); color:var(--amber); }
+    .br { background:var(--red-light); color:var(--red); }
+    .bt { background:var(--teal-light); color:var(--teal); }
+    .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+    .stat { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:14px; text-align:center; box-shadow:var(--shadow); }
+    .stat-lbl { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
+    .stat-val { font-size:19px; font-weight:700; color:var(--text); }
+    .cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .cnb { padding:8px 14px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; cursor:pointer; font-size:18px; color:var(--text); font-family:inherit; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+    .cal-head { text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); padding:6px 2px; }
+    .cal-day { text-align:center; padding:8px 2px; font-size:13px; border-radius:var(--radius-sm); cursor:pointer; color:var(--text); min-height:36px; position:relative; }
+    .cal-day:hover { background:var(--bg-surface); }
+    .cal-day.today { background:var(--green-light); color:var(--green); font-weight:700; }
+    .cal-day.has-event::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--green-mid); }
+    .cal-day.empty { pointer-events:none; }
+    .pg { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); margin-bottom:12px; overflow:hidden; box-shadow:var(--shadow); }
+    .ph { padding:12px 16px; background:var(--bg-surface); display:flex; justify-content:space-between; align-items:center; border-bottom:0.5px solid var(--border); }
+    .pb { padding:14px 16px; }
+    .pr { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:0.5px solid var(--border); font-size:13px; }
+    .pr:last-child { border-bottom:none; }
+    .ctabs { display:flex; gap:8px; margin-bottom:14px; }
+    .ct { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; }
+    .ct.on { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
+    .cr { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:0.5px solid var(--border); font-size:14px; gap:8px; }
+    .cr:last-child { border-bottom:none; }
+    .sr { display:flex; justify-content:space-between; padding:8px 0; font-size:14px; }
+    .sr.tot { font-weight:700; font-size:15px; border-top:1px solid var(--border-mid); padding-top:12px; margin-top:4px; }
+    .sr.pos { color:var(--green); font-weight:700; }
+    .sr.neg { color:var(--red); font-weight:700; }
+    hr.dv { border:none; border-top:0.5px solid var(--border); margin:10px 0; }
+    .slbl { font-size:11px; font-weight:700; color:var(--text-hint); text-transform:uppercase; letter-spacing:.6px; margin:14px 0 8px; }
+    .empty { text-align:center; padding:32px 16px; color:var(--text-muted); font-size:14px; }
+    .empty-icon { font-size:36px; margin-bottom:10px; }
+    .loading { text-align:center; padding:24px; color:var(--text-muted); font-size:14px; }
+    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a1a; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; pointer-events:none; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">🌾</div>
+  <div class="login-title">Fazenda Manager</div>
+  <div class="login-sub">Gerencie sua fazenda de qualquer lugar</div>
+  <div class="login-card">
+    <div class="login-tabs">
+      <button class="ltab on" onclick="setLTab('in',this)">Entrar</button>
+      <button class="ltab" onclick="setLTab('up',this)">Criar conta</button>
+    </div>
+    <div id="formIn" class="lform">
+      <input type="email" id="inEmail" placeholder="E-mail" autocomplete="email">
+      <input type="password" id="inPass" placeholder="Senha" autocomplete="current-password">
+      <div class="lerr" id="inErr"></div>
+      <button class="btn-login" onclick="doSignIn()">Entrar</button>
+      <div class="div-or">ou</div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+        Entrar com Google
+      </button>
+    </div>
+    <div id="formUp" class="lform" style="display:none">
+      <input type="text" id="upName" placeholder="Seu nome">
+      <input type="email" id="upEmail" placeholder="E-mail" autocomplete="email">
+      <input type="password" id="upPass" placeholder="Senha (mín. 6 caracteres)" autocomplete="new-password">
+      <input type="password" id="upPass2" placeholder="Confirmar senha" autocomplete="new-password">
+      <div class="lerr" id="upErr"></div>
+      <button class="btn-login" onclick="doSignUp()">Criar conta</button>
+      <div class="div-or">ou</div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+        Cadastrar com Google
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+  <div class="toast" id="toast"></div>
+  <div class="header">
+    <div>
+      <h1>🌾 Fazenda Manager</h1>
+      <p id="uName">...</p>
+    </div>
+    <button class="btn-out" onclick="doOut()">Sair</button>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn on" onclick="goTo('pg-ativ',this)"><span class="icon">📋</span>Atividades</button>
+    <button class="nav-btn" onclick="goTo('pg-cal',this)"><span class="icon">📅</span>Calendário</button>
+    <button class="nav-btn" onclick="goTo('pg-fret',this)"><span class="icon">🚛</span>Fretes</button>
+    <button class="nav-btn" onclick="goTo('pg-cust',this)"><span class="icon">🌱</span>Custos</button>
+    <button class="nav-btn" onclick="goTo('pg-fin',this)"><span class="icon">💰</span>Financeiro</button>
+  </nav>
+
+  <!-- ATIVIDADES -->
+  <div id="pg-ativ" class="page on">
+    <div class="card">
+      <div class="card-title">Nova atividade</div>
+      <label>Tipo</label>
+      <select id="aType"><option>Plantio</option><option>Colheita</option><option>Irrigação</option><option>Fertilizante</option><option>Defensivo</option></select>
+      <label>Data</label><input type="date" id="aDate">
+      <label>Descrição</label><textarea id="aDesc" placeholder="Detalhes da atividade..."></textarea>
+      <button class="btn btn-g" onclick="addAtiv()">+ Registrar atividade</button>
+    </div>
+    <div id="aList"><div class="loading">Carregando...</div></div>
+  </div>
+
+  <!-- CALENDÁRIO -->
+  <div id="pg-cal" class="page">
+    <div class="card">
+      <div class="cal-nav">
+        <button class="cnb" onclick="calMv(-1)">‹</button>
+        <span style="font-size:16px;font-weight:600" id="calTitle"></span>
+        <button class="cnb" onclick="calMv(1)">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="card" id="calDayCard" style="display:none">
+      <div class="card-title" id="calDayTitle"></div>
+      <div id="calDayEvs"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Novo evento</div>
+      <label>Título</label><input type="text" id="evTitle" placeholder="Ex: Aplicação de defensivo">
+      <div class="row2">
+        <div><label>Data</label><input type="date" id="evDate"></div>
+        <div><label>Hora</label><input type="time" id="evTime" value="08:00"></div>
+      </div>
+      <label>Descrição</label><textarea id="evDesc" placeholder="Detalhes..." style="min-height:50px"></textarea>
+      <button class="btn btn-g" onclick="addEv()">+ Salvar evento</button>
+      <div class="row2" style="margin-top:8px;gap:8px">
+        <button class="btn btn-b" onclick="expICS()" style="margin-top:0">Exportar .ics</button>
+        <button class="btn btn-b" onclick="expGCal()" style="margin-top:0">Google Agenda</button>
+      </div>
+    </div>
+    <div id="evList"></div>
+  </div>
+
+  <!-- FRETES -->
+  <div id="pg-fret" class="page">
+    <div class="card">
+      <div class="card-title">Registrar viagem</div>
+      <div class="row2">
+        <div><label>Placa</label><input type="text" id="fPlaca" placeholder="ABC1234" style="text-transform:uppercase"></div>
+        <div><label>Motorista</label><input type="text" id="fMot" placeholder="Nome"></div>
+      </div>
+      <div class="row2">
+        <div><label>Peso (kg)</label><input type="number" id="fPeso" placeholder="0" inputmode="decimal"></div>
+        <div><label>Data</label><input type="date" id="fData"></div>
+      </div>
+      <label>Preço por kg (R$)</label><input type="number" id="fPkg" placeholder="0.000" step="0.001" inputmode="decimal">
+      <label>Destinado a</label>
+      <div class="tg">
+        <button class="tb on-g" id="fOwnBtn" onclick="setFO('proprio')">Nossa fazenda</button>
+        <button class="tb" id="fOthBtn" onclick="setFO('outro')">Outra fazenda</button>
+      </div>
+      <div id="fOthWrap" style="display:none"><label>Nome da fazenda</label><input type="text" id="fOthName" placeholder="Nome da fazenda vizinha"></div>
+      <button class="btn btn-g" onclick="addFret()">+ Registrar viagem</button>
+    </div>
+    <div id="fGrps"><div class="loading">Carregando...</div></div>
+  </div>
+
+  <!-- CUSTOS -->
+  <div id="pg-cust" class="page">
+    <div class="ctabs">
+      <button class="ct on" onclick="setCult('cafe',this)">☕ Café</button>
+      <button class="ct" onclick="setCult('milho',this)">🌽 Milho</button>
+      <button class="ct" onclick="setCult('soja',this)">🌿 Soja</button>
+    </div>
+    <div class="card">
+      <div class="card-title" id="cultTitle">Café — Configuração</div>
+      <div class="row2">
+        <div><label>Área (ha)</label><input type="number" id="cHa" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
+        <div><label>Prod. (sacas/ha)</label><input type="number" id="cProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
+      </div>
+      <label>Preço da saca (R$)</label><input type="number" id="cSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveCultConf()">
+    </div>
+    <div class="card">
+      <div class="card-title">Adicionar custo</div>
+      <label>Categoria</label>
+      <select id="cCat"><option>Semente / Muda</option><option>Fertilizante</option><option>Defensivo</option><option>Combustível</option><option>Mão de obra</option><option>Maquinário</option><option>Irrigação</option><option>Outro</option></select>
+      <label>Descrição</label><input type="text" id="cDesc" placeholder="Detalhe o custo">
+      <div class="row2">
+        <div><label>Valor (R$)</label><input type="number" id="cVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+        <div><label>Safra</label><input type="text" id="cSafra" placeholder="2024/25"></div>
+      </div>
+      <button class="btn btn-g" onclick="addCost()">+ Adicionar custo</button>
+    </div>
+    <div class="card" id="cultSum" style="display:none"><div class="card-title">Resumo da safra</div><div id="cultSumC"></div></div>
+    <div id="cList"><div class="loading">Carregando...</div></div>
+  </div>
+
+  <!-- FINANCEIRO -->
+  <div id="pg-fin" class="page">
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-lbl">Receitas</div><div class="stat-val" id="sRec" style="color:var(--green)">R$ 0</div></div>
+      <div class="stat"><div class="stat-lbl">Despesas</div><div class="stat-val" id="sDesp" style="color:var(--red)">R$ 0</div></div>
+      <div class="stat"><div class="stat-lbl">Saldo</div><div class="stat-val" id="sSaldo">R$ 0</div></div>
+      <div class="stat"><div class="stat-lbl">Atividades</div><div class="stat-val" id="sAtiv">0</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Nova movimentação</div>
+      <label>Tipo</label>
+      <div class="tg">
+        <button class="tb on-g" id="fRecBtn" onclick="setFT('receita')">📈 Receita</button>
+        <button class="tb" id="fDespBtn" onclick="setFT('despesa')">📉 Despesa</button>
+      </div>
+      <label>Descrição</label><input type="text" id="fDesc" placeholder="Ex: Venda de soja">
+      <label>Categoria</label>
+      <select id="fCat"><option>Venda de produção</option><option>Fertilizante</option><option>Defensivo</option><option>Combustível</option><option>Manutenção</option><option>Frete</option><option>Outro</option></select>
+      <div class="row2">
+        <div><label>Valor (R$)</label><input type="number" id="fVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+        <div><label>Data</label><input type="date" id="fDate"></div>
+      </div>
+      <button class="btn btn-g" onclick="addFin()">+ Registrar</button>
+    </div>
+    <div id="fList"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyD-ypAF3_OlKf_vRl8c4xqYQq7BcerLYsY",
+    authDomain: "fazenda-manager.firebaseapp.com",
+    projectId: "fazenda-manager",
+    storageBucket: "fazenda-manager.firebasestorage.app",
+    messagingSenderId: "272078847061",
+    appId: "1:272078847061:web:013d4998d2f7c96471a8dc"
+  });
+
+  window.FB = {
+    auth: getAuth(app), db: getFirestore(app), gp: new GoogleAuthProvider(),
+    signIn: signInWithEmailAndPassword, signUp: createUserWithEmailAndPassword,
+    signInPopup: signInWithPopup, signOut, onAuth: onAuthStateChanged, updateProfile,
+    col: collection, add: addDoc, del: deleteDoc, ref: doc, set: setDoc,
+    snap: onSnapshot, ts: serverTimestamp, q: query, ob: orderBy
+  };
+  window.dispatchEvent(new Event('fbOK'));
+</script>
+
+<script>
+  var CU = null, unsubs = [];
+  var DB = { ativ:[], evs:[], frets:[], costs:[], fins:[], cd:{cafe:{},milho:{},soja:{}} };
+  var calY = new Date().getFullYear(), calM = new Date().getMonth();
+  var cult = 'cafe', finT = 'receita', fOwn = 'proprio';
+
+  function td() { return new Date().toISOString().split('T')[0]; }
+  function fd(ds) { if(!ds) return ''; var p=ds.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+  function brl(v) { return 'R$ '+parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function toast(m) { var e=document.getElementById('toast'); e.textContent=m; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),2500); }
+  function uid() { return CU.uid; }
+  function uc(n) { return window.FB.col(window.FB.db,'users',uid(),n); }
+  function ud(n,i) { return window.FB.ref(window.FB.db,'users',uid(),n,i); }
+
+  // AUTH
+  function setLTab(t,b) {
+    document.querySelectorAll('.ltab').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    document.getElementById('formIn').style.display=t==='in'?'flex':'none';
+    document.getElementById('formUp').style.display=t==='up'?'flex':'none';
+    document.getElementById('inErr').textContent=''; document.getElementById('upErr').textContent='';
+  }
+  async function doSignIn() {
+    var e=document.getElementById('inEmail').value.trim(), p=document.getElementById('inPass').value;
+    if(!e||!p){document.getElementById('inErr').textContent='Preencha e-mail e senha';return;}
+    try { await window.FB.signIn(window.FB.auth,e,p); }
+    catch(err){document.getElementById('inErr').textContent=aerr(err.code);}
+  }
+  async function doSignUp() {
+    var n=document.getElementById('upName').value.trim(), e=document.getElementById('upEmail').value.trim(),
+        p=document.getElementById('upPass').value, p2=document.getElementById('upPass2').value;
+    if(!n||!e||!p){document.getElementById('upErr').textContent='Preencha todos os campos';return;}
+    if(p!==p2){document.getElementById('upErr').textContent='As senhas não coincidem';return;}
+    if(p.length<6){document.getElementById('upErr').textContent='Senha deve ter mínimo 6 caracteres';return;}
+    try { var c=await window.FB.signUp(window.FB.auth,e,p); await window.FB.updateProfile(c.user,{displayName:n}); }
+    catch(err){document.getElementById('upErr').textContent=aerr(err.code);}
+  }
+  async function doGoogle() {
+    try { await window.FB.signInPopup(window.FB.auth,window.FB.gp); }
+    catch(err){document.getElementById('inErr').textContent=aerr(err.code);}
+  }
+  function doOut() {
+    if(confirm('Deseja sair da sua conta?')){ unsubs.forEach(u=>u()); unsubs=[]; window.FB.signOut(window.FB.auth); }
+  }
+  function aerr(c) {
+    return ({
+      'auth/user-not-found':'Usuário não encontrado','auth/wrong-password':'Senha incorreta',
+      'auth/invalid-email':'E-mail inválido','auth/email-already-in-use':'E-mail já cadastrado',
+      'auth/weak-password':'Senha muito fraca','auth/invalid-credential':'E-mail ou senha incorretos',
+      'auth/popup-closed-by-user':'Login cancelado','auth/network-request-failed':'Erro de conexão'
+    }[c])||'Erro ao autenticar';
+  }
+
+  function initApp(u) {
+    CU=u;
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appScreen').style.display='block';
+    document.getElementById('uName').textContent=u.displayName||u.email;
+    document.getElementById('aDate').value=td();
+    document.getElementById('evDate').value=td();
+    document.getElementById('fData').value=td();
+    document.getElementById('fDate').value=td();
+    startSnaps();
+  }
+
+  function startSnaps() {
+    unsubs.forEach(u=>u()); unsubs=[];
+    var o=(n,k,r)=>unsubs.push(window.FB.snap(window.FB.q(uc(n),window.FB.ob('createdAt','desc')),s=>{DB[k]=s.docs.map(d=>({...d.data(),_id:d.id}));r();}));
+    o('atividades','ativ',()=>{renderAtiv();updFinStats();});
+    o('fretes','frets',renderFrets);
+    o('costs','costs',()=>{renderCosts();updCultSum();});
+    o('fins','fins',()=>{renderFin();updFinStats();});
+    unsubs.push(window.FB.snap(window.FB.q(uc('events'),window.FB.ob('date','asc')),s=>{DB.evs=s.docs.map(d=>({...d.data(),_id:d.id}));renderCal();renderEvList();}));
+    unsubs.push(window.FB.snap(window.FB.col(window.FB.db,'users',uid(),'cultdata'),s=>{s.docs.forEach(d=>{DB.cd[d.id]=d.data();});loadCultConf();updCultSum();}));
+  }
+
+  window.addEventListener('fbOK',()=>{
+    window.FB.onAuth(window.FB.auth,u=>{
+      if(u) initApp(u);
+      else { CU=null; document.getElementById('appScreen').style.display='none'; document.getElementById('loginScreen').style.display='flex'; }
+    });
+  });
+
+  function goTo(id,btn) {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+    document.getElementById(id).classList.add('on'); btn.classList.add('on');
+    if(id==='pg-cal') renderCal();
+    if(id==='pg-cust'){renderCosts();updCultSum();}
+    if(id==='pg-fin') updFinStats();
+  }
+
+  // ATIVIDADES
+  async function addAtiv() {
+    var t=document.getElementById('aType').value, d=document.getElementById('aDate').value, desc=document.getElementById('aDesc').value.trim();
+    if(!d||!desc){toast('Preencha data e descrição');return;}
+    await window.FB.add(uc('atividades'),{type:t,date:d,desc,createdAt:window.FB.ts()});
+    document.getElementById('aDesc').value=''; toast('Atividade registrada ✓');
+  }
+  function renderAtiv() {
+    var el=document.getElementById('aList');
+    if(!DB.ativ.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div>Nenhuma atividade registrada</div>';return;}
+    el.innerHTML=DB.ativ.map(a=>`<div class="item"><div class="item-head"><span class="item-title">${a.type}</span><span class="badge bg">${fd(a.date)}</span></div><div class="item-meta">${a.desc}</div><div class="item-actions"><button class="btn btn-r btn-sm" onclick="del('atividades','${a._id}')">Remover</button></div></div>`).join('');
+  }
+
+  // CALENDÁRIO
+  function renderCal() {
+    var ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    document.getElementById('calTitle').textContent=ms[calM]+' '+calY;
+    var f=new Date(calY,calM,1).getDay(), days=new Date(calY,calM+1,0).getDate(), t=td();
+    var h=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d=>`<div class="cal-head">${d}</div>`).join('');
+    for(var i=0;i<f;i++) h+='<div class="cal-day empty"></div>';
+    for(var d=1;d<=days;d++){
+      var ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      var hE=DB.evs.some(e=>e.date===ds);
+      h+=`<div class="cal-day${ds===t?' today':''}${hE?' has-event':''}" onclick="showDay('${ds}')">${d}</div>`;
+    }
+    document.getElementById('calGrid').innerHTML=h;
+  }
+  function calMv(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
+  function showDay(ds) {
+    var evs=DB.evs.filter(e=>e.date===ds), card=document.getElementById('calDayCard');
+    document.getElementById('calDayTitle').textContent='Eventos: '+fd(ds);
+    if(!evs.length){card.style.display='none';return;}
+    card.style.display='block';
+    document.getElementById('calDayEvs').innerHTML=evs.map(e=>`<div style="padding:10px 0;border-bottom:.5px solid var(--border)"><div style="font-weight:600">${e.title}</div><div style="font-size:13px;color:var(--text-muted);margin-top:3px">${e.time}${e.desc?' — '+e.desc:''}</div><button class="btn btn-r btn-sm" style="margin-top:8px" onclick="del('events','${e._id}')">Remover</button></div>`).join('');
+  }
+  async function addEv() {
+    var t=document.getElementById('evTitle').value.trim(), d=document.getElementById('evDate').value,
+        ti=document.getElementById('evTime').value, desc=document.getElementById('evDesc').value.trim();
+    if(!t||!d){toast('Preencha título e data');return;}
+    await window.FB.add(uc('events'),{title:t,date:d,time:ti,desc,createdAt:window.FB.ts()});
+    document.getElementById('evTitle').value=''; document.getElementById('evDesc').value=''; toast('Evento salvo ✓');
+  }
+  function renderEvList() {
+    var el=document.getElementById('evList'), f=DB.evs.filter(e=>e.date>=td()).slice(0,10);
+    if(!f.length){el.innerHTML='';return;}
+    el.innerHTML='<div class="slbl">Próximos eventos</div>'+f.map(e=>`<div class="item"><div class="item-head"><span class="item-title">${e.title}</span><span class="badge bt">${fd(e.date)}</span></div><div class="item-meta">${e.time}${e.desc?' — '+e.desc:''}</div></div>`).join('');
+  }
+  function expICS() {
+    if(!DB.evs.length){toast('Nenhum evento para exportar');return;}
+    var ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Fazenda Manager//PT\r\n";
+    DB.evs.forEach(e=>{var dt=e.date.replace(/-/g,'')+'T'+(e.time||'08:00').replace(':','')+'00';ics+="BEGIN:VEVENT\r\nDTSTART:"+dt+"\r\nSUMMARY:"+e.title+"\r\nDESCRIPTION:"+(e.desc||'')+"\r\nEND:VEVENT\r\n";});
+    ics+="END:VCALENDAR";
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='fazenda-eventos.ics';a.click();toast('.ics gerado ✓');
+  }
+  function expGCal() {
+    var e=DB.evs.find(e=>e.date>=td());
+    if(!e){toast('Nenhum evento futuro');return;}
+    var dt=e.date.replace(/-/g,'')+'T'+(e.time||'08:00').replace(':','')+'00';
+    window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.title)+'&dates='+dt+'/'+dt+'&details='+encodeURIComponent(e.desc||''),'_blank');
+  }
+
+  // FRETES
+  function setFO(o) {
+    fOwn=o;
+    document.getElementById('fOwnBtn').className='tb'+(o==='proprio'?' on-g':'');
+    document.getElementById('fOthBtn').className='tb'+(o==='outro'?' on-g':'');
+    document.getElementById('fOthWrap').style.display=o==='outro'?'block':'none';
+  }
+  async function addFret() {
+    var pl=document.getElementById('fPlaca').value.toUpperCase().trim(),
+        mo=document.getElementById('fMot').value.trim(),
+        pe=parseFloat(document.getElementById('fPeso').value)||0,
+        da=document.getElementById('fData').value,
+        pk=parseFloat(document.getElementById('fPkg').value)||0,
+        fz=fOwn==='proprio'?'Nossa fazenda':(document.getElementById('fOthName').value.trim()||'Outra fazenda');
+    if(!pl||!mo||!pe||!da){toast('Preencha todos os campos');return;}
+    await window.FB.add(uc('fretes'),{placa:pl,mot:mo,peso:pe,data:da,priceKg:pk,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});
+    document.getElementById('fPeso').value=''; toast('Viagem registrada ✓');
+  }
+  function renderFrets() {
+    var el=document.getElementById('fGrps');
+    if(!DB.frets.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div>Nenhuma viagem registrada</div>';return;}
+    var g={};
+    DB.frets.forEach(f=>{
+      if(!g[f.placa]) g[f.placa]={vs:[],tot:0,pk:f.priceKg,faz:{}};
+      g[f.placa].vs.push(f); g[f.placa].tot+=parseFloat(f.peso||0);
+      var fz=f.fazenda||'Nossa fazenda'; g[f.placa].faz[fz]=(g[f.placa].faz[fz]||0)+parseFloat(f.peso||0);
+    });
+    el.innerHTML=Object.keys(g).map(pl=>{
+      var x=g[pl], tf=x.tot*x.pk;
+      var fr=Object.entries(x.faz).map(([k,v])=>`<div class="pr"><span style="color:var(--text-muted)">${k}</span><span style="font-weight:600">${v.toLocaleString('pt-BR')} kg</span></div>`).join('');
+      var vr=x.vs.map(v=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border);font-size:13px;gap:8px"><span style="color:var(--text-muted)">${v.mot} — ${fd(v.data)}<br><small>${v.fazenda}</small></span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600">${parseFloat(v.peso).toLocaleString('pt-BR')} kg</span><button class="btn btn-r btn-sm" onclick="del('fretes','${v._id}')">✕</button></span></div>`).join('');
+      return `<div class="pg"><div class="ph"><span style="font-weight:700;font-size:16px">${pl}</span><span class="badge bb">${x.tot.toLocaleString('pt-BR')} kg</span></div><div class="pb"><div class="slbl">Por fazenda</div>${fr}<div class="slbl" style="margin-top:14px">Viagens</div>${vr}<hr class="dv"><div class="sr"><span>Preço por kg</span><span>R$ ${x.pk.toFixed(3)}</span></div><div class="sr pos"><span>Total do frete</span><span>${brl(tf)}</span></div></div></div>`;
+    }).join('');
+  }
+
+  // CUSTOS
+  function setCult(c,b) {
+    cult=c; document.querySelectorAll('.ct').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    document.getElementById('cultTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Configuração';
+    loadCultConf(); renderCosts(); updCultSum();
+  }
+  function loadCultConf() {
+    var cd=DB.cd[cult]||{};
+    document.getElementById('cHa').value=cd.ha||'';
+    document.getElementById('cProd').value=cd.prod||'';
+    document.getElementById('cSaca').value=cd.sacaPrice||'';
+  }
+  async function saveCultConf() {
+    var ha=parseFloat(document.getElementById('cHa').value)||0,
+        prod=parseFloat(document.getElementById('cProd').value)||0,
+        sacaPrice=parseFloat(document.getElementById('cSaca').value)||0;
+    DB.cd[cult]={ha,prod,sacaPrice};
+    await window.FB.set(window.FB.ref(window.FB.db,'users',uid(),'cultdata',cult),{ha,prod,sacaPrice},{merge:true});
+    updCultSum();
+  }
+  function updCultSum() {
+    var cd=DB.cd[cult]||{}, ha=parseFloat(cd.ha)||0, prod=parseFloat(cd.prod)||0, sp=parseFloat(cd.sacaPrice)||0;
+    var cs=DB.costs.filter(c=>c.culture===cult), tc=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
+    var ts=ha*prod, tr=ts*sp, lu=tr-tc, card=document.getElementById('cultSum');
+    if(!ha&&!sp){card.style.display='none';return;}
+    card.style.display='block';
+    document.getElementById('cultSumC').innerHTML=`
+      <div class="sr"><span>Área cultivada</span><span>${ha.toFixed(1)} ha</span></div>
+      <div class="sr"><span>Produção estimada</span><span>${ts.toFixed(0)} sacas</span></div>
+      <div class="sr"><span>Preço por saca</span><span>${brl(sp)}</span></div>
+      <hr class="dv">
+      <div class="sr neg"><span>Total de custos</span><span>${brl(tc)}</span></div>
+      <div class="sr"><span>Custo por hectare</span><span>${brl(ha>0?tc/ha:0)}</span></div>
+      <hr class="dv">
+      <div class="sr pos"><span>Receita estimada</span><span>${brl(tr)}</span></div>
+      <div class="sr pos"><span>Receita em sacas</span><span>${ts.toFixed(0)} sacas</span></div>
+      <hr class="dv">
+      <div class="sr tot ${lu>=0?'pos':'neg'}"><span>Resultado estimado</span><span>${brl(lu)}</span></div>`;
+  }
+  async function addCost() {
+    var cat=document.getElementById('cCat').value, desc=document.getElementById('cDesc').value.trim(),
+        val=parseFloat(document.getElementById('cVal').value)||0, safra=document.getElementById('cSafra').value.trim();
+    if(!val){toast('Informe o valor');return;}
+    await window.FB.add(uc('costs'),{culture:cult,cat,desc,val,safra,createdAt:window.FB.ts()});
+    document.getElementById('cVal').value=''; document.getElementById('cDesc').value=''; toast('Custo adicionado ✓');
+  }
+  function renderCosts() {
+    var el=document.getElementById('cList'), items=DB.costs.filter(c=>c.culture===cult);
+    if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div>Nenhum custo para esta cultura</div>';return;}
+    var bc={};
+    items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});
+    el.innerHTML=Object.entries(bc).map(([cat,cs])=>{
+      var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
+      return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-weight:600;font-size:15px">${cat}</span><span class="badge ba">${brl(tot)}</span></div>${cs.map(c=>`<div class="cr"><span style="color:var(--text-muted);flex:1;line-height:1.3">${c.desc||c.cat}${c.safra?' ('+c.safra+')':''}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;white-space:nowrap">${brl(c.val)}</span><button class="btn btn-r btn-sm" onclick="del('costs','${c._id}')">✕</button></span></div>`).join('')}</div>`;
+    }).join('');
+  }
+
+  // FINANCEIRO
+  function setFT(t) {
+    finT=t;
+    document.getElementById('fRecBtn').className='tb'+(t==='receita'?' on-g':'');
+    document.getElementById('fDespBtn').className='tb'+(t==='despesa'?' on-r':'');
+  }
+  async function addFin() {
+    var desc=document.getElementById('fDesc').value.trim(), cat=document.getElementById('fCat').value,
+        val=parseFloat(document.getElementById('fVal').value)||0, date=document.getElementById('fDate').value;
+    if(!desc||!val||!date){toast('Preencha todos os campos');return;}
+    await window.FB.add(uc('fins'),{type:finT,desc,cat,val,date,createdAt:window.FB.ts()});
+    document.getElementById('fDesc').value=''; document.getElementById('fVal').value=''; toast('Registrado ✓');
+  }
+  function updFinStats() {
+    var r=DB.fins.filter(f=>f.type==='receita').reduce((s,f)=>s+parseFloat(f.val||0),0);
+    var d=DB.fins.filter(f=>f.type==='despesa').reduce((s,f)=>s+parseFloat(f.val||0),0);
+    var sl=r-d;
+    document.getElementById('sRec').textContent=brl(r);
+    document.getElementById('sDesp').textContent=brl(d);
+    document.getElementById('sSaldo').textContent=brl(sl);
+    document.getElementById('sSaldo').style.color=sl>=0?'var(--green)':'var(--red)';
+    document.getElementById('sAtiv').textContent=DB.ativ.length;
+  }
+  function renderFin() {
+    var el=document.getElementById('fList'); updFinStats();
+    if(!DB.fins.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>Nenhuma movimentação registrada</div>';return;}
+    el.innerHTML=DB.fins.map(f=>`<div class="item"><div class="item-head"><span class="item-title">${f.desc}</span><span class="badge ${f.type==='receita'?'bg':'br'}">${f.type==='receita'?'+':'-'} ${brl(f.val)}</span></div><div class="item-meta">${f.cat} — ${fd(f.date)}</div><div class="item-actions"><button class="btn btn-r btn-sm" onclick="del('fins','${f._id}')">Remover</button></div></div>`).join('');
+  }
+
+  // DELETE
+  async function del(col, id) {
+    if(!confirm('Remover este item?')) return;
+    await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),col,id));
+    toast('Removido ✓');
+  }
+</script>
+</body>
+</html>
