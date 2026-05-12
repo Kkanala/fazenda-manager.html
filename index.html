@@ -58,8 +58,8 @@
     .header p { font-size:11px; color:var(--text-muted); margin-top:1px; }
     .btn-out { padding:7px 14px; border:0.5px solid var(--border-mid); border-radius:20px; background:transparent; color:var(--text-muted); font-size:13px; cursor:pointer; font-family:inherit; }
     .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--bg); border-top:0.5px solid var(--border); display:flex; z-index:100; }
-    .nav-btn { flex:1; padding:10px 4px 12px; border:none; background:transparent; color:var(--text-muted); font-size:10px; font-weight:500; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; }
-    .nav-btn .icon { font-size:20px; }
+    .nav-btn { flex:1; padding:8px 2px 10px; border:none; background:transparent; color:var(--text-muted); font-size:9px; font-weight:500; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .nav-btn .icon { font-size:18px; }
     .nav-btn.on { color:var(--green); }
     .page { display:none; padding:12px; }
     .page.on { display:block; }
@@ -70,7 +70,6 @@
     input:focus,select:focus,textarea:focus { outline:none; border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(99,153,34,0.15); }
     textarea { resize:vertical; min-height:68px; line-height:1.5; }
     .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
     .btn { display:block; width:100%; padding:13px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; color:var(--text); font-size:15px; font-weight:500; cursor:pointer; margin-top:12px; font-family:inherit; }
     .btn-g { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
     .btn-b { background:var(--blue-light); color:var(--blue); border-color:rgba(24,95,165,0.3); }
@@ -115,6 +114,7 @@
     .sr { display:flex; justify-content:space-between; padding:7px 0; font-size:14px; }
     .sr.tot { font-weight:700; font-size:15px; border-top:1.5px solid var(--border-mid); padding-top:12px; margin-top:4px; }
     .sr.pos { color:var(--green); font-weight:700; }
+    .sr.pos-blue { color:var(--blue); font-weight:700; }
     .sr.neg { color:var(--red); font-weight:700; }
     hr.dv { border:none; border-top:0.5px solid var(--border); margin:10px 0; }
     .slbl { font-size:11px; font-weight:700; color:var(--text-hint); text-transform:uppercase; letter-spacing:.6px; margin:14px 0 8px; }
@@ -123,14 +123,15 @@
     .loading { text-align:center; padding:24px; color:var(--text-muted); font-size:14px; }
     .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a1a; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; pointer-events:none; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-    /* FRETES */
     .fret-nav { display:flex; gap:8px; margin-bottom:14px; }
     .fret-nav-btn { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:13px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; text-align:center; }
     .fret-nav-btn.on { background:var(--purple-light); color:var(--purple); border-color:rgba(91,63,166,0.3); }
+    .fret-nav-btn.on-blue { background:var(--blue-light); color:var(--blue); border-color:rgba(24,95,165,0.3); }
     .talhao-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow); }
     .talhao-header { padding:14px 16px; background:var(--green-light); border-bottom:0.5px solid var(--border); }
+    .talhao-header.blue { background:var(--blue-light); }
     .talhao-name { font-size:16px; font-weight:700; color:var(--green); }
+    .talhao-name.blue { color:var(--blue); }
     .talhao-meta { font-size:12px; color:var(--text-muted); margin-top:3px; }
     .talhao-body { padding:14px 16px; }
     .talhao-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
@@ -141,16 +142,9 @@
     .viagem-row:last-child { border-bottom:none; }
     .talhao-info-bar { background:var(--purple-light); border:0.5px solid rgba(91,63,166,0.3); border-radius:var(--radius-sm); padding:10px 14px; font-size:13px; color:var(--purple); margin-bottom:12px; font-weight:500; }
 
-    /* RELATÓRIO PDF */
-    @media print {
-      body { background: white !important; }
-      .bottom-nav, .header, .fret-nav, #btnPDF { display:none !important; }
-      .page { display:block !important; padding:0 !important; }
-      #pg-fret { display:block !important; }
-      #fret-talhoes, #fret-viagens { display:none !important; }
-      #fret-relatorio { display:block !important; }
-      .card { box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
-    }
+    /* Entrega form inline */
+    .entrega-form { background:var(--bg-surface); border-radius:var(--radius-sm); padding:12px; margin-top:10px; }
+    .entrega-form input { margin-bottom:8px; }
   </style>
 </head>
 <body>
@@ -202,10 +196,12 @@
     </div>
     <button class="btn-out" onclick="doOut()">Sair</button>
   </div>
+
   <nav class="bottom-nav">
     <button class="nav-btn on" onclick="goTo('pg-ativ',this)"><span class="icon">📋</span>Atividades</button>
     <button class="nav-btn" onclick="goTo('pg-cal',this)"><span class="icon">📅</span>Calendário</button>
     <button class="nav-btn" onclick="goTo('pg-fret',this)"><span class="icon">🚛</span>Fretes</button>
+    <button class="nav-btn" onclick="goTo('pg-liq',this)"><span class="icon">💧</span>Líquida</button>
     <button class="nav-btn" onclick="goTo('pg-cust',this)"><span class="icon">🌱</span>Custos</button>
     <button class="nav-btn" onclick="goTo('pg-fin',this)"><span class="icon">💰</span>Financeiro</button>
   </nav>
@@ -254,7 +250,7 @@
     <div id="evList"></div>
   </div>
 
-  <!-- FRETES -->
+  <!-- FRETES (PESO BRUTO) -->
   <div id="pg-fret" class="page">
     <div class="fret-nav">
       <button class="fret-nav-btn on" id="fnTab1" onclick="setFretTab('talhoes')">&#128209; Talhões</button>
@@ -262,7 +258,6 @@
       <button class="fret-nav-btn" id="fnTab3" onclick="setFretTab('relatorio')">&#128202; Relatório</button>
     </div>
 
-    <!-- TALHÕES -->
     <div id="fret-talhoes">
       <div class="card">
         <div class="card-title">Novo talhão</div>
@@ -289,7 +284,6 @@
       <div id="talhaoList"><div class="loading">Carregando...</div></div>
     </div>
 
-    <!-- VIAGENS -->
     <div id="fret-viagens" style="display:none">
       <div id="talhaoInfoBar" class="talhao-info-bar" style="display:none"></div>
       <div class="card">
@@ -318,10 +312,46 @@
       <div id="fGrps"></div>
     </div>
 
-    <!-- RELATÓRIO -->
     <div id="fret-relatorio" style="display:none">
-      <button id="btnPDF" class="btn btn-a" onclick="gerarPDF()" style="margin-bottom:14px">&#128196; Baixar relatório em PDF</button>
+      <button class="btn btn-a" onclick="gerarPDF()" style="margin-bottom:14px">&#128196; Baixar relatório em PDF</button>
       <div id="relatorioContent"><div class="loading">Carregando...</div></div>
+    </div>
+  </div>
+
+  <!-- MÉDIA LÍQUIDA -->
+  <div id="pg-liq" class="page">
+    <div class="fret-nav">
+      <button class="fret-nav-btn on-blue on" id="lqTab1" onclick="setLiqTab('talhoes')">&#128209; Talhões</button>
+      <button class="fret-nav-btn" id="lqTab2" onclick="setLiqTab('relatorio')">&#128202; Relatório</button>
+    </div>
+
+    <div id="liq-talhoes">
+      <div class="card">
+        <div class="card-title">Novo talhão líquido</div>
+        <label>Nome do talhão</label>
+        <input type="text" id="lqNome" placeholder="Ex: Talhão Norte, Gleba A...">
+        <div class="row2">
+          <div><label>Cultura</label>
+            <select id="lqCultura"><option>Café</option><option>Milho</option><option>Soja</option><option>Outro</option></select>
+          </div>
+          <div><label>Tamanho (ha)</label>
+            <input type="number" id="lqHa" placeholder="0.0" step="0.1" inputmode="decimal">
+          </div>
+        </div>
+        <div class="row2">
+          <div><label>Data início</label><input type="date" id="lqInicio"></div>
+          <div><label>Data fim</label><input type="date" id="lqFim"></div>
+        </div>
+        <label>Observações (secador, contrato...)</label>
+        <textarea id="lqObs" placeholder="Ex: Secador São João, contrato 2024..." style="min-height:50px"></textarea>
+        <button class="btn btn-b" onclick="addLiqTalhao()">+ Criar talhão</button>
+      </div>
+      <div id="liqTalhaoList"><div class="loading">Carregando...</div></div>
+    </div>
+
+    <div id="liq-relatorio" style="display:none">
+      <button class="btn btn-a" onclick="gerarPDFLiq()" style="margin-bottom:14px">&#128196; Baixar relatório em PDF</button>
+      <div id="liqRelContent"><div class="loading">Carregando...</div></div>
     </div>
   </div>
 
@@ -391,7 +421,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, collection, addDoc, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
   const app = initializeApp({
     apiKey: "AIzaSyD-ypAF3_OlKf_vRl8c4xqYQq7BcerLYsY",
     authDomain: "fazenda-manager.firebaseapp.com",
@@ -412,9 +441,10 @@
 
 <script>
   var CU=null, unsubs=[];
-  var DB={ativ:[],evs:[],talhoes:[],frets:[],costs:[],fins:[],cd:{cafe:{},milho:{},soja:{}}};
+  var DB={ativ:[],evs:[],talhoes:[],frets:[],costs:[],fins:[],liqtalhoes:[],liqentregas:[],cd:{cafe:{},milho:{},soja:{}}};
   var calY=new Date().getFullYear(), calM=new Date().getMonth();
-  var cult='cafe', finT='receita', fOwn='proprio', fretTab='talhoes';
+  var cult='cafe', finT='receita', fOwn='proprio', fretTab='talhoes', liqTab='talhoes';
+  var liqEntregaAberta=null;
 
   function td(){return new Date().toISOString().split('T')[0];}
   function fd(ds){if(!ds)return '';var p=ds.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
@@ -469,6 +499,7 @@
     document.getElementById('fData').value=td();
     document.getElementById('fDate').value=td();
     document.getElementById('tInicio').value=td();
+    document.getElementById('lqInicio').value=td();
     startSnaps();
   }
 
@@ -479,6 +510,8 @@
     o('fretes','frets',()=>{renderViagens();renderTalhoes();renderRelatorio();});
     o('costs','costs',()=>{renderCosts();updCultSum();});
     o('fins','fins',()=>{renderFin();updFinStats();});
+    o('liqtalhoes','liqtalhoes',()=>{renderLiqTalhoes();renderLiqRelatorio();});
+    o('liqentregas','liqentregas',()=>{renderLiqTalhoes();renderLiqRelatorio();});
     unsubs.push(window.FB.snap(window.FB.q(uc('talhoes'),window.FB.ob('createdAt','desc')),s=>{
       DB.talhoes=s.docs.map(d=>({...d.data(),_id:d.id}));
       renderTalhoes();renderViagens();renderRelatorio();populateTalhaoSelect();
@@ -502,6 +535,7 @@
     if(id==='pg-cust'){renderCosts();updCultSum();}
     if(id==='pg-fin')updFinStats();
     if(id==='pg-fret')renderRelatorio();
+    if(id==='pg-liq')renderLiqRelatorio();
   }
 
   // ATIVIDADES
@@ -565,7 +599,7 @@
     window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.title)+'&dates='+dt+'/'+dt+'&details='+encodeURIComponent(e.desc||''),'_blank');
   }
 
-  // ============ FRETES ============
+  // ============ FRETES (PESO BRUTO) ============
   function setFretTab(t){
     fretTab=t;
     ['talhoes','viagens','relatorio'].forEach(x=>document.getElementById('fret-'+x).style.display=x===t?'block':'none');
@@ -575,7 +609,6 @@
     if(t==='relatorio')renderRelatorio();
   }
 
-  // TALHÕES
   async function addTalhao(){
     var nome=document.getElementById('tNome').value.trim(),
         cultura=document.getElementById('tCultura').value,
@@ -586,19 +619,11 @@
         obs=document.getElementById('tObs').value.trim();
     if(!nome||!inicio){toast('Informe o nome e a data de início');return;}
     await window.FB.add(uc('talhoes'),{nome,cultura,ha,inicio,fim,priceKg,obs,createdAt:window.FB.ts()});
-    document.getElementById('tNome').value='';
-    document.getElementById('tHa').value='';
-    document.getElementById('tObs').value='';
-    document.getElementById('tFim').value='';
-    document.getElementById('tPriceKg').value='';
+    ['tNome','tHa','tObs','tFim','tPriceKg'].forEach(id=>document.getElementById(id).value='');
     toast('Talhão criado ✓');
   }
 
-  function calcMedia(pesoKg, ha){
-    // média = peso total em kg ÷ 60 ÷ hectares = sacas/ha
-    if(!ha||!pesoKg)return null;
-    return pesoKg/60/ha;
-  }
+  function calcMedia(pesoKg,ha){return (ha&&pesoKg)?pesoKg/60/ha:null;}
 
   function renderTalhoes(){
     var el=document.getElementById('talhaoList');
@@ -622,7 +647,7 @@
           <div class="talhao-stats">
             <div class="tstat"><div class="tstat-lbl">Peso total</div><div class="tstat-val">${num(totalPeso)} kg</div></div>
             <div class="tstat"><div class="tstat-lbl">Sacas totais</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div>
-            <div class="tstat"><div class="tstat-lbl">Média (sc/ha)</div><div class="tstat-val" style="color:var(--green)">${media!==null?num(media,1):'—'}</div></div>
+            <div class="tstat"><div class="tstat-lbl">Média bruta sc/ha</div><div class="tstat-val" style="color:var(--green)">${media!==null?num(media,2):'—'}</div></div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-p btn-sm" onclick="irParaViagens('${t._id}','${t.nome}')">+ Registrar viagem</button>
@@ -645,11 +670,7 @@
   function populateTalhaoSelect(){
     var sel=document.getElementById('vTalhao'),cur=sel.value;
     sel.innerHTML='<option value="">Selecione o talhão...</option>';
-    DB.talhoes.forEach(t=>{
-      var o=document.createElement('option');
-      o.value=t._id;o.textContent=t.nome+' ('+t.cultura+')';
-      sel.appendChild(o);
-    });
+    DB.talhoes.forEach(t=>{var o=document.createElement('option');o.value=t._id;o.textContent=t.nome+' ('+t.cultura+')';sel.appendChild(o);});
     if(cur)sel.value=cur;
   }
 
@@ -657,12 +678,11 @@
     var id=document.getElementById('vTalhao').value;
     var t=DB.talhoes.find(x=>x._id===id);
     var bar=document.getElementById('talhaoInfoBar');
-    if(t){bar.style.display='block';bar.textContent='📍 Talhão selecionado: '+t.nome+(t.ha?' ('+t.ha+' ha)':'');}
+    if(t){bar.style.display='block';bar.textContent='📍 Talhão: '+t.nome+(t.ha?' ('+t.ha+' ha)':'');}
     else bar.style.display='none';
     renderViagens();
   }
 
-  // VIAGENS
   function setFO(o){
     fOwn=o;
     document.getElementById('fOwnBtn').className='tb'+(o==='proprio'?' on-g':'');
@@ -680,11 +700,9 @@
     if(!talhaoId){toast('Selecione o talhão');return;}
     if(!pl||!mo||!pe||!da){toast('Preencha todos os campos');return;}
     var talhao=DB.talhoes.find(t=>t._id===talhaoId);
-    var priceKg=talhao?talhao.priceKg:0;
-    await window.FB.add(uc('fretes'),{talhaoId,talhaoNome:talhao?talhao.nome:'',placa:pl,mot:mo,peso:pe,data:da,priceKg,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});
+    await window.FB.add(uc('fretes'),{talhaoId,talhaoNome:talhao?talhao.nome:'',placa:pl,mot:mo,peso:pe,data:da,priceKg:talhao?talhao.priceKg:0,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});
     document.getElementById('fPeso').value='';
     toast('Viagem registrada ✓');
-    renderViagens();
   }
 
   function renderViagens(){
@@ -692,7 +710,6 @@
     var talhaoId=document.getElementById('vTalhao')?document.getElementById('vTalhao').value:'';
     var vs=talhaoId?DB.frets.filter(f=>f.talhaoId===talhaoId):DB.frets;
     if(!vs.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div>Nenhuma viagem registrada ainda</div>';return;}
-    // agrupa por placa
     var g={};
     vs.forEach(f=>{
       if(!g[f.placa])g[f.placa]={vs:[],tot:0};
@@ -712,119 +729,228 @@
     }).join('');
   }
 
-  // ============ RELATÓRIO ============
+  // RELATÓRIO BRUTO
   function renderRelatorio(){
     var el=document.getElementById('relatorioContent');
     if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Crie talhões para ver o relatório</div>';return;}
-
-    var totalGeralPeso=0, totalGeralFrete=0;
-
-    var talhaoHTML=DB.talhoes.map(t=>{
+    var totalGeralPeso=0,totalGeralFrete=0;
+    var html=DB.talhoes.map(t=>{
       var vs=DB.frets.filter(f=>f.talhaoId===t._id);
       var totalPeso=vs.reduce((s,f)=>s+parseFloat(f.peso||0),0);
       var totalFrete=totalPeso*(t.priceKg||0);
       var totalSacas=totalPeso/60;
       var media=calcMedia(totalPeso,t.ha);
-      totalGeralPeso+=totalPeso;
-      totalGeralFrete+=totalFrete;
+      totalGeralPeso+=totalPeso;totalGeralFrete+=totalFrete;
 
-      // Por placa
       var porPlaca={};
-      vs.forEach(f=>{
-        if(!porPlaca[f.placa])porPlaca[f.placa]={tot:0,frete:0,vs:[]};
-        porPlaca[f.placa].tot+=parseFloat(f.peso||0);
-        porPlaca[f.placa].frete+=parseFloat(f.peso||0)*(f.priceKg||0);
-        porPlaca[f.placa].vs.push(f);
-      });
+      vs.forEach(f=>{if(!porPlaca[f.placa])porPlaca[f.placa]={tot:0,frete:0};porPlaca[f.placa].tot+=parseFloat(f.peso||0);porPlaca[f.placa].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});
 
-      // Por motorista
       var porMot={};
-      vs.forEach(f=>{
-        if(!porMot[f.mot])porMot[f.mot]={tot:0,frete:0};
-        porMot[f.mot].tot+=parseFloat(f.peso||0);
-        porMot[f.mot].frete+=parseFloat(f.peso||0)*(f.priceKg||0);
-      });
+      vs.forEach(f=>{if(!porMot[f.mot])porMot[f.mot]={tot:0,frete:0};porMot[f.mot].tot+=parseFloat(f.peso||0);porMot[f.mot].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});
 
-      // Por fazenda (nossa x outra)
       var porFaz={};
-      vs.forEach(f=>{
-        var fz=f.fazenda||'Nossa fazenda';
-        if(!porFaz[fz])porFaz[fz]={tot:0,frete:0};
-        porFaz[fz].tot+=parseFloat(f.peso||0);
-        porFaz[fz].frete+=parseFloat(f.peso||0)*(f.priceKg||0);
-      });
-
-      var placaRows=Object.entries(porPlaca).map(([pl,x])=>`
-        <div class="sr"><span style="font-weight:600">🚛 ${pl}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('');
-
-      var motRows=Object.entries(porMot).map(([m,x])=>`
-        <div class="sr"><span>👤 ${m}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('');
-
-      var fazRows=Object.entries(porFaz).map(([f,x])=>`
-        <div class="sr"><span>🏡 ${f}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('');
+      vs.forEach(f=>{var fz=f.fazenda||'Nossa fazenda';if(!porFaz[fz])porFaz[fz]={tot:0,frete:0};porFaz[fz].tot+=parseFloat(f.peso||0);porFaz[fz].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});
 
       return `<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px">
-          <div>
-            <div style="font-weight:700;font-size:16px;color:var(--green)">📍 ${t.nome}</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div>
-          </div>
+          <div><div style="font-weight:700;font-size:16px;color:var(--green)">📍 ${t.nome}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div>
           <span class="badge bp">${vs.length} viagens</span>
         </div>
-
-        ${placaRows?`<div class="slbl">Por placa</div>${placaRows}`:''}
-        ${motRows?`<div class="slbl">Por motorista</div>${motRows}`:''}
-        ${fazRows?`<div class="slbl">Por fazenda</div>${fazRows}`:''}
-
+        ${Object.keys(porPlaca).length?`<div class="slbl">Por placa</div>${Object.entries(porPlaca).map(([pl,x])=>`<div class="sr"><span style="font-weight:600">🚛 ${pl}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
+        ${Object.keys(porMot).length?`<div class="slbl">Por motorista</div>${Object.entries(porMot).map(([m,x])=>`<div class="sr"><span>👤 ${m}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
+        ${Object.keys(porFaz).length?`<div class="slbl">Por fazenda</div>${Object.entries(porFaz).map(([f,x])=>`<div class="sr"><span>🏡 ${f}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
         <hr class="dv">
         <div class="sr"><span>Total de sacas</span><span style="font-weight:600">${num(totalSacas,1)} sacas</span></div>
-        <div class="sr"><span>Total de peso</span><span style="font-weight:600">${num(totalPeso)} kg</span></div>
-        ${t.ha?`<div class="sr pos"><span>Média da lavoura</span><span>${num(media,2)} sacas/ha</span></div>`:''}
+        <div class="sr"><span>Peso bruto total</span><span style="font-weight:600">${num(totalPeso)} kg</span></div>
+        ${t.ha?`<div class="sr pos"><span>Média da lavoura (peso bruto)</span><span>${num(media,2)} sacas/ha</span></div>`:''}
         <div class="sr tot pos"><span>Total do frete</span><span>${brl(totalFrete)}</span></div>
       </div>`;
     }).join('');
 
-    // Resumo geral
-    var totalGeralSacas=totalGeralPeso/60;
-    var geralHTML=`<div class="card" style="border:1.5px solid var(--green);background:var(--green-light)">
-      <div class="card-title" style="color:var(--green)">Resumo Geral — Todos os Talhões</div>
+    html+=`<div class="card" style="border:1.5px solid var(--green);background:var(--green-light)">
+      <div class="card-title" style="color:var(--green)">Resumo Geral — Peso Bruto</div>
       <div class="sr"><span>Total de viagens</span><span style="font-weight:600">${DB.frets.length}</span></div>
-      <div class="sr"><span>Peso total colhido</span><span style="font-weight:600">${num(totalGeralPeso)} kg</span></div>
-      <div class="sr"><span>Total em sacas</span><span style="font-weight:600">${num(totalGeralSacas,1)} sacas</span></div>
+      <div class="sr"><span>Peso bruto total</span><span style="font-weight:600">${num(totalGeralPeso)} kg</span></div>
+      <div class="sr"><span>Total em sacas</span><span style="font-weight:600">${num(totalGeralPeso/60,1)} sacas</span></div>
       <div class="sr tot pos"><span>Total geral de fretes</span><span>${brl(totalGeralFrete)}</span></div>
     </div>`;
-
-    el.innerHTML=talhaoHTML+geralHTML;
+    el.innerHTML=html;
   }
 
-  // PDF
   function gerarPDF(){
     var conteudo=document.getElementById('relatorioContent').innerHTML;
     var data=new Date().toLocaleDateString('pt-BR');
     var win=window.open('','_blank');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatório Fazenda - ${data}</title>
+    win.document.write(pdfTemplate('🌾 Fazenda Manager — Relatório de Fretes (Peso Bruto)',data,conteudo,'#3B6D11'));
+    win.document.close();
+  }
+
+  // ============ MÉDIA LÍQUIDA ============
+  function setLiqTab(t){
+    liqTab=t;
+    document.getElementById('liq-talhoes').style.display=t==='talhoes'?'block':'none';
+    document.getElementById('liq-relatorio').style.display=t==='relatorio'?'block':'none';
+    document.getElementById('lqTab1').className='fret-nav-btn'+(t==='talhoes'?' on-blue on':'');
+    document.getElementById('lqTab2').className='fret-nav-btn'+(t==='relatorio'?' on-blue on':'');
+    if(t==='relatorio')renderLiqRelatorio();
+  }
+
+  async function addLiqTalhao(){
+    var nome=document.getElementById('lqNome').value.trim(),
+        cultura=document.getElementById('lqCultura').value,
+        ha=parseFloat(document.getElementById('lqHa').value)||0,
+        inicio=document.getElementById('lqInicio').value,
+        fim=document.getElementById('lqFim').value,
+        obs=document.getElementById('lqObs').value.trim();
+    if(!nome||!inicio){toast('Informe nome e data de início');return;}
+    await window.FB.add(uc('liqtalhoes'),{nome,cultura,ha,inicio,fim,obs,createdAt:window.FB.ts()});
+    ['lqNome','lqHa','lqObs','lqFim'].forEach(id=>document.getElementById(id).value='');
+    toast('Talhão criado ✓');
+  }
+
+  function showLiqEntregaForm(talhaoId,talhaoNome){
+    liqEntregaAberta=talhaoId;
+    renderLiqTalhoes();
+  }
+
+  async function saveLiqEntrega(talhaoId){
+    var peso=parseFloat(document.getElementById('lqEPeso_'+talhaoId).value)||0;
+    var data=document.getElementById('lqEData_'+talhaoId).value;
+    var secador=document.getElementById('lqESec_'+talhaoId).value.trim();
+    if(!peso||!data){toast('Preencha peso e data');return;}
+    var talhao=DB.liqtalhoes.find(t=>t._id===talhaoId);
+    await window.FB.add(uc('liqentregas'),{talhaoId,talhaoNome:talhao?talhao.nome:'',peso,data,secador,createdAt:window.FB.ts()});
+    liqEntregaAberta=null;
+    toast('Entrega registrada ✓');
+  }
+
+  function renderLiqTalhoes(){
+    var el=document.getElementById('liqTalhaoList');
+    if(!DB.liqtalhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">💧</div>Nenhum talhão criado ainda</div>';return;}
+    el.innerHTML=DB.liqtalhoes.map(t=>{
+      var entregas=DB.liqentregas.filter(e=>e.talhaoId===t._id);
+      var totalPeso=entregas.reduce((s,e)=>s+parseFloat(e.peso||0),0);
+      var media=calcMedia(totalPeso,t.ha);
+      var formAberta=liqEntregaAberta===t._id;
+      return `<div class="talhao-card">
+        <div class="talhao-header blue">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="talhao-name blue">💧 ${t.nome}</div>
+              <div class="talhao-meta">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div>
+              ${t.obs?`<div style="font-size:12px;color:var(--text-muted);margin-top:3px">${t.obs}</div>`:''}
+            </div>
+            <span class="badge bb">${entregas.length} entregas</span>
+          </div>
+        </div>
+        <div class="talhao-body">
+          <div class="talhao-stats">
+            <div class="tstat"><div class="tstat-lbl">Peso líquido</div><div class="tstat-val">${num(totalPeso)} kg</div></div>
+            <div class="tstat"><div class="tstat-lbl">Sacas líquidas</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div>
+            <div class="tstat"><div class="tstat-lbl">Média líq. sc/ha</div><div class="tstat-val" style="color:var(--blue)">${media!==null?num(media,2):'—'}</div></div>
+          </div>
+          ${entregas.length?`<div class="slbl">Entregas</div>`+entregas.map(e=>`
+            <div class="viagem-row">
+              <div><span style="font-weight:500">${e.secador||'Secador'}</span><br>
+              <span style="font-size:12px;color:var(--text-muted)">${fd(e.data)}</span></div>
+              <span style="display:flex;align-items:center;gap:8px;font-weight:600">${num(e.peso)} kg
+                <button class="btn btn-r btn-sm" onclick="del('liqentregas','${e._id}')">✕</button>
+              </span>
+            </div>`).join(''):''}
+          ${formAberta?`
+            <div class="entrega-form">
+              <div class="slbl" style="margin-top:0">Nova entrega</div>
+              <label>Peso líquido (kg)</label>
+              <input type="number" id="lqEPeso_${t._id}" placeholder="0" inputmode="decimal">
+              <label>Data</label>
+              <input type="date" id="lqEData_${t._id}" value="${td()}">
+              <label>Nome do secador</label>
+              <input type="text" id="lqESec_${t._id}" placeholder="Ex: Secador São João">
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button class="btn btn-b btn-sm" onclick="saveLiqEntrega('${t._id}')">Salvar entrega</button>
+                <button class="btn btn-sm" onclick="liqEntregaAberta=null;renderLiqTalhoes()">Cancelar</button>
+              </div>
+            </div>`:`
+            <button class="btn btn-b btn-sm" style="margin-top:10px" onclick="showLiqEntregaForm('${t._id}','${t.nome}')">+ Adicionar entrega</button>`}
+          <button class="btn btn-r btn-sm" style="margin-top:8px" onclick="del('liqtalhoes','${t._id}')">Remover talhão</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderLiqRelatorio(){
+    var el=document.getElementById('liqRelContent');
+    if(!DB.liqtalhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">💧</div>Crie talhões para ver o relatório</div>';return;}
+    var totalAreaGeral=0,totalPesoGeral=0;
+
+    var html=DB.liqtalhoes.map(t=>{
+      var entregas=DB.liqentregas.filter(e=>e.talhaoId===t._id);
+      var totalPeso=entregas.reduce((s,e)=>s+parseFloat(e.peso||0),0);
+      var totalSacas=totalPeso/60;
+      var media=calcMedia(totalPeso,t.ha);
+      totalAreaGeral+=parseFloat(t.ha||0);
+      totalPesoGeral+=totalPeso;
+
+      var entRows=entregas.map(e=>`<div class="sr"><span>📦 ${e.secador||'Secador'} · ${fd(e.data)}</span><span>${num(e.peso)} kg</span></div>`).join('');
+
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px">
+          <div><div style="font-weight:700;font-size:16px;color:var(--blue)">💧 ${t.nome}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div>
+          <span class="badge bb">${entregas.length} entregas</span>
+        </div>
+        ${entRows?`<div class="slbl">Entregas por secador</div>${entRows}`:'<div style="font-size:13px;color:var(--text-muted)">Sem entregas registradas</div>'}
+        <hr class="dv">
+        <div class="sr"><span>Total de sacas líquidas</span><span style="font-weight:600">${num(totalSacas,1)} sacas</span></div>
+        <div class="sr"><span>Peso líquido total</span><span style="font-weight:600">${num(totalPeso)} kg</span></div>
+        ${t.ha?`<div class="sr pos-blue tot"><span>Média da lavoura (peso líquido)</span><span>${num(media,2)} sacas/ha</span></div>`
+        :`<div class="sr neg"><span>⚠️ Informe o tamanho em ha para calcular a média</span></div>`}
+      </div>`;
+    }).join('');
+
+    var mediaGeral=totalAreaGeral&&totalPesoGeral?totalPesoGeral/60/totalAreaGeral:null;
+    html+=`<div class="card" style="border:1.5px solid var(--blue);background:var(--blue-light)">
+      <div class="card-title" style="color:var(--blue)">Resumo Geral — Média Líquida</div>
+      <div class="sr"><span>Área total</span><span style="font-weight:600">${num(totalAreaGeral,1)} ha</span></div>
+      <div class="sr"><span>Peso líquido total</span><span style="font-weight:600">${num(totalPesoGeral)} kg</span></div>
+      <div class="sr"><span>Total em sacas líquidas</span><span style="font-weight:600">${num(totalPesoGeral/60,1)} sacas</span></div>
+      <div class="sr tot pos-blue"><span>Média geral da área (peso líquido)</span><span>${mediaGeral!==null?num(mediaGeral,2)+' sacas/ha':'—'}</span></div>
+    </div>`;
+    el.innerHTML=html;
+  }
+
+  function gerarPDFLiq(){
+    var conteudo=document.getElementById('liqRelContent').innerHTML;
+    var data=new Date().toLocaleDateString('pt-BR');
+    var win=window.open('','_blank');
+    win.document.write(pdfTemplate('💧 Fazenda Manager — Relatório de Média Líquida',data,conteudo,'#185FA5'));
+    win.document.close();
+  }
+
+  function pdfTemplate(titulo,data,conteudo,cor){
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titulo}</title>
     <style>
       body{font-family:Arial,sans-serif;padding:20px;color:#1a1a1a;max-width:800px;margin:0 auto}
-      h1{color:#3B6D11;font-size:20px;margin-bottom:4px}
-      .sub{color:#888;font-size:13px;margin-bottom:24px}
-      .card{border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:16px;page-break-inside:avoid}
-      .card-title{font-size:15px;font-weight:700;margin-bottom:12px;color:#3B6D11}
-      .sr{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:0.5px solid #eee}
+      h1{color:${cor};font-size:18px;margin-bottom:4px}
+      .sub{color:#888;font-size:12px;margin-bottom:24px}
+      .card{border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:14px;page-break-inside:avoid}
+      .card-title{font-size:15px;font-weight:700;margin-bottom:12px}
+      .sr{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:.5px solid #eee}
       .sr:last-child{border-bottom:none}
-      .sr.tot{font-weight:700;font-size:15px;border-top:2px solid #ccc;padding-top:10px;margin-top:4px;color:#3B6D11}
-      .sr.pos{color:#3B6D11;font-weight:700}
-      .slbl{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
-      .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#EDE9FB;color:#5B3FA6}
-      .bg-green{background:#EAF3DE!important;border-color:#3B6D11!important}
-      hr{border:none;border-top:0.5px solid #ddd;margin:8px 0}
-      @media print{body{padding:10px}.card{page-break-inside:avoid}}
+      .sr.tot{font-weight:700;font-size:14px;border-top:2px solid #ccc;border-bottom:none;padding-top:10px;margin-top:4px;color:${cor}}
+      .sr.pos,.sr.pos-blue{color:${cor};font-weight:700}
+      .sr.neg{color:#A32D2D;font-size:12px}
+      .slbl{font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px}
+      .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#eee;color:#333}
+      hr.dv{border:none;border-top:.5px solid #ddd;margin:8px 0}
+      @media print{.card{page-break-inside:avoid}}
     </style></head><body>
-    <h1>🌾 Fazenda Manager — Relatório de Fretes</h1>
+    <h1>${titulo}</h1>
     <div class="sub">Gerado em ${data}</div>
     ${conteudo}
     <script>window.onload=function(){window.print();}<\/script>
-    </body></html>`);
-    win.document.close();
+    </body></html>`;
   }
 
   // CUSTOS
