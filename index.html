@@ -4,174 +4,626 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#3B6D11">
+  <meta name="theme-color" content="#2D1F0E">
   <title>Fazenda Manager</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --green: #3B6D11; --green-light: #EAF3DE; --green-mid: #639922;
-      --blue: #185FA5; --blue-light: #E6F1FB;
-      --amber: #854F0B; --amber-light: #FAEEDA;
-      --red: #A32D2D; --red-light: #FCEBEB;
-      --teal: #0F6E56; --teal-light: #E1F5EE;
-      --purple: #5B3FA6; --purple-light: #EDE9FB;
-      --text: #1a1a1a; --text-muted: #5F5E5A; --text-hint: #999;
-      --bg: #ffffff; --bg-surface: #F8F7F4;
-      --border: rgba(0,0,0,0.12); --border-mid: rgba(0,0,0,0.22);
-      --radius-sm: 8px; --radius-md: 12px; --shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --text: #f0ede8; --text-muted: #B4B2A9; --text-hint: #888;
-        --bg: #1c1c1a; --bg-surface: #252522;
-        --border: rgba(255,255,255,0.10); --border-mid: rgba(255,255,255,0.20);
-        --green-light: #173404; --blue-light: #042C53;
-        --amber-light: #412402; --red-light: #501313; --teal-light: #04342C;
-        --purple-light: #1E1540;
-      }
-    }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-surface); color: var(--text); min-height: 100vh; }
+      /* Paleta rural */
+      --soil:    #2D1F0E;   /* terra escura */
+      --bark:    #5C3D1E;   /* casca */
+      --clay:    #8B5E3C;   /* argila */
+      --straw:   #C49A4A;   /* palha */
+      --straw-light: #F5E6C8; /* palha clara */
+      --wheat:   #E8D5A3;   /* trigo */
+      --sage:    #4A6741;   /* verde sálvia */
+      --sage-light: #D6E8D0;
+      --leaf:    #2E5E2A;   /* folha */
+      --sky:     #3B6FA0;   /* céu */
+      --sky-light: #D0E4F7;
+      --rust:    #8B3A2A;   /* ferrugem */
+      --rust-light: #F5D5CF;
+      --amber:   #8B5E00;
+      --amber-light: #FFF0C2;
+      --teal:    #1A5C4E;
+      --teal-light: #C8EDE7;
 
-    /* LOGIN */
-    #loginScreen { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
-    .login-logo { font-size:56px; margin-bottom:10px; }
-    .login-title { font-size:26px; font-weight:700; color:var(--green); margin-bottom:4px; }
-    .login-sub { font-size:14px; color:var(--text-muted); margin-bottom:28px; }
-    .login-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:24px; width:100%; max-width:380px; box-shadow:var(--shadow); }
-    .ltab-row { display:flex; gap:8px; margin-bottom:20px; }
-    .ltab { flex:1; padding:9px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:500; cursor:pointer; color:var(--text-muted); font-family:inherit; }
-    .ltab.on { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
-    .lform { display:flex; flex-direction:column; gap:12px; }
-    .lform input { padding:12px 14px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; background:var(--bg); color:var(--text); }
-    .lform input:focus { outline:none; border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(99,153,34,0.15); }
-    .btn-login { padding:13px; border:none; border-radius:var(--radius-sm); background:var(--green); color:white; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
-    .div-or { text-align:center; color:var(--text-hint); font-size:13px; margin:4px 0; position:relative; }
-    .div-or::before,.div-or::after { content:''; position:absolute; top:50%; width:40%; height:.5px; background:var(--border-mid); }
+      --text:      #1A1208;
+      --text-mid:  #4A3520;
+      --text-muted:#7A6248;
+      --text-hint: #A89070;
+
+      --bg:        #FDF8F0;
+      --bg-card:   #FFFFFF;
+      --bg-surface:#F5EDE0;
+      --bg-deep:   #EDE0CC;
+
+      --border:     rgba(92,61,30,0.12);
+      --border-mid: rgba(92,61,30,0.25);
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-sm: 0 1px 3px rgba(45,31,14,0.08);
+      --shadow-md: 0 4px 16px rgba(45,31,14,0.12);
+      --shadow-lg: 0 8px 32px rgba(45,31,14,0.16);
+
+      --font: 'Montserrat', -apple-system, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========== LOGIN ========== */
+    #loginScreen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(160deg, var(--soil) 0%, var(--bark) 50%, var(--clay) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #loginScreen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .login-logo-wrap {
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .login-logo-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--straw), var(--clay));
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .login-title {
+      font-size: 28px; font-weight: 800;
+      color: var(--straw-light);
+      letter-spacing: -0.5px;
+    }
+    .login-sub {
+      font-size: 14px; color: rgba(245,230,200,0.6);
+      margin-top: 4px; font-weight: 400;
+    }
+    .login-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      width: 100%; max-width: 380px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .ltab-row { display: flex; gap: 6px; margin-bottom: 22px; background: var(--bg-surface); border-radius: var(--radius-sm); padding: 4px; }
+    .ltab { flex:1; padding: 10px; border: none; border-radius: 8px; background: transparent; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-muted); font-family: var(--font); transition: all .2s; }
+    .ltab.on { background: var(--bg-card); color: var(--bark); box-shadow: var(--shadow-sm); }
+    .lform { display: flex; flex-direction: column; gap: 12px; }
+    .lform input {
+      padding: 13px 16px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      font-size: 15px; font-family: var(--font);
+      background: var(--bg-surface);
+      color: var(--text);
+      transition: border-color .2s;
+    }
+    .lform input:focus { outline: none; border-color: var(--clay); background: var(--bg-card); }
+    .btn-login {
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--bark), var(--clay));
+      color: var(--straw-light);
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: var(--font);
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 12px rgba(92,61,30,0.3);
+      transition: all .2s;
+    }
+    .btn-login:active { transform: scale(0.98); }
+    .div-or { text-align: center; color: var(--text-hint); font-size: 12px; margin: 4px 0; position: relative; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+    .div-or::before,.div-or::after { content:''; position:absolute; top:50%; width:40%; height:1px; background: var(--border-mid); }
     .div-or::before { left:0; } .div-or::after { right:0; }
-    .btn-google { display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); font-size:15px; font-weight:500; cursor:pointer; font-family:inherit; }
-    .lerr { color:var(--red); font-size:13px; text-align:center; min-height:18px; }
+    .btn-google {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 13px; border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card); color: var(--text);
+      font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font);
+    }
+    .lerr { color: var(--rust); font-size: 12px; text-align: center; min-height: 16px; font-weight: 500; }
 
-    /* APP */
-    #appScreen { display:none; padding-bottom:80px; }
-    .header { background:var(--bg); border-bottom:0.5px solid var(--border); padding:14px 16px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; }
-    .header h1 { font-size:17px; font-weight:700; color:var(--green); }
-    .header p { font-size:11px; color:var(--text-muted); margin-top:1px; }
-    .btn-out { padding:7px 14px; border:0.5px solid var(--border-mid); border-radius:20px; background:transparent; color:var(--text-muted); font-size:13px; cursor:pointer; font-family:inherit; }
-    .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--bg); border-top:0.5px solid var(--border); display:flex; z-index:100; }
-    .nav-btn { flex:1; padding:8px 2px 10px; border:none; background:transparent; color:var(--text-muted); font-size:9px; font-weight:500; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; }
-    .nav-btn .icon { font-size:18px; }
-    .nav-btn.on { color:var(--green); }
-    .page { display:none; padding:12px; }
-    .page.on { display:block; }
-    .card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; box-shadow:var(--shadow); }
-    .card-title { font-size:15px; font-weight:600; color:var(--text); margin-bottom:14px; }
-    label { display:block; font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px; margin-top:12px; text-transform:uppercase; letter-spacing:.4px; }
-    input,select,textarea { width:100%; padding:11px 13px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; background:var(--bg); color:var(--text); -webkit-appearance:none; appearance:none; }
-    input:focus,select:focus,textarea:focus { outline:none; border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(99,153,34,0.15); }
-    textarea { resize:vertical; min-height:68px; line-height:1.5; }
-    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    .btn { display:block; width:100%; padding:13px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; color:var(--text); font-size:15px; font-weight:500; cursor:pointer; margin-top:12px; font-family:inherit; }
-    .btn-g { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
-    .btn-b { background:var(--blue-light); color:var(--blue); border-color:rgba(24,95,165,0.3); }
-    .btn-r { background:var(--red-light); color:var(--red); border-color:rgba(163,45,45,0.3); }
-    .btn-p { background:var(--purple-light); color:var(--purple); border-color:rgba(91,63,166,0.3); }
-    .btn-a { background:var(--amber-light); color:var(--amber); border-color:rgba(133,79,11,0.3); }
-    .btn-t { background:var(--teal-light); color:var(--teal); border-color:rgba(15,110,86,0.3); }
-    .btn-sm { width:auto; padding:6px 12px; font-size:12px; margin-top:0; display:inline-block; }
-    .tg { display:flex; gap:8px; margin-top:10px; }
-    .tb { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; color:var(--text-muted); font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; }
-    .tb.on-g { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
-    .tb.on-r { background:var(--red-light); color:var(--red); border-color:rgba(163,45,45,0.3); }
-    .item { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); }
-    .item-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
-    .item-title { font-size:15px; font-weight:600; color:var(--text); flex:1; }
-    .item-meta { font-size:13px; color:var(--text-muted); margin-top:5px; line-height:1.4; }
-    .item-actions { display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:0.5px solid var(--border); flex-wrap:wrap; }
-    .badge { display:inline-block; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
-    .bg { background:var(--green-light); color:var(--green); }
-    .bb { background:var(--blue-light); color:var(--blue); }
-    .ba { background:var(--amber-light); color:var(--amber); }
-    .br { background:var(--red-light); color:var(--red); }
-    .bt { background:var(--teal-light); color:var(--teal); }
-    .bp { background:var(--purple-light); color:var(--purple); }
-    .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
-    .stat { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:14px; text-align:center; box-shadow:var(--shadow); }
-    .stat-lbl { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
-    .stat-val { font-size:19px; font-weight:700; color:var(--text); }
-    .cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    .cnb { padding:8px 14px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; cursor:pointer; font-size:18px; color:var(--text); font-family:inherit; }
-    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
-    .cal-head { text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); padding:6px 2px; }
-    .cal-day { text-align:center; padding:8px 2px; font-size:13px; border-radius:var(--radius-sm); cursor:pointer; color:var(--text); min-height:36px; position:relative; }
-    .cal-day:hover { background:var(--bg-surface); }
-    .cal-day.today { background:var(--green-light); color:var(--green); font-weight:700; }
-    .cal-day.has-event::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--green-mid); }
-    .cal-day.empty { pointer-events:none; }
-    .ctabs { display:flex; gap:8px; margin-bottom:14px; }
-    .ct { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; }
-    .ct.on { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
-    .cr { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:0.5px solid var(--border); font-size:14px; gap:8px; }
-    .cr:last-child { border-bottom:none; }
-    .sr { display:flex; justify-content:space-between; padding:7px 0; font-size:14px; }
-    .sr.tot { font-weight:700; font-size:15px; border-top:1.5px solid var(--border-mid); padding-top:12px; margin-top:4px; }
-    .sr.pos { color:var(--green); font-weight:700; }
-    .sr.pos-blue { color:var(--blue); font-weight:700; }
-    .sr.neg { color:var(--red); font-weight:700; }
-    .sr.warn { color:var(--amber); font-weight:600; font-size:13px; }
-    hr.dv { border:none; border-top:0.5px solid var(--border); margin:10px 0; }
-    .slbl { font-size:11px; font-weight:700; color:var(--text-hint); text-transform:uppercase; letter-spacing:.6px; margin:14px 0 8px; }
-    .empty { text-align:center; padding:32px 16px; color:var(--text-muted); font-size:14px; }
-    .empty-icon { font-size:36px; margin-bottom:10px; }
-    .loading { text-align:center; padding:24px; color:var(--text-muted); font-size:14px; }
-    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a1a; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; pointer-events:none; }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    .fret-nav { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-    .fret-nav-btn { flex:1; min-width:80px; padding:10px 6px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:12px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; text-align:center; }
-    .fret-nav-btn.on { background:var(--purple-light); color:var(--purple); border-color:rgba(91,63,166,0.3); }
-    .fret-nav-btn.on-blue { background:var(--blue-light); color:var(--blue); border-color:rgba(24,95,165,0.3); }
-    .fret-nav-btn.on-teal { background:var(--teal-light); color:var(--teal); border-color:rgba(15,110,86,0.3); }
-    .talhao-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow); }
-    .talhao-header { padding:14px 16px; background:var(--green-light); border-bottom:0.5px solid var(--border); }
-    .talhao-header.blue { background:var(--blue-light); }
-    .talhao-name { font-size:16px; font-weight:700; color:var(--green); }
-    .talhao-name.blue { color:var(--blue); }
-    .talhao-meta { font-size:12px; color:var(--text-muted); margin-top:3px; }
-    .talhao-body { padding:14px 16px; }
-    .talhao-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
-    .tstat { background:var(--bg-surface); border-radius:var(--radius-sm); padding:10px 8px; text-align:center; }
-    .tstat-lbl { font-size:10px; font-weight:700; color:var(--text-hint); text-transform:uppercase; letter-spacing:.3px; margin-bottom:4px; }
-    .tstat-val { font-size:14px; font-weight:700; color:var(--text); }
-    .viagem-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:0.5px solid var(--border); font-size:13px; gap:8px; }
-    .viagem-row:last-child { border-bottom:none; }
-    .talhao-info-bar { background:var(--purple-light); border:0.5px solid rgba(91,63,166,0.3); border-radius:var(--radius-sm); padding:10px 14px; font-size:13px; color:var(--purple); margin-bottom:12px; font-weight:500; }
-    .entrega-form { background:var(--bg-surface); border-radius:var(--radius-sm); padding:12px; margin-top:10px; }
+    /* ========== APP ========== */
+    #appScreen { display: none; padding-bottom: 80px; }
 
-    /* INVESTIMENTO */
-    .inv-tabs { display:flex; gap:8px; margin-bottom:14px; }
-    .inv-tab { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:13px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; text-align:center; }
-    .inv-tab.on { background:var(--teal-light); color:var(--teal); border-color:rgba(15,110,86,0.3); }
-    .inv-sub-tabs { display:flex; gap:6px; margin-bottom:12px; overflow-x:auto; }
-    .inv-sub-tab { padding:7px 14px; border:0.5px solid var(--border-mid); border-radius:20px; background:transparent; font-size:13px; font-weight:500; cursor:pointer; color:var(--text-muted); font-family:inherit; white-space:nowrap; }
-    .inv-sub-tab.on { background:var(--teal-light); color:var(--teal); border-color:rgba(15,110,86,0.3); }
-    .inv-result-card { border-radius:var(--radius-md); padding:16px; margin-bottom:12px; }
-    .inv-result-card.green { background:var(--green-light); border:1px solid rgba(59,109,17,0.3); }
-    .inv-result-card.red { background:var(--red-light); border:1px solid rgba(163,45,45,0.3); }
-    .inv-result-card.blue { background:var(--blue-light); border:1px solid rgba(24,95,165,0.3); }
-    .inv-result-card.amber { background:var(--amber-light); border:1px solid rgba(133,79,11,0.3); }
-    .compare-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:0.5px solid var(--border); }
-    .compare-row:last-child { border-bottom:none; }
-    .compare-label { font-size:13px; color:var(--text-muted); }
-    .compare-val { font-size:15px; font-weight:700; }
+    .header {
+      background: linear-gradient(135deg, var(--soil) 0%, var(--bark) 100%);
+      padding: 16px 18px 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(45,31,14,0.25);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--straw), var(--clay));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header h1 { font-size: 17px; font-weight: 800; color: var(--straw-light); letter-spacing: -0.3px; }
+    .header p { font-size: 11px; color: rgba(245,230,200,0.55); margin-top: 1px; font-weight: 400; }
+    .btn-out {
+      padding: 7px 14px;
+      border: 1px solid rgba(245,230,200,0.25);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(245,230,200,0.7);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+    }
+
+    /* NAV */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex; z-index: 100;
+      box-shadow: 0 -4px 20px rgba(45,31,14,0.10);
+    }
+    .nav-btn {
+      flex: 1; padding: 10px 2px 12px;
+      border: none; background: transparent;
+      color: var(--text-hint);
+      font-size: 9px; font-weight: 600;
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-family: var(--font);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      transition: color .2s;
+      position: relative;
+    }
+    .nav-btn .icon { font-size: 20px; }
+    .nav-btn.on { color: var(--bark); }
+    .nav-btn.on::after {
+      content: '';
+      position: absolute; bottom: 0; left: 20%; right: 20%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--straw), var(--clay));
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* PAGES */
+    .page { display: none; padding: 14px; }
+    .page.on { display: block; }
+
+    /* SECTION HEADER */
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px; padding: 16px;
+      background: linear-gradient(135deg, var(--sage) 0%, var(--leaf) 100%);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .section-header .sh-icon { font-size: 28px; }
+    .section-header .sh-title { font-size: 16px; font-weight: 800; color: white; letter-spacing: -0.3px; }
+    .section-header .sh-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+    .section-header.amber { background: linear-gradient(135deg, var(--clay) 0%, var(--straw) 100%); }
+    .section-header.blue { background: linear-gradient(135deg, var(--sky) 0%, #2952A3 100%); }
+    .section-header.teal { background: linear-gradient(135deg, var(--teal) 0%, #0D3D33 100%); }
+    .section-header.soil { background: linear-gradient(135deg, var(--bark) 0%, var(--soil) 100%); }
+
+    /* CARDS */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--bark);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 14px;
+      background: linear-gradient(180deg, var(--straw), var(--clay));
+      border-radius: 2px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* FORMS */
+    label {
+      display: block;
+      font-size: 11px; font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 5px; margin-top: 14px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      font-size: 14px; font-family: var(--font);
+      background: var(--bg-surface);
+      color: var(--text);
+      -webkit-appearance: none; appearance: none;
+      transition: border-color .2s, background .2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--clay);
+      background: var(--bg-card);
+      box-shadow: 0 0 0 3px rgba(139,94,60,0.12);
+    }
+    textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* BUTTONS */
+    .btn {
+      display: block; width: 100%;
+      padding: 13px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      color: var(--text-mid);
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; margin-top: 14px;
+      font-family: var(--font);
+      letter-spacing: 0.2px;
+      transition: all .2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--bark), var(--clay));
+      color: var(--straw-light);
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(92,61,30,0.25);
+    }
+    .btn-sage {
+      background: linear-gradient(135deg, var(--sage), var(--leaf));
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(46,94,42,0.25);
+    }
+    .btn-sky {
+      background: linear-gradient(135deg, var(--sky), #2952A3);
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59,111,160,0.25);
+    }
+    .btn-teal {
+      background: linear-gradient(135deg, var(--teal), #0D3D33);
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(26,92,78,0.25);
+    }
+    .btn-rust {
+      background: linear-gradient(135deg, var(--rust), #6B2518);
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(139,58,42,0.25);
+    }
+    .btn-straw {
+      background: linear-gradient(135deg, var(--straw), #A07830);
+      color: var(--soil); border-color: transparent;
+      box-shadow: 0 4px 12px rgba(196,154,74,0.3);
+    }
+    .btn-sm {
+      width: auto; padding: 7px 14px;
+      font-size: 12px; margin-top: 0;
+      display: inline-block;
+    }
+
+    /* TOGGLE */
+    .tg { display: flex; gap: 8px; margin-top: 12px; background: var(--bg-surface); border-radius: var(--radius-sm); padding: 4px; }
+    .tb {
+      flex: 1; padding: 10px;
+      border: none; border-radius: 8px;
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+      transition: all .2s;
+    }
+    .tb.on-sage { background: var(--bg-card); color: var(--sage); box-shadow: var(--shadow-sm); }
+    .tb.on-rust { background: var(--bg-card); color: var(--rust); box-shadow: var(--shadow-sm); }
+    .tb.on-sky  { background: var(--bg-card); color: var(--sky);  box-shadow: var(--shadow-sm); }
+
+    /* ITEMS / LIST */
+    .item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--straw), var(--clay));
+    }
+    .item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .item-title { font-size: 15px; font-weight: 700; color: var(--text); flex: 1; }
+    .item-meta { font-size: 12px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; font-weight: 500; }
+    .item-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+
+    /* BADGES */
+    .badge {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 20px; font-size: 11px; font-weight: 700;
+      white-space: nowrap; letter-spacing: 0.3px;
+    }
+    .bsage  { background: var(--sage-light);  color: var(--leaf); }
+    .bsky   { background: var(--sky-light);   color: var(--sky);  }
+    .bamber { background: var(--amber-light); color: var(--amber);}
+    .brust  { background: var(--rust-light);  color: var(--rust); }
+    .bteal  { background: var(--teal-light);  color: var(--teal); }
+    .bstraw { background: var(--straw-light); color: var(--bark); }
+    .bsoil  { background: var(--bg-deep);     color: var(--bark); }
+
+    /* STATS */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      position: relative; overflow: hidden;
+    }
+    .stat::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--straw), var(--clay));
+    }
+    .stat-lbl { font-size: 10px; font-weight: 700; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+    .stat-val { font-size: 20px; font-weight: 800; color: var(--bark); }
+
+    /* CALENDAR */
+    .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .cnb {
+      width: 38px; height: 38px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: 10px; background: var(--bg-surface);
+      cursor: pointer; font-size: 18px; color: var(--clay);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font);
+    }
+    .cal-month-label { font-size: 16px; font-weight: 800; color: var(--bark); letter-spacing: -0.3px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+    .cal-head { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-hint); padding: 6px 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .cal-day {
+      text-align: center; padding: 8px 2px; font-size: 13px; font-weight: 600;
+      border-radius: 8px; cursor: pointer; color: var(--text-mid);
+      min-height: 34px; position: relative; transition: background .15s;
+    }
+    .cal-day:hover { background: var(--bg-surface); }
+    .cal-day.today {
+      background: linear-gradient(135deg, var(--straw), var(--clay));
+      color: white; font-weight: 800;
+    }
+    .cal-day.has-event::after {
+      content: ''; position: absolute; bottom: 3px; left: 50%;
+      transform: translateX(-50%); width: 5px; height: 5px;
+      border-radius: 50%; background: var(--sage);
+    }
+    .cal-day.today.has-event::after { background: white; }
+    .cal-day.empty { pointer-events: none; color: var(--text-hint); }
+
+    /* FRETES / TALHÕES */
+    .fret-nav { display: flex; gap: 8px; margin-bottom: 16px; }
+    .fret-nav-btn {
+      flex: 1;
+      padding: 11px 6px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; color: var(--text-muted);
+      font-family: var(--font); text-align: center;
+      transition: all .2s; letter-spacing: 0.2px;
+    }
+    .fret-nav-btn.on {
+      background: linear-gradient(135deg, var(--bark), var(--clay));
+      color: var(--straw-light); border-color: transparent;
+      box-shadow: 0 4px 12px rgba(92,61,30,0.25);
+    }
+    .fret-nav-btn.on-blue {
+      background: linear-gradient(135deg, var(--sky), #2952A3);
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59,111,160,0.25);
+    }
+
+    /* TALHÃO CARD */
+    .talhao-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .talhao-header {
+      padding: 16px;
+      background: linear-gradient(135deg, var(--sage) 0%, var(--leaf) 100%);
+      position: relative;
+    }
+    .talhao-header.blue {
+      background: linear-gradient(135deg, var(--sky) 0%, #2952A3 100%);
+    }
+    .talhao-header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .talhao-name { font-size: 16px; font-weight: 800; color: white; letter-spacing: -0.3px; }
+    .talhao-meta { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 3px; font-weight: 500; }
+    .talhao-body { padding: 16px; }
+    .talhao-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+    .tstat {
+      background: var(--bg-surface);
+      border-radius: 10px; padding: 10px 8px; text-align: center;
+      border: 1px solid var(--border);
+    }
+    .tstat-lbl { font-size: 9px; font-weight: 700; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .tstat-val { font-size: 14px; font-weight: 800; color: var(--bark); }
+
+    /* VIAGEM ROWS */
+    .viagem-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px; gap: 8px;
+    }
+    .viagem-row:last-child { border-bottom: none; }
+
+    /* SUMMARY ROWS */
+    .sr { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+    .sr:last-child { border-bottom: none; }
+    .sr.tot { font-weight: 800; font-size: 15px; border-top: 2px solid var(--border-mid); border-bottom: none; padding-top: 14px; margin-top: 6px; }
+    .sr.pos  { color: var(--leaf);  font-weight: 700; }
+    .sr.pos-blue { color: var(--sky); font-weight: 700; }
+    .sr.neg  { color: var(--rust);  font-weight: 700; }
+    .sr.warn { color: var(--amber); font-weight: 600; font-size: 12px; }
+    hr.dv { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+    /* SECTION LABEL */
+    .slbl {
+      font-size: 10px; font-weight: 800; color: var(--clay);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin: 16px 0 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .slbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* CULTURE TABS */
+    .ctabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .ct {
+      flex: 1; padding: 11px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; color: var(--text-muted);
+      font-family: var(--font); text-align: center;
+      transition: all .2s;
+    }
+    .ct.on {
+      background: linear-gradient(135deg, var(--sage), var(--leaf));
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(46,94,42,0.25);
+    }
+
+    /* COST ROWS */
+    .cr { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; gap: 8px; }
+    .cr:last-child { border-bottom: none; }
+
+    /* INV TABS */
+    .inv-sub-tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+    .inv-sub-tab {
+      padding: 8px 16px;
+      border: 1.5px solid var(--border-mid);
+      border-radius: 20px;
+      background: var(--bg-surface);
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; color: var(--text-muted);
+      font-family: var(--font); white-space: nowrap;
+      transition: all .2s; letter-spacing: 0.3px;
+    }
+    .inv-sub-tab.on {
+      background: linear-gradient(135deg, var(--bark), var(--clay));
+      color: var(--straw-light); border-color: transparent;
+      box-shadow: 0 4px 12px rgba(92,61,30,0.25);
+    }
+
+    /* EMPTY / LOADING */
+    .empty { text-align: center; padding: 36px 16px; color: var(--text-hint); }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .6; }
+    .empty p { font-size: 14px; font-weight: 600; }
+    .loading { text-align: center; padding: 28px; color: var(--text-hint); font-size: 14px; font-weight: 500; }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--soil);
+      color: var(--straw-light);
+      padding: 12px 22px;
+      border-radius: 24px; font-size: 13px; font-weight: 700;
+      opacity: 0; transition: all .3s; z-index: 999;
+      white-space: nowrap; pointer-events: none;
+      box-shadow: 0 8px 24px rgba(45,31,14,0.35);
+      letter-spacing: 0.2px;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* TALHÃO INFO BAR */
+    .talhao-info-bar {
+      background: var(--straw-light);
+      border: 1.5px solid var(--straw);
+      border-radius: var(--radius-sm);
+      padding: 11px 16px;
+      font-size: 13px; color: var(--bark);
+      margin-bottom: 14px; font-weight: 700;
+    }
+    .entrega-form {
+      background: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      padding: 14px; margin-top: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* COMPARE ROW */
+    .compare-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .compare-row:last-child { border-bottom: none; }
+    .compare-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .compare-val { font-size: 16px; font-weight: 800; }
+
+    /* RESULT CARDS */
+    .result-card {
+      border-radius: var(--radius-md); padding: 18px; margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .result-card.green { background: var(--sage-light); border-color: rgba(46,94,42,0.25); }
+    .result-card.rust  { background: var(--rust-light);  border-color: rgba(139,58,42,0.25); }
+    .result-card.sky   { background: var(--sky-light);   border-color: rgba(59,111,160,0.25); }
+    .result-card.amber { background: var(--amber-light); border-color: rgba(139,94,0,0.25); }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ===== LOGIN ===== -->
 <div id="loginScreen">
-  <div class="login-logo">🌾</div>
-  <div class="login-title">Fazenda Manager</div>
-  <div class="login-sub">Gerencie sua fazenda de qualquer lugar</div>
+  <div class="login-logo-wrap">
+    <div class="login-logo-icon">🌾</div>
+    <div class="login-title">Fazenda Manager</div>
+    <div class="login-sub">Gestão do campo na palma da mão</div>
+  </div>
   <div class="login-card">
     <div class="ltab-row">
       <button class="ltab on" onclick="setLTab('in',this)">Entrar</button>
@@ -181,11 +633,11 @@
       <input type="email" id="inEmail" placeholder="E-mail" autocomplete="email">
       <input type="password" id="inPass" placeholder="Senha" autocomplete="current-password">
       <div class="lerr" id="inErr"></div>
-      <button class="btn-login" onclick="doSignIn()">Entrar</button>
+      <button class="btn-login" onclick="doSignIn()">Entrar na fazenda</button>
       <div class="div-or">ou</div>
       <button class="btn-google" onclick="doGoogle()">
         <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
-        Entrar com Google
+        Continuar com Google
       </button>
     </div>
     <div id="formUp" class="lform" style="display:none">
@@ -194,7 +646,7 @@
       <input type="password" id="upPass" placeholder="Senha (mín. 6 caracteres)" autocomplete="new-password">
       <input type="password" id="upPass2" placeholder="Confirmar senha" autocomplete="new-password">
       <div class="lerr" id="upErr"></div>
-      <button class="btn-login" onclick="doSignUp()">Criar conta</button>
+      <button class="btn-login" onclick="doSignUp()">Criar minha conta</button>
       <div class="div-or">ou</div>
       <button class="btn-google" onclick="doGoogle()">
         <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
@@ -204,13 +656,17 @@
   </div>
 </div>
 
-<!-- APP -->
+<!-- ===== APP ===== -->
 <div id="appScreen">
   <div class="toast" id="toast"></div>
+
   <div class="header">
-    <div>
-      <h1>🌾 Fazenda Manager</h1>
-      <p id="uName">...</p>
+    <div class="header-left">
+      <div class="header-icon">🌾</div>
+      <div>
+        <h1>Fazenda Manager</h1>
+        <p id="uName">...</p>
+      </div>
     </div>
     <button class="btn-out" onclick="doOut()">Sair</button>
   </div>
@@ -226,58 +682,47 @@
 
   <!-- INVESTIMENTO -->
   <div id="pg-inv" class="page on">
+    <div class="section-header soil">
+      <div class="sh-icon">📈</div>
+      <div><div class="sh-title">Análise de Investimento</div><div class="sh-sub">Projete e compare seus projetos</div></div>
+    </div>
     <div class="ctabs">
-      <button class="ct on" onclick="setInvCult('cafe',this)">&#9749; Café</button>
-      <button class="ct" onclick="setInvCult('milho',this)">&#127805; Milho</button>
-      <button class="ct" onclick="setInvCult('soja',this)">&#127807; Soja</button>
+      <button class="ct on" onclick="setInvCult('cafe',this)">☕ Café</button>
+      <button class="ct" onclick="setInvCult('milho',this)">🌽 Milho</button>
+      <button class="ct" onclick="setInvCult('soja',this)">🌿 Soja</button>
     </div>
-
     <div class="inv-sub-tabs">
-      <button class="inv-sub-tab on" id="invST0" onclick="setInvSubTab(0)">&#128200; Configuração</button>
-      <button class="inv-sub-tab" id="invST1" onclick="setInvSubTab(1)">&#128179; Custos</button>
-      <button class="inv-sub-tab" id="invST2" onclick="setInvSubTab(2)">&#9881; Financiamento</button>
-      <button class="inv-sub-tab" id="invST3" onclick="setInvSubTab(3)">&#128202; Relatório</button>
+      <button class="inv-sub-tab on" id="invST0" onclick="setInvSubTab(0)">⚙️ Configuração</button>
+      <button class="inv-sub-tab" id="invST1" onclick="setInvSubTab(1)">💸 Custos</button>
+      <button class="inv-sub-tab" id="invST2" onclick="setInvSubTab(2)">🏦 Financiamento</button>
+      <button class="inv-sub-tab" id="invST3" onclick="setInvSubTab(3)">📊 Relatório</button>
     </div>
-
-    <!-- SUB: CONFIGURAÇÃO -->
     <div id="inv-sub-0">
       <div class="card">
-        <div class="card-title" id="invCultTitle">Café — Configuração do Projeto</div>
+        <div class="card-title">Projeto</div>
         <label>Nome do projeto</label>
         <input type="text" id="invNome" placeholder="Ex: Implantação Café Arábica 2025" oninput="saveInvConf()">
         <label>Área do projeto (ha)</label>
         <input type="number" id="invHa" placeholder="0.0" step="0.1" inputmode="decimal" oninput="saveInvConf()">
         <div class="row2">
-          <div>
-            <label>Produtividade esperada (sacas/ha)</label>
-            <input type="number" id="invProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveInvConf()">
-          </div>
-          <div>
-            <label>Preço da saca (R$)</label>
-            <input type="number" id="invSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()">
-          </div>
+          <div><label>Produtividade (sacas/ha)</label><input type="number" id="invProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Preço da saca (R$)</label><input type="number" id="invSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
         </div>
-        <label>Horizonte do projeto (anos)</label>
-        <input type="number" id="invAnos" placeholder="Ex: 10" step="1" inputmode="decimal" oninput="saveInvConf()">
-        <label>Taxa Selic / Juros de referência (% ao ano)</label>
-        <input type="number" id="invSelic" placeholder="Ex: 13.75" step="0.01" inputmode="decimal" oninput="saveInvConf()">
+        <div class="row2">
+          <div><label>Horizonte (anos)</label><input type="number" id="invAnos" placeholder="Ex: 10" step="1" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Taxa Selic (% a.a.)</label><input type="number" id="invSelic" placeholder="Ex: 13.75" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
+        </div>
       </div>
     </div>
-
-    <!-- SUB: CUSTOS DE INVESTIMENTO -->
     <div id="inv-sub-1" style="display:none">
       <div class="card">
-        <div class="card-title">Adicionar custo de investimento</div>
+        <div class="card-title">Novo custo</div>
         <label>Categoria</label>
         <select id="invCostCat">
-          <option>Mudas / Sementes</option>
-          <option>Preparo do solo</option>
-          <option>Adubação / Fertilizante</option>
-          <option>Defensivos</option>
-          <option>Irrigação</option>
-          <option>Mão de obra</option>
-          <option>Máquinas / Veículos</option>
-          <option>Infraestrutura</option>
+          <option>Mudas / Sementes</option><option>Preparo do solo</option>
+          <option>Adubação / Fertilizante</option><option>Defensivos</option>
+          <option>Irrigação</option><option>Mão de obra</option>
+          <option>Máquinas / Veículos</option><option>Infraestrutura</option>
           <option>Outro</option>
         </select>
         <label>Descrição</label>
@@ -286,56 +731,49 @@
           <div><label>Valor (R$)</label><input type="number" id="invCostVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
           <div><label>Ano do custo</label><input type="number" id="invCostAno" placeholder="1" step="1" inputmode="decimal" value="1"></div>
         </div>
-        <!-- DEPRECIAÇÃO -->
         <div id="invDepWrap" style="display:none">
-          <label>Vida útil para depreciação (anos)</label>
-          <input type="number" id="invDepAnos" placeholder="Ex: 10" step="1" inputmode="decimal">
-          <label>Valor residual (R$)</label>
-          <input type="number" id="invDepResidual" placeholder="0.00" step="0.01" inputmode="decimal">
+          <div class="row2">
+            <div><label>Vida útil (anos)</label><input type="number" id="invDepAnos" placeholder="Ex: 10" step="1" inputmode="decimal"></div>
+            <div><label>Valor residual (R$)</label><input type="number" id="invDepResidual" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+          </div>
         </div>
-        <button class="btn btn-t" onclick="addInvCost()">+ Adicionar custo</button>
+        <button class="btn btn-primary" onclick="addInvCost()">+ Adicionar custo</button>
       </div>
       <div id="invCostList"><div class="loading">Carregando...</div></div>
     </div>
-
-    <!-- SUB: FINANCIAMENTO -->
     <div id="inv-sub-2" style="display:none">
       <div class="card">
         <div class="card-title">Financiamento</div>
         <label>Valor financiado (R$)</label>
         <input type="number" id="invFinVal" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()">
         <div class="row2">
-          <div><label>Taxa de juros (% ao ano)</label>
-            <input type="number" id="invFinTaxa" placeholder="Ex: 7.5" step="0.01" inputmode="decimal" oninput="saveInvConf()">
-          </div>
-          <div><label>Prazo (anos)</label>
-            <input type="number" id="invFinPrazo" placeholder="Ex: 5" step="1" inputmode="decimal" oninput="saveInvConf()">
-          </div>
+          <div><label>Taxa (% a.a.)</label><input type="number" id="invFinTaxa" placeholder="Ex: 7.5" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Prazo (anos)</label><input type="number" id="invFinPrazo" placeholder="Ex: 5" step="1" inputmode="decimal" oninput="saveInvConf()"></div>
         </div>
         <label>Sistema de amortização</label>
         <select id="invFinSistema" onchange="saveInvConf()">
           <option value="SAC">SAC (prestações decrescentes)</option>
           <option value="PRICE">Price (prestações fixas)</option>
         </select>
-        <div class="card" id="invFinResumo" style="margin-top:14px;margin-bottom:0;background:var(--bg-surface)">
-          <div id="invFinResumoContent"></div>
-        </div>
+        <div id="invFinResumoContent" style="margin-top:14px"></div>
       </div>
     </div>
-
-    <!-- SUB: RELATÓRIO -->
     <div id="inv-sub-3" style="display:none">
-      <button class="btn btn-a" onclick="gerarPDFInv()" style="margin-bottom:14px">&#128196; Baixar relatório em PDF</button>
+      <button class="btn btn-straw" onclick="gerarPDFInv()" style="margin-bottom:14px">📄 Baixar relatório em PDF</button>
       <div id="invRelContent"><div class="loading">Carregando...</div></div>
     </div>
   </div>
 
   <!-- CALENDÁRIO -->
   <div id="pg-cal" class="page">
+    <div class="section-header">
+      <div class="sh-icon">📅</div>
+      <div><div class="sh-title">Calendário</div><div class="sh-sub">Gerencie seus eventos e compromissos</div></div>
+    </div>
     <div class="card">
       <div class="cal-nav">
         <button class="cnb" onclick="calMv(-1)">&#8249;</button>
-        <span style="font-size:16px;font-weight:600" id="calTitle"></span>
+        <span class="cal-month-label" id="calTitle"></span>
         <button class="cnb" onclick="calMv(1)">&#8250;</button>
       </div>
       <div class="cal-grid" id="calGrid"></div>
@@ -352,10 +790,10 @@
         <div><label>Hora</label><input type="time" id="evTime" value="08:00"></div>
       </div>
       <label>Descrição</label><textarea id="evDesc" placeholder="Detalhes..." style="min-height:50px"></textarea>
-      <button class="btn btn-g" onclick="addEv()">+ Salvar evento</button>
-      <div class="row2" style="margin-top:8px;gap:8px">
-        <button class="btn btn-b" onclick="expICS()" style="margin-top:0">Exportar .ics</button>
-        <button class="btn btn-b" onclick="expGCal()" style="margin-top:0">Google Agenda</button>
+      <button class="btn btn-sage" onclick="addEv()">+ Salvar evento</button>
+      <div class="row2" style="margin-top:10px;gap:8px">
+        <button class="btn btn-sky" onclick="expICS()" style="margin-top:0">📤 Exportar .ics</button>
+        <button class="btn btn-sky" onclick="expGCal()" style="margin-top:0">📆 Google Agenda</button>
       </div>
     </div>
     <div id="evList"></div>
@@ -363,10 +801,14 @@
 
   <!-- FRETES -->
   <div id="pg-fret" class="page">
+    <div class="section-header amber">
+      <div class="sh-icon">🚛</div>
+      <div><div class="sh-title">Controle de Fretes</div><div class="sh-sub">Talhões, viagens e relatórios</div></div>
+    </div>
     <div class="fret-nav">
-      <button class="fret-nav-btn on" id="fnTab1" onclick="setFretTab('talhoes')">&#128209; Talhões</button>
-      <button class="fret-nav-btn" id="fnTab2" onclick="setFretTab('viagens')">&#128666; Viagens</button>
-      <button class="fret-nav-btn" id="fnTab3" onclick="setFretTab('relatorio')">&#128202; Relatório</button>
+      <button class="fret-nav-btn on" id="fnTab1" onclick="setFretTab('talhoes')">🗺️ Talhões</button>
+      <button class="fret-nav-btn" id="fnTab2" onclick="setFretTab('viagens')">🚛 Viagens</button>
+      <button class="fret-nav-btn" id="fnTab3" onclick="setFretTab('relatorio')">📊 Relatório</button>
     </div>
     <div id="fret-talhoes">
       <div class="card">
@@ -385,7 +827,7 @@
         <input type="number" id="tPriceKg" placeholder="0.000" step="0.001" inputmode="decimal">
         <label>Observações</label>
         <textarea id="tObs" placeholder="Informações adicionais..." style="min-height:50px"></textarea>
-        <button class="btn btn-p" onclick="addTalhao()">+ Criar talhão</button>
+        <button class="btn btn-primary" onclick="addTalhao()">+ Criar talhão</button>
       </div>
       <div id="talhaoList"><div class="loading">Carregando...</div></div>
     </div>
@@ -405,28 +847,32 @@
         </div>
         <label>Destinado a</label>
         <div class="tg">
-          <button class="tb on-g" id="fOwnBtn" onclick="setFO('proprio')">Nossa fazenda</button>
-          <button class="tb" id="fOthBtn" onclick="setFO('outro')">Outra fazenda</button>
+          <button class="tb on-sage" id="fOwnBtn" onclick="setFO('proprio')">🏡 Nossa fazenda</button>
+          <button class="tb" id="fOthBtn" onclick="setFO('outro')">🌾 Outra fazenda</button>
         </div>
         <div id="fOthWrap" style="display:none">
           <label>Nome da fazenda</label>
           <input type="text" id="fOthName" placeholder="Nome da fazenda vizinha">
         </div>
-        <button class="btn btn-g" onclick="addFret()">+ Registrar viagem</button>
+        <button class="btn btn-sage" onclick="addFret()">+ Registrar viagem</button>
       </div>
       <div id="fGrps"></div>
     </div>
     <div id="fret-relatorio" style="display:none">
-      <button class="btn btn-a" onclick="gerarPDF()" style="margin-bottom:14px">&#128196; Baixar relatório em PDF</button>
+      <button class="btn btn-straw" onclick="gerarPDF()" style="margin-bottom:14px">📄 Baixar relatório em PDF</button>
       <div id="relatorioContent"><div class="loading">Carregando...</div></div>
     </div>
   </div>
 
   <!-- MÉDIA LÍQUIDA -->
   <div id="pg-liq" class="page">
+    <div class="section-header blue">
+      <div class="sh-icon">💧</div>
+      <div><div class="sh-title">Média Líquida</div><div class="sh-sub">Peso após desconto dos secadores</div></div>
+    </div>
     <div class="fret-nav">
-      <button class="fret-nav-btn on-blue on" id="lqTab1" onclick="setLiqTab('talhoes')">&#128209; Talhões</button>
-      <button class="fret-nav-btn" id="lqTab2" onclick="setLiqTab('relatorio')">&#128202; Relatório</button>
+      <button class="fret-nav-btn on-blue on" id="lqTab1" onclick="setLiqTab('talhoes')">🗺️ Talhões</button>
+      <button class="fret-nav-btn" id="lqTab2" onclick="setLiqTab('relatorio')">📊 Relatório</button>
     </div>
     <div id="liq-talhoes">
       <div class="card">
@@ -443,22 +889,26 @@
         </div>
         <label>Observações (secador, contrato...)</label>
         <textarea id="lqObs" placeholder="Ex: Secador São João..." style="min-height:50px"></textarea>
-        <button class="btn btn-b" onclick="addLiqTalhao()">+ Criar talhão</button>
+        <button class="btn btn-sky" onclick="addLiqTalhao()">+ Criar talhão</button>
       </div>
       <div id="liqTalhaoList"><div class="loading">Carregando...</div></div>
     </div>
     <div id="liq-relatorio" style="display:none">
-      <button class="btn btn-a" onclick="gerarPDFLiq()" style="margin-bottom:14px">&#128196; Baixar relatório em PDF</button>
+      <button class="btn btn-straw" onclick="gerarPDFLiq()" style="margin-bottom:14px">📄 Baixar relatório em PDF</button>
       <div id="liqRelContent"><div class="loading">Carregando...</div></div>
     </div>
   </div>
 
   <!-- CUSTOS -->
   <div id="pg-cust" class="page">
+    <div class="section-header">
+      <div class="sh-icon">🌱</div>
+      <div><div class="sh-title">Custos por Safra</div><div class="sh-sub">Controle por cultura e por safra</div></div>
+    </div>
     <div class="ctabs">
-      <button class="ct on" onclick="setCult('cafe',this)">&#9749; Café</button>
-      <button class="ct" onclick="setCult('milho',this)">&#127805; Milho</button>
-      <button class="ct" onclick="setCult('soja',this)">&#127807; Soja</button>
+      <button class="ct on" onclick="setCult('cafe',this)">☕ Café</button>
+      <button class="ct" onclick="setCult('milho',this)">🌽 Milho</button>
+      <button class="ct" onclick="setCult('soja',this)">🌿 Soja</button>
     </div>
     <div class="card">
       <div class="card-title" id="cultTitle">Café — Configuração</div>
@@ -478,7 +928,7 @@
         <div><label>Valor (R$)</label><input type="number" id="cVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
         <div><label>Safra</label><input type="text" id="cSafra" placeholder="2024/25"></div>
       </div>
-      <button class="btn btn-g" onclick="addCost()">+ Adicionar custo</button>
+      <button class="btn btn-sage" onclick="addCost()">+ Adicionar custo</button>
     </div>
     <div class="card" id="cultSum" style="display:none">
       <div class="card-title">Resumo da safra</div>
@@ -489,18 +939,22 @@
 
   <!-- FINANCEIRO -->
   <div id="pg-fin" class="page">
+    <div class="section-header">
+      <div class="sh-icon">💰</div>
+      <div><div class="sh-title">Financeiro</div><div class="sh-sub">Receitas, despesas e saldo</div></div>
+    </div>
     <div class="stat-grid">
-      <div class="stat"><div class="stat-lbl">Receitas</div><div class="stat-val" id="sRec" style="color:var(--green)">R$ 0</div></div>
-      <div class="stat"><div class="stat-lbl">Despesas</div><div class="stat-val" id="sDesp" style="color:var(--red)">R$ 0</div></div>
+      <div class="stat"><div class="stat-lbl">Receitas</div><div class="stat-val" id="sRec" style="color:var(--leaf)">R$ 0</div></div>
+      <div class="stat"><div class="stat-lbl">Despesas</div><div class="stat-val" id="sDesp" style="color:var(--rust)">R$ 0</div></div>
       <div class="stat"><div class="stat-lbl">Saldo</div><div class="stat-val" id="sSaldo">R$ 0</div></div>
-      <div class="stat"><div class="stat-lbl">Projetos</div><div class="stat-val" id="sAtiv">0</div></div>
+      <div class="stat"><div class="stat-lbl">Projetos</div><div class="stat-val" id="sAtiv" style="color:var(--bark)">0</div></div>
     </div>
     <div class="card">
       <div class="card-title">Nova movimentação</div>
       <label>Tipo</label>
       <div class="tg">
-        <button class="tb on-g" id="fRecBtn" onclick="setFT('receita')">&#128200; Receita</button>
-        <button class="tb" id="fDespBtn" onclick="setFT('despesa')">&#128201; Despesa</button>
+        <button class="tb on-sage" id="fRecBtn" onclick="setFT('receita')">📈 Receita</button>
+        <button class="tb" id="fDespBtn" onclick="setFT('despesa')">📉 Despesa</button>
       </div>
       <label>Descrição</label><input type="text" id="fDesc" placeholder="Ex: Venda de soja">
       <label>Categoria</label>
@@ -509,7 +963,7 @@
         <div><label>Valor (R$)</label><input type="number" id="fVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
         <div><label>Data</label><input type="date" id="fDate"></div>
       </div>
-      <button class="btn btn-g" onclick="addFin()">+ Registrar</button>
+      <button class="btn btn-sage" onclick="addFin()">+ Registrar</button>
     </div>
     <div id="fList"><div class="loading">Carregando...</div></div>
   </div>
@@ -553,7 +1007,6 @@
   function uid(){return CU.uid;}
   function uc(n){return window.FB.col(window.FB.db,'users',uid(),n);}
 
-  // AUTH
   function setLTab(t,b){
     document.querySelectorAll('.ltab').forEach(x=>x.classList.remove('on'));b.classList.add('on');
     document.getElementById('formIn').style.display=t==='in'?'flex':'none';
@@ -578,15 +1031,8 @@
     try{await window.FB.signInPopup(window.FB.auth,window.FB.gp);}
     catch(err){document.getElementById('inErr').textContent=aerr(err.code);}
   }
-  function doOut(){
-    if(confirm('Deseja sair da sua conta?')){unsubs.forEach(u=>u());unsubs=[];window.FB.signOut(window.FB.auth);}
-  }
-  function aerr(c){
-    return({'auth/user-not-found':'Usuário não encontrado','auth/wrong-password':'Senha incorreta',
-    'auth/invalid-email':'E-mail inválido','auth/email-already-in-use':'E-mail já cadastrado',
-    'auth/weak-password':'Senha muito fraca','auth/invalid-credential':'E-mail ou senha incorretos',
-    'auth/popup-closed-by-user':'Login cancelado','auth/network-request-failed':'Erro de conexão'}[c])||'Erro ao autenticar';
-  }
+  function doOut(){if(confirm('Deseja sair?')){unsubs.forEach(u=>u());unsubs=[];window.FB.signOut(window.FB.auth);}}
+  function aerr(c){return({'auth/user-not-found':'Usuário não encontrado','auth/wrong-password':'Senha incorreta','auth/invalid-email':'E-mail inválido','auth/email-already-in-use':'E-mail já cadastrado','auth/weak-password':'Senha muito fraca','auth/invalid-credential':'E-mail ou senha incorretos','auth/popup-closed-by-user':'Login cancelado','auth/network-request-failed':'Erro de conexão'}[c])||'Erro ao autenticar';}
 
   function initApp(u){
     CU=u;
@@ -610,21 +1056,13 @@
     o('liqtalhoes','liqtalhoes',()=>{renderLiqTalhoes();renderLiqRelatorio();});
     o('liqentregas','liqentregas',()=>{renderLiqTalhoes();renderLiqRelatorio();});
     o('invCosts','invCosts',()=>{renderInvCosts();renderInvRel();});
-    unsubs.push(window.FB.snap(window.FB.q(uc('talhoes'),window.FB.ob('createdAt','desc')),s=>{
-      DB.talhoes=s.docs.map(d=>({...d.data(),_id:d.id}));
-      renderTalhoes();renderViagens();renderRelatorio();populateTalhaoSelect();
-    }));
+    unsubs.push(window.FB.snap(window.FB.q(uc('talhoes'),window.FB.ob('createdAt','desc')),s=>{DB.talhoes=s.docs.map(d=>({...d.data(),_id:d.id}));renderTalhoes();renderViagens();renderRelatorio();populateTalhaoSelect();}));
     unsubs.push(window.FB.snap(window.FB.q(uc('events'),window.FB.ob('date','asc')),s=>{DB.evs=s.docs.map(d=>({...d.data(),_id:d.id}));renderCal();renderEvList();}));
     unsubs.push(window.FB.snap(window.FB.col(window.FB.db,'users',uid(),'cultdata'),s=>{s.docs.forEach(d=>{DB.cd[d.id]=d.data();});loadCultConf();updCultSum();}));
     unsubs.push(window.FB.snap(window.FB.col(window.FB.db,'users',uid(),'invdata'),s=>{s.docs.forEach(d=>{DB.invData[d.id]=d.data();});loadInvConf();renderInvFin();renderInvRel();}));
   }
 
-  window.addEventListener('fbOK',()=>{
-    window.FB.onAuth(window.FB.auth,u=>{
-      if(u)initApp(u);
-      else{CU=null;document.getElementById('appScreen').style.display='none';document.getElementById('loginScreen').style.display='flex';}
-    });
-  });
+  window.addEventListener('fbOK',()=>{window.FB.onAuth(window.FB.auth,u=>{if(u)initApp(u);else{CU=null;document.getElementById('appScreen').style.display='none';document.getElementById('loginScreen').style.display='flex';}});});
 
   function goTo(id,btn){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
@@ -638,661 +1076,75 @@
     if(id==='pg-inv'){loadInvConf();renderInvCosts();renderInvRel();}
   }
 
-  // ============ INVESTIMENTO ============
+  // ===== INVESTIMENTO =====
   var INV_CATS_DEP=['Máquinas / Veículos','Infraestrutura'];
-
-  function setInvCult(c,b){
-    invCult=c;
-    document.querySelectorAll('#pg-inv .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-    var names={cafe:'Café',milho:'Milho',soja:'Soja'};
-    document.getElementById('invCultTitle').textContent=names[c]+' — Configuração do Projeto';
-    loadInvConf();renderInvCosts();renderInvFin();renderInvRel();
-  }
-
-  function setInvSubTab(n){
-    invSubTab=n;
-    for(var i=0;i<4;i++){
-      document.getElementById('inv-sub-'+i).style.display=i===n?'block':'none';
-      document.getElementById('invST'+i).classList.toggle('on',i===n);
-    }
-    if(n===3)renderInvRel();
-    if(n===2)renderInvFin();
-    if(n===1)renderInvCosts();
-  }
-
-  function loadInvConf(){
-    var d=DB.invData[invCult]||{};
-    document.getElementById('invNome').value=d.nome||'';
-    document.getElementById('invHa').value=d.ha||'';
-    document.getElementById('invProd').value=d.prod||'';
-    document.getElementById('invSaca').value=d.saca||'';
-    document.getElementById('invAnos').value=d.anos||'';
-    document.getElementById('invSelic').value=d.selic||'';
-    document.getElementById('invFinVal').value=d.finVal||'';
-    document.getElementById('invFinTaxa').value=d.finTaxa||'';
-    document.getElementById('invFinPrazo').value=d.finPrazo||'';
-    document.getElementById('invFinSistema').value=d.finSistema||'SAC';
-    renderInvFin();
-  }
-
-  async function saveInvConf(){
-    var d={
-      nome:document.getElementById('invNome').value.trim(),
-      ha:parseFloat(document.getElementById('invHa').value)||0,
-      prod:parseFloat(document.getElementById('invProd').value)||0,
-      saca:parseFloat(document.getElementById('invSaca').value)||0,
-      anos:parseInt(document.getElementById('invAnos').value)||0,
-      selic:parseFloat(document.getElementById('invSelic').value)||0,
-      finVal:parseFloat(document.getElementById('invFinVal').value)||0,
-      finTaxa:parseFloat(document.getElementById('invFinTaxa').value)||0,
-      finPrazo:parseInt(document.getElementById('invFinPrazo').value)||0,
-      finSistema:document.getElementById('invFinSistema').value
-    };
-    DB.invData[invCult]=d;
-    await window.FB.set(window.FB.ref(window.FB.db,'users',uid(),'invdata',invCult),d,{merge:true});
-    renderInvFin();
-    renderInvRel();
-  }
-
-  // Depreciação
-  document.addEventListener('change',function(e){
-    if(e.target.id==='invCostCat'){
-      var cat=e.target.value;
-      document.getElementById('invDepWrap').style.display=INV_CATS_DEP.includes(cat)?'block':'none';
-    }
-  });
-
-  async function addInvCost(){
-    var cat=document.getElementById('invCostCat').value,
-        desc=document.getElementById('invCostDesc').value.trim(),
-        val=parseFloat(document.getElementById('invCostVal').value)||0,
-        ano=parseInt(document.getElementById('invCostAno').value)||1;
-    if(!val){toast('Informe o valor');return;}
-    var rec={culture:invCult,cat,desc,val,ano,createdAt:window.FB.ts()};
-    if(INV_CATS_DEP.includes(cat)){
-      rec.depAnos=parseInt(document.getElementById('invDepAnos').value)||0;
-      rec.depResidual=parseFloat(document.getElementById('invDepResidual').value)||0;
-    }
-    await window.FB.add(uc('invCosts'),rec);
-    document.getElementById('invCostVal').value='';
-    document.getElementById('invCostDesc').value='';
-    document.getElementById('invDepAnos').value='';
-    document.getElementById('invDepResidual').value='';
-    toast('Custo adicionado ✓');
-  }
-
-  function renderInvCosts(){
-    var el=document.getElementById('invCostList');
-    var items=DB.invCosts.filter(c=>c.culture===invCult);
-    if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div>Nenhum custo adicionado</div>';return;}
-    var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});
-    el.innerHTML=Object.entries(bc).map(([cat,cs])=>{
-      var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
-      return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span style="font-weight:600;font-size:15px">${cat}</span><span class="badge ba">${brl(tot)}</span></div>
-        ${cs.map(c=>{
-          var depInfo=c.depAnos?`<br><span style="font-size:11px;color:var(--teal)">Dep: ${brl((c.val-c.depResidual)/c.depAnos)}/ano · ${c.depAnos} anos</span>`:'';
-          return `<div class="cr"><span style="color:var(--text-muted);flex:1;line-height:1.4">${c.desc||c.cat} (Ano ${c.ano})${depInfo}</span>
-          <span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;white-space:nowrap">${brl(c.val)}</span>
-          <button class="btn btn-r btn-sm" onclick="del('invCosts','${c._id}')">✕</button></span></div>`;
-        }).join('')}
-      </div>`;
-    }).join('');
-  }
-
-  // CÁLCULO FINANCIAMENTO
-  function calcFinanciamento(pv,taxaAnual,prazo,sistema){
-    if(!pv||!taxaAnual||!prazo)return null;
-    var i=taxaAnual/100;
-    var parcelas=[];
-    var saldo=pv;
-    var amort=pv/prazo;
-    var totalJuros=0,totalPago=0;
-    for(var ano=1;ano<=prazo;ano++){
-      var juros=saldo*i;
-      var pmt=sistema==='SAC'?amort+juros:pv*i*Math.pow(1+i,prazo)/(Math.pow(1+i,prazo)-1);
-      var amortizacao=sistema==='SAC'?amort:pmt-juros;
-      totalJuros+=juros;totalPago+=pmt;
-      parcelas.push({ano,pmt,juros,amortizacao,saldo:Math.max(0,saldo-amortizacao)});
-      saldo=Math.max(0,saldo-amortizacao);
-    }
-    return {parcelas,totalJuros,totalPago,sistema};
-  }
-
-  function renderInvFin(){
-    var d=DB.invData[invCult]||{};
-    var el=document.getElementById('invFinResumoContent');
-    if(!d.finVal||!d.finTaxa||!d.finPrazo){
-      el.innerHTML='<div style="font-size:13px;color:var(--text-muted)">Preencha os dados acima para ver o resumo do financiamento.</div>';
-      return;
-    }
-    var f=calcFinanciamento(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC');
-    if(!f){el.innerHTML='';return;}
-    var rows=f.parcelas.map(p=>`<div class="sr"><span>Ano ${p.ano}</span><span style="font-size:13px">${brl(p.pmt)} (juros: ${brl(p.juros)})</span></div>`).join('');
-    el.innerHTML=`
-      <div class="slbl">Resumo do financiamento (${f.sistema})</div>
-      <div class="sr"><span>Valor financiado</span><span>${brl(d.finVal)}</span></div>
-      <div class="sr"><span>Taxa de juros</span><span>${pct(d.finTaxa)} a.a.</span></div>
-      <div class="sr"><span>Total de juros</span><span style="color:var(--red);font-weight:600">${brl(f.totalJuros)}</span></div>
-      <div class="sr tot"><span>Total a pagar</span><span>${brl(f.totalPago)}</span></div>
-      <div class="slbl" style="margin-top:14px">Pagamento por ano</div>
-      ${rows}`;
-  }
-
-  // RELATÓRIO DE INVESTIMENTO
-  function renderInvRel(){
-    var el=document.getElementById('invRelContent');
-    var d=DB.invData[invCult]||{};
-    var items=DB.invCosts.filter(c=>c.culture===invCult);
-    var names={cafe:'Café',milho:'Milho',soja:'Soja'};
-
-    if(!d.ha&&!items.length){
-      el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Configure o projeto e adicione custos para ver o relatório</div>';
-      return;
-    }
-
-    var ha=parseFloat(d.ha)||0;
-    var prod=parseFloat(d.prod)||0;
-    var saca=parseFloat(d.saca)||0;
-    var anos=parseInt(d.anos)||1;
-    var selic=parseFloat(d.selic)||0;
-
-    // Totais por categoria
-    var totalInv=items.reduce((s,c)=>s+parseFloat(c.val||0),0);
-    var totalDep=items.filter(c=>c.depAnos).reduce((s,c)=>s+(c.val-(c.depResidual||0))/(c.depAnos||1),0);
-
-    // Financiamento
-    var fin=d.finVal&&d.finTaxa&&d.finPrazo?calcFinanciamento(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC'):null;
-    var totalJuros=fin?fin.totalJuros:0;
-    var custoTotal=totalInv+totalJuros;
-
-    // Receita
-    var receitaAnual=ha*prod*saca;
-    var receitaTotal=receitaAnual*anos;
-
-    // Por hectare
-    var custoPorHa=ha>0?totalInv/ha:0;
-    var receitaPorHa=ha>0?receitaAnual/ha:0;
-
-    // ROI
-    var roi=custoTotal>0?(receitaTotal-custoTotal)/custoTotal*100:0;
-    var payback=receitaAnual>0?totalInv/receitaAnual:null;
-
-    // Comparação com Selic
-    var retornoSelic=selic>0?totalInv*Math.pow(1+selic/100,anos)-totalInv:null;
-    var retornoProjeto=receitaTotal-custoTotal;
-
-    // Custos por categoria
-    var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});
-    var catRows=Object.entries(bc).map(([cat,cs])=>{
-      var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
-      return `<div class="sr"><span>${cat}</span><span style="font-weight:600">${brl(tot)}</span></div>`;
-    }).join('');
-
-    el.innerHTML=`
-      <div class="card">
-        <div class="card-title" style="color:var(--teal)">📈 ${d.nome||names[invCult]} — Análise de Investimento</div>
-        <div class="sr"><span>Área do projeto</span><span>${ha} ha</span></div>
-        <div class="sr"><span>Produtividade esperada</span><span>${prod} sacas/ha</span></div>
-        <div class="sr"><span>Preço da saca</span><span>${brl(saca)}</span></div>
-        <div class="sr"><span>Horizonte do projeto</span><span>${anos} anos</span></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Estrutura de custos</div>
-        ${catRows||'<div style="font-size:13px;color:var(--text-muted)">Nenhum custo adicionado</div>'}
-        <hr class="dv">
-        <div class="sr"><span>Investimento total</span><span style="font-weight:600">${brl(totalInv)}</span></div>
-        <div class="sr"><span>Custo por hectare</span><span style="font-weight:600">${brl(custoPorHa)}</span></div>
-        ${totalDep>0?`<div class="sr"><span>Depreciação anual total</span><span style="color:var(--amber);font-weight:600">${brl(totalDep)}/ano</span></div>`:''}
-        ${fin?`<div class="sr neg"><span>Juros totais do financiamento</span><span>${brl(totalJuros)}</span></div>
-        <div class="sr tot neg"><span>Custo total (inv. + juros)</span><span>${brl(custoTotal)}</span></div>`:''}
-      </div>
-
-      <div class="card">
-        <div class="card-title">Projeção de receita</div>
-        <div class="sr"><span>Receita anual estimada</span><span style="font-weight:600">${brl(receitaAnual)}</span></div>
-        <div class="sr"><span>Receita por hectare/ano</span><span style="font-weight:600">${brl(receitaPorHa)}</span></div>
-        <div class="sr pos"><span>Receita total (${anos} anos)</span><span>${brl(receitaTotal)}</span></div>
-        ${payback!==null?`<div class="sr"><span>Payback estimado</span><span style="font-weight:600">${payback.toFixed(1)} anos</span></div>`:''}
-        <hr class="dv">
-        <div class="sr ${retornoProjeto>=0?'pos':'neg'} tot"><span>Resultado líquido do projeto</span><span>${brl(retornoProjeto)}</span></div>
-        <div class="sr"><span>ROI do projeto</span><span style="font-weight:700;color:${roi>=0?'var(--green)':'var(--red)'}">${pct(roi)}</span></div>
-      </div>
-
-      ${selic>0&&retornoSelic!==null?`
-      <div class="card" style="border:1.5px solid var(--blue)">
-        <div class="card-title" style="color:var(--blue)">Comparação com Selic (${pct(selic)} a.a.)</div>
-        <div class="compare-row">
-          <div><div class="compare-label">Retorno do projeto</div><div class="compare-val" style="color:${retornoProjeto>=0?'var(--green)':'var(--red)'}">${brl(retornoProjeto)}</div></div>
-        </div>
-        <div class="compare-row">
-          <div><div class="compare-label">Rendimento Selic em ${anos} anos</div><div class="compare-val" style="color:var(--blue)">${brl(retornoSelic)}</div></div>
-        </div>
-        <hr class="dv">
-        <div class="sr ${retornoProjeto>=retornoSelic?'pos':'neg'} tot">
-          <span>${retornoProjeto>=retornoSelic?'✅ Projeto supera a Selic':'⚠️ Selic supera o projeto'}</span>
-          <span>${brl(Math.abs(retornoProjeto-retornoSelic))}</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:8px">
-          ${retornoProjeto>=retornoSelic?'O projeto rende '+brl(retornoProjeto-retornoSelic)+' a mais que a Selic no período.':'Aplicar na Selic renderia '+brl(retornoSelic-retornoProjeto)+' a mais que o projeto.'}
-        </div>
-      </div>`:''}
-
-      ${fin?`<div class="card">
-        <div class="card-title">Cronograma do financiamento</div>
-        ${fin.parcelas.map(p=>`<div class="sr"><span>Ano ${p.ano}</span><span style="font-size:13px">${brl(p.pmt)} (juros: ${brl(p.juros)} · saldo: ${brl(p.saldo)})</span></div>`).join('')}
-      </div>`:''}
-    `;
-  }
-
-  function gerarPDFInv(){
-    var conteudo=document.getElementById('invRelContent').innerHTML;
-    var data=new Date().toLocaleDateString('pt-BR');
-    var win=window.open('','_blank');
-    win.document.write(pdfTemplate('📈 Fazenda Manager — Análise de Investimento',data,conteudo,'#0F6E56'));
-    win.document.close();
-  }
+  function setInvCult(c,b){invCult=c;document.querySelectorAll('#pg-inv .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');var names={cafe:'Café',milho:'Milho',soja:'Soja'};loadInvConf();renderInvCosts();renderInvFin();renderInvRel();}
+  function setInvSubTab(n){invSubTab=n;for(var i=0;i<4;i++){document.getElementById('inv-sub-'+i).style.display=i===n?'block':'none';document.getElementById('invST'+i).classList.toggle('on',i===n);}if(n===3)renderInvRel();if(n===2)renderInvFin();if(n===1)renderInvCosts();}
+  function loadInvConf(){var d=DB.invData[invCult]||{};document.getElementById('invNome').value=d.nome||'';document.getElementById('invHa').value=d.ha||'';document.getElementById('invProd').value=d.prod||'';document.getElementById('invSaca').value=d.saca||'';document.getElementById('invAnos').value=d.anos||'';document.getElementById('invSelic').value=d.selic||'';document.getElementById('invFinVal').value=d.finVal||'';document.getElementById('invFinTaxa').value=d.finTaxa||'';document.getElementById('invFinPrazo').value=d.finPrazo||'';document.getElementById('invFinSistema').value=d.finSistema||'SAC';renderInvFin();}
+  async function saveInvConf(){var d={nome:document.getElementById('invNome').value.trim(),ha:parseFloat(document.getElementById('invHa').value)||0,prod:parseFloat(document.getElementById('invProd').value)||0,saca:parseFloat(document.getElementById('invSaca').value)||0,anos:parseInt(document.getElementById('invAnos').value)||0,selic:parseFloat(document.getElementById('invSelic').value)||0,finVal:parseFloat(document.getElementById('invFinVal').value)||0,finTaxa:parseFloat(document.getElementById('invFinTaxa').value)||0,finPrazo:parseInt(document.getElementById('invFinPrazo').value)||0,finSistema:document.getElementById('invFinSistema').value};DB.invData[invCult]=d;await window.FB.set(window.FB.ref(window.FB.db,'users',uid(),'invdata',invCult),d,{merge:true});renderInvFin();renderInvRel();}
+  document.addEventListener('change',function(e){if(e.target.id==='invCostCat'){document.getElementById('invDepWrap').style.display=INV_CATS_DEP.includes(e.target.value)?'block':'none';}});
+  async function addInvCost(){var cat=document.getElementById('invCostCat').value,desc=document.getElementById('invCostDesc').value.trim(),val=parseFloat(document.getElementById('invCostVal').value)||0,ano=parseInt(document.getElementById('invCostAno').value)||1;if(!val){toast('Informe o valor');return;}var rec={culture:invCult,cat,desc,val,ano,createdAt:window.FB.ts()};if(INV_CATS_DEP.includes(cat)){rec.depAnos=parseInt(document.getElementById('invDepAnos').value)||0;rec.depResidual=parseFloat(document.getElementById('invDepResidual').value)||0;}await window.FB.add(uc('invCosts'),rec);document.getElementById('invCostVal').value='';document.getElementById('invCostDesc').value='';document.getElementById('invDepAnos').value='';document.getElementById('invDepResidual').value='';toast('Custo adicionado ✓');}
+  function renderInvCosts(){var el=document.getElementById('invCostList');var items=DB.invCosts.filter(c=>c.culture===invCult);if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div><p>Nenhum custo adicionado</p></div>';return;}var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});el.innerHTML=Object.entries(bc).map(([cat,cs])=>{var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-weight:700;font-size:14px;color:var(--bark)">${cat}</span><span class="badge bamber">${brl(tot)}</span></div>${cs.map(c=>{var depInfo=c.depAnos?`<br><span style="font-size:11px;color:var(--teal);font-weight:600">Dep: ${brl((c.val-(c.depResidual||0))/(c.depAnos||1))}/ano · ${c.depAnos} anos</span>`:'';return `<div class="cr"><span style="color:var(--text-muted);flex:1;line-height:1.4;font-size:13px">${c.desc||c.cat} (Ano ${c.ano})${depInfo}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;white-space:nowrap;color:var(--bark)">${brl(c.val)}</span><button class="btn btn-rust btn-sm" onclick="del('invCosts','${c._id}')">✕</button></span></div>`;}).join('')}</div>`;}).join('');}
+  function calcFin(pv,taxaAnual,prazo,sistema){if(!pv||!taxaAnual||!prazo)return null;var i=taxaAnual/100,saldo=pv,amort=pv/prazo,totalJuros=0,totalPago=0,parcelas=[];for(var ano=1;ano<=prazo;ano++){var juros=saldo*i;var pmt=sistema==='SAC'?amort+juros:pv*i*Math.pow(1+i,prazo)/(Math.pow(1+i,prazo)-1);var amortizacao=sistema==='SAC'?amort:pmt-juros;totalJuros+=juros;totalPago+=pmt;parcelas.push({ano,pmt,juros,amortizacao,saldo:Math.max(0,saldo-amortizacao)});saldo=Math.max(0,saldo-amortizacao);}return{parcelas,totalJuros,totalPago,sistema};}
+  function renderInvFin(){var d=DB.invData[invCult]||{};var el=document.getElementById('invFinResumoContent');if(!d.finVal||!d.finTaxa||!d.finPrazo){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);font-weight:500">Preencha os dados acima para ver o resumo.</div>';return;}var f=calcFin(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC');if(!f){el.innerHTML='';return;}el.innerHTML=`<div class="slbl">Resumo (${f.sistema})</div><div class="sr"><span>Valor financiado</span><span>${brl(d.finVal)}</span></div><div class="sr"><span>Taxa de juros</span><span>${pct(d.finTaxa)} a.a.</span></div><div class="sr neg"><span>Total de juros</span><span>${brl(f.totalJuros)}</span></div><div class="sr tot"><span>Total a pagar</span><span>${brl(f.totalPago)}</span></div><div class="slbl" style="margin-top:14px">Por ano</div>${f.parcelas.map(p=>`<div class="sr"><span>Ano ${p.ano}</span><span style="font-size:13px">${brl(p.pmt)} <span style="color:var(--rust)">(juros: ${brl(p.juros)})</span></span></div>`).join('')}`;}
+  function renderInvRel(){var el=document.getElementById('invRelContent');var d=DB.invData[invCult]||{};var items=DB.invCosts.filter(c=>c.culture===invCult);var names={cafe:'Café',milho:'Milho',soja:'Soja'};if(!d.ha&&!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><p>Configure o projeto e adicione custos</p></div>';return;}var ha=parseFloat(d.ha)||0,prod=parseFloat(d.prod)||0,saca=parseFloat(d.saca)||0,anos=parseInt(d.anos)||1,selic=parseFloat(d.selic)||0;var totalInv=items.reduce((s,c)=>s+parseFloat(c.val||0),0);var totalDep=items.filter(c=>c.depAnos).reduce((s,c)=>s+(c.val-(c.depResidual||0))/(c.depAnos||1),0);var fin=d.finVal&&d.finTaxa&&d.finPrazo?calcFin(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC'):null;var totalJuros=fin?fin.totalJuros:0;var custoTotal=totalInv+totalJuros;var receitaAnual=ha*prod*saca;var receitaTotal=receitaAnual*anos;var custoPorHa=ha>0?totalInv/ha:0;var receitaPorHa=ha>0?receitaAnual/ha:0;var roi=custoTotal>0?(receitaTotal-custoTotal)/custoTotal*100:0;var payback=receitaAnual>0?totalInv/receitaAnual:null;var retornoSelic=selic>0?totalInv*Math.pow(1+selic/100,anos)-totalInv:null;var retornoProjeto=receitaTotal-custoTotal;var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});var catRows=Object.entries(bc).map(([cat,cs])=>{var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);return `<div class="sr"><span style="font-weight:600">${cat}</span><span>${brl(tot)}</span></div>`;}).join('');el.innerHTML=`<div class="card"><div class="card-title">Sobre o projeto</div><div class="sr"><span>Área</span><span>${ha} ha</span></div><div class="sr"><span>Produtividade esperada</span><span>${prod} sacas/ha</span></div><div class="sr"><span>Preço da saca</span><span>${brl(saca)}</span></div><div class="sr"><span>Horizonte</span><span>${anos} anos</span></div></div><div class="card"><div class="card-title">Estrutura de custos</div>${catRows||'<div style="font-size:13px;color:var(--text-muted)">Sem custos</div>'}<hr class="dv"><div class="sr"><span>Investimento total</span><span style="font-weight:700">${brl(totalInv)}</span></div><div class="sr"><span>Custo por hectare</span><span style="font-weight:700">${brl(custoPorHa)}</span></div>${totalDep>0?`<div class="sr warn"><span>Depreciação anual</span><span>${brl(totalDep)}/ano</span></div>`:''}${fin?`<div class="sr neg"><span>Juros do financiamento</span><span>${brl(totalJuros)}</span></div><div class="sr neg tot"><span>Custo total (inv. + juros)</span><span>${brl(custoTotal)}</span></div>`:''}</div><div class="card"><div class="card-title">Projeção de receita</div><div class="sr"><span>Receita anual estimada</span><span style="font-weight:700">${brl(receitaAnual)}</span></div><div class="sr"><span>Receita por ha/ano</span><span style="font-weight:700">${brl(receitaPorHa)}</span></div><div class="sr pos"><span>Receita total (${anos} anos)</span><span>${brl(receitaTotal)}</span></div>${payback!==null?`<div class="sr"><span>Payback estimado</span><span style="font-weight:700">${payback.toFixed(1)} anos</span></div>`:''}<hr class="dv"><div class="sr ${retornoProjeto>=0?'pos':'neg'} tot"><span>Resultado líquido</span><span>${brl(retornoProjeto)}</span></div><div class="sr"><span>ROI do projeto</span><span style="font-weight:800;color:${roi>=0?'var(--leaf)':'var(--rust)'}">${pct(roi)}</span></div></div>${selic>0&&retornoSelic!==null?`<div class="card" style="border:2px solid var(--sky);background:var(--sky-light)"><div class="card-title" style="color:var(--sky)">Comparação com Selic (${pct(selic)} a.a.)</div><div class="compare-row"><div><div class="compare-label">Retorno do projeto</div><div class="compare-val" style="color:${retornoProjeto>=0?'var(--leaf)':'var(--rust)'}">${brl(retornoProjeto)}</div></div></div><div class="compare-row"><div><div class="compare-label">Rendimento Selic em ${anos} anos</div><div class="compare-val" style="color:var(--sky)">${brl(retornoSelic)}</div></div></div><hr class="dv"><div class="sr ${retornoProjeto>=retornoSelic?'pos':'neg'} tot"><span>${retornoProjeto>=retornoSelic?'✅ Projeto supera a Selic':'⚠️ Selic supera o projeto'}</span><span>${brl(Math.abs(retornoProjeto-retornoSelic))}</span></div><div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-weight:500">${retornoProjeto>=retornoSelic?'O projeto rende '+brl(retornoProjeto-retornoSelic)+' a mais que a Selic no período.':'Aplicar na Selic renderia '+brl(retornoSelic-retornoProjeto)+' a mais que o projeto.'}</div></div>`:''}${fin?`<div class="card"><div class="card-title">Cronograma do financiamento</div>${fin.parcelas.map(p=>`<div class="sr"><span>Ano ${p.ano}</span><span style="font-size:13px">${brl(p.pmt)} <span style="color:var(--rust)">(juros: ${brl(p.juros)})</span></span></div>`).join('')}</div>`:''}`;}
+  function gerarPDFInv(){var conteudo=document.getElementById('invRelContent').innerHTML;var data=new Date().toLocaleDateString('pt-BR');var win=window.open('','_blank');win.document.write(pdfTemplate('📈 Fazenda Manager — Análise de Investimento',data,conteudo,'#5C3D1E'));win.document.close();}
 
   // CALENDÁRIO
-  function renderCal(){
-    var ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    document.getElementById('calTitle').textContent=ms[calM]+' '+calY;
-    var f=new Date(calY,calM,1).getDay(),days=new Date(calY,calM+1,0).getDate(),t=td();
-    var h=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d=>`<div class="cal-head">${d}</div>`).join('');
-    for(var i=0;i<f;i++)h+='<div class="cal-day empty"></div>';
-    for(var d=1;d<=days;d++){
-      var ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-      var hE=DB.evs.some(e=>e.date===ds);
-      h+=`<div class="cal-day${ds===t?' today':''}${hE?' has-event':''}" onclick="showDay('${ds}')">${d}</div>`;
-    }
-    document.getElementById('calGrid').innerHTML=h;
-  }
+  function renderCal(){var ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];document.getElementById('calTitle').textContent=ms[calM]+' '+calY;var f=new Date(calY,calM,1).getDay(),days=new Date(calY,calM+1,0).getDate(),t=td();var h=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d=>`<div class="cal-head">${d}</div>`).join('');for(var i=0;i<f;i++)h+='<div class="cal-day empty"></div>';for(var d=1;d<=days;d++){var ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var hE=DB.evs.some(e=>e.date===ds);h+=`<div class="cal-day${ds===t?' today':''}${hE?' has-event':''}" onclick="showDay('${ds}')">${d}</div>`;}document.getElementById('calGrid').innerHTML=h;}
   function calMv(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
-  function showDay(ds){
-    var evs=DB.evs.filter(e=>e.date===ds),card=document.getElementById('calDayCard');
-    document.getElementById('calDayTitle').textContent='Eventos: '+fd(ds);
-    if(!evs.length){card.style.display='none';return;}
-    card.style.display='block';
-    document.getElementById('calDayEvs').innerHTML=evs.map(e=>`<div style="padding:10px 0;border-bottom:.5px solid var(--border)"><div style="font-weight:600">${e.title}</div><div style="font-size:13px;color:var(--text-muted);margin-top:3px">${e.time}${e.desc?' — '+e.desc:''}</div><button class="btn btn-r btn-sm" style="margin-top:8px" onclick="del('events','${e._id}')">Remover</button></div>`).join('');
-  }
-  async function addEv(){
-    var t=document.getElementById('evTitle').value.trim(),d=document.getElementById('evDate').value,
-        ti=document.getElementById('evTime').value,desc=document.getElementById('evDesc').value.trim();
-    if(!t||!d){toast('Preencha título e data');return;}
-    await window.FB.add(uc('events'),{title:t,date:d,time:ti,desc,createdAt:window.FB.ts()});
-    document.getElementById('evTitle').value='';document.getElementById('evDesc').value='';toast('Evento salvo ✓');
-  }
-  function renderEvList(){
-    var el=document.getElementById('evList'),f=DB.evs.filter(e=>e.date>=td()).slice(0,10);
-    if(!f.length){el.innerHTML='';return;}
-    el.innerHTML='<div class="slbl">Próximos eventos</div>'+f.map(e=>`<div class="item"><div class="item-head"><span class="item-title">${e.title}</span><span class="badge bt">${fd(e.date)}</span></div><div class="item-meta">${e.time}${e.desc?' — '+e.desc:''}</div></div>`).join('');
-  }
-  function expICS(){
-    if(!DB.evs.length){toast('Nenhum evento para exportar');return;}
-    var ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Fazenda Manager//PT\r\n";
-    DB.evs.forEach(e=>{var dt=e.date.replace(/-/g,'')+'T'+(e.time||'08:00').replace(':','')+'00';ics+="BEGIN:VEVENT\r\nDTSTART:"+dt+"\r\nSUMMARY:"+e.title+"\r\nDESCRIPTION:"+(e.desc||'')+"\r\nEND:VEVENT\r\n";});
-    ics+="END:VCALENDAR";
-    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='fazenda-eventos.ics';a.click();toast('.ics gerado ✓');
-  }
-  function expGCal(){
-    var e=DB.evs.find(e=>e.date>=td());
-    if(!e){toast('Nenhum evento futuro');return;}
-    var dt=e.date.replace(/-/g,'')+'T'+(e.time||'08:00').replace(':','')+'00';
-    window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.title)+'&dates='+dt+'/'+dt+'&details='+encodeURIComponent(e.desc||''),'_blank');
-  }
+  function showDay(ds){var evs=DB.evs.filter(e=>e.date===ds),card=document.getElementById('calDayCard');document.getElementById('calDayTitle').textContent='Eventos: '+fd(ds);if(!evs.length){card.style.display='none';return;}card.style.display='block';document.getElementById('calDayEvs').innerHTML=evs.map(e=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-weight:700;color:var(--bark)">${e.title}</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;font-weight:500">${e.time}${e.desc?' — '+e.desc:''}</div><button class="btn btn-rust btn-sm" style="margin-top:8px" onclick="del('events','${e._id}')">Remover</button></div>`).join('');}
+  async function addEv(){var t=document.getElementById('evTitle').value.trim(),d=document.getElementById('evDate').value,ti=document.getElementById('evTime').value,desc=document.getElementById('evDesc').value.trim();if(!t||!d){toast('Preencha título e data');return;}await window.FB.add(uc('events'),{title:t,date:d,time:ti,desc,createdAt:window.FB.ts()});document.getElementById('evTitle').value='';document.getElementById('evDesc').value='';toast('Evento salvo ✓');}
+  function renderEvList(){var el=document.getElementById('evList'),f=DB.evs.filter(e=>e.date>=td()).slice(0,10);if(!f.length){el.innerHTML='';return;}el.innerHTML='<div class="slbl">Próximos eventos</div>'+f.map(e=>`<div class="item"><div class="item-head"><span class="item-title">${e.title}</span><span class="badge bteal">${fd(e.date)}</span></div><div class="item-meta">${e.time}${e.desc?' — '+e.desc:''}</div></div>`).join('');}
+  function expICS(){if(!DB.evs.length){toast('Nenhum evento para exportar');return;}var ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Fazenda Manager//PT\r\n";DB.evs.forEach(e=>{var dt=e.date.replace(/-/g,'')+'T'+(e.time||'08:00').replace(':','')+'00';ics+="BEGIN:VEVENT\r\nDTSTART:"+dt+"\r\nSUMMARY:"+e.title+"\r\nDESCRIPTION:"+(e.desc||'')+"\r\nEND:VEVENT\r\n";});ics+="END:VCALENDAR";var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='fazenda-eventos.ics';a.click();toast('.ics gerado ✓');}
+  function expGCal(){var e=DB.evs.find(e=>e.date>=td());if(!e){toast('Nenhum evento futuro');return;}var dt=e.date.replace(/-/g,'')+'T'+(e.time||'08:00').replace(':','')+'00';window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.title)+'&dates='+dt+'/'+dt+'&details='+encodeURIComponent(e.desc||''),'_blank');}
 
   // FRETES
-  function setFretTab(t){
-    fretTab=t;
-    ['talhoes','viagens','relatorio'].forEach(x=>document.getElementById('fret-'+x).style.display=x===t?'block':'none');
-    document.getElementById('fnTab1').className='fret-nav-btn'+(t==='talhoes'?' on':'');
-    document.getElementById('fnTab2').className='fret-nav-btn'+(t==='viagens'?' on':'');
-    document.getElementById('fnTab3').className='fret-nav-btn'+(t==='relatorio'?' on':'');
-    if(t==='relatorio')renderRelatorio();
-  }
-  async function addTalhao(){
-    var nome=document.getElementById('tNome').value.trim(),cultura=document.getElementById('tCultura').value,
-        ha=parseFloat(document.getElementById('tHa').value)||0,inicio=document.getElementById('tInicio').value,
-        fim=document.getElementById('tFim').value,priceKg=parseFloat(document.getElementById('tPriceKg').value)||0,
-        obs=document.getElementById('tObs').value.trim();
-    if(!nome||!inicio){toast('Informe o nome e a data de início');return;}
-    await window.FB.add(uc('talhoes'),{nome,cultura,ha,inicio,fim,priceKg,obs,createdAt:window.FB.ts()});
-    ['tNome','tHa','tObs','tFim','tPriceKg'].forEach(id=>document.getElementById(id).value='');
-    toast('Talhão criado ✓');
-  }
+  function setFretTab(t){fretTab=t;['talhoes','viagens','relatorio'].forEach(x=>document.getElementById('fret-'+x).style.display=x===t?'block':'none');document.getElementById('fnTab1').className='fret-nav-btn'+(t==='talhoes'?' on':'');document.getElementById('fnTab2').className='fret-nav-btn'+(t==='viagens'?' on':'');document.getElementById('fnTab3').className='fret-nav-btn'+(t==='relatorio'?' on':'');if(t==='relatorio')renderRelatorio();}
+  async function addTalhao(){var nome=document.getElementById('tNome').value.trim(),cultura=document.getElementById('tCultura').value,ha=parseFloat(document.getElementById('tHa').value)||0,inicio=document.getElementById('tInicio').value,fim=document.getElementById('tFim').value,priceKg=parseFloat(document.getElementById('tPriceKg').value)||0,obs=document.getElementById('tObs').value.trim();if(!nome||!inicio){toast('Informe nome e data de início');return;}await window.FB.add(uc('talhoes'),{nome,cultura,ha,inicio,fim,priceKg,obs,createdAt:window.FB.ts()});['tNome','tHa','tObs','tFim','tPriceKg'].forEach(id=>document.getElementById(id).value='');toast('Talhão criado ✓');}
   function calcMedia(pesoKg,ha){return(ha&&pesoKg)?pesoKg/60/ha:null;}
-  function renderTalhoes(){
-    var el=document.getElementById('talhaoList');
-    if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">🗺️</div>Nenhum talhão criado ainda</div>';return;}
-    el.innerHTML=DB.talhoes.map(t=>{
-      var vs=DB.frets.filter(f=>f.talhaoId===t._id);
-      var totalPeso=vs.reduce((s,f)=>s+parseFloat(f.peso||0),0);
-      var media=calcMedia(totalPeso,t.ha);
-      return `<div class="talhao-card">
-        <div class="talhao-header">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start">
-            <div><div class="talhao-name">📍 ${t.nome}</div>
-            <div class="talhao-meta">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · Início: ${fd(t.inicio)}${t.fim?' · Fim: '+fd(t.fim):''}</div>
-            ${t.obs?`<div style="font-size:12px;color:var(--text-muted);margin-top:3px">${t.obs}</div>`:''}</div>
-            <span class="badge bp">${vs.length} viagens</span>
-          </div>
-        </div>
-        <div class="talhao-body">
-          <div class="talhao-stats">
-            <div class="tstat"><div class="tstat-lbl">Peso total</div><div class="tstat-val">${num(totalPeso)} kg</div></div>
-            <div class="tstat"><div class="tstat-lbl">Sacas totais</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div>
-            <div class="tstat"><div class="tstat-lbl">Média bruta sc/ha</div><div class="tstat-val" style="color:var(--green)">${media!==null?num(media,2):'—'}</div></div>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-p btn-sm" onclick="irParaViagens('${t._id}','${t.nome}')">+ Registrar viagem</button>
-            <button class="btn btn-r btn-sm" onclick="del('talhoes','${t._id}')">Remover</button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  function irParaViagens(id,nome){
-    setFretTab('viagens');
-    document.getElementById('vTalhao').value=id;
-    var bar=document.getElementById('talhaoInfoBar');
-    bar.style.display='block';bar.textContent='📍 Talhão selecionado: '+nome;
-    renderViagens();
-  }
-  function populateTalhaoSelect(){
-    var sel=document.getElementById('vTalhao'),cur=sel.value;
-    sel.innerHTML='<option value="">Selecione o talhão...</option>';
-    DB.talhoes.forEach(t=>{var o=document.createElement('option');o.value=t._id;o.textContent=t.nome+' ('+t.cultura+')';sel.appendChild(o);});
-    if(cur)sel.value=cur;
-  }
-  function onTalhaoChange(){
-    var id=document.getElementById('vTalhao').value,t=DB.talhoes.find(x=>x._id===id);
-    var bar=document.getElementById('talhaoInfoBar');
-    if(t){bar.style.display='block';bar.textContent='📍 Talhão: '+t.nome+(t.ha?' ('+t.ha+' ha)':'');}
-    else bar.style.display='none';
-    renderViagens();
-  }
-  function setFO(o){
-    fOwn=o;
-    document.getElementById('fOwnBtn').className='tb'+(o==='proprio'?' on-g':'');
-    document.getElementById('fOthBtn').className='tb'+(o==='outro'?' on-g':'');
-    document.getElementById('fOthWrap').style.display=o==='outro'?'block':'none';
-  }
-  async function addFret(){
-    var talhaoId=document.getElementById('vTalhao').value,
-        pl=document.getElementById('fPlaca').value.toUpperCase().trim(),
-        mo=document.getElementById('fMot').value.trim(),
-        pe=parseFloat(document.getElementById('fPeso').value)||0,
-        da=document.getElementById('fData').value,
-        fz=fOwn==='proprio'?'Nossa fazenda':(document.getElementById('fOthName').value.trim()||'Outra fazenda');
-    if(!talhaoId){toast('Selecione o talhão');return;}
-    if(!pl||!mo||!pe||!da){toast('Preencha todos os campos');return;}
-    var talhao=DB.talhoes.find(t=>t._id===talhaoId);
-    await window.FB.add(uc('fretes'),{talhaoId,talhaoNome:talhao?talhao.nome:'',placa:pl,mot:mo,peso:pe,data:da,priceKg:talhao?talhao.priceKg:0,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});
-    document.getElementById('fPeso').value='';toast('Viagem registrada ✓');
-  }
-  function renderViagens(){
-    var el=document.getElementById('fGrps');
-    var talhaoId=document.getElementById('vTalhao')?document.getElementById('vTalhao').value:'';
-    var vs=talhaoId?DB.frets.filter(f=>f.talhaoId===talhaoId):DB.frets;
-    if(!vs.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div>Nenhuma viagem registrada ainda</div>';return;}
-    var g={};
-    vs.forEach(f=>{if(!g[f.placa])g[f.placa]={vs:[],tot:0};g[f.placa].vs.push(f);g[f.placa].tot+=parseFloat(f.peso||0);});
-    el.innerHTML=Object.keys(g).map(pl=>{
-      var x=g[pl];
-      var vr=x.vs.map(v=>`<div class="viagem-row"><div><span style="font-weight:500">${v.mot}</span><br><span style="font-size:12px;color:var(--text-muted)">${fd(v.data)} · ${v.fazenda}</span></div>
-        <span style="display:flex;align-items:center;gap:8px;font-weight:600">${num(v.peso)} kg <button class="btn btn-r btn-sm" onclick="del('fretes','${v._id}')">✕</button></span></div>`).join('');
-      return `<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-weight:700;font-size:15px">${pl}</span><span class="badge bb">${num(x.tot)} kg</span></div>${vr}</div>`;
-    }).join('');
-  }
-  function renderRelatorio(){
-    var el=document.getElementById('relatorioContent');
-    if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Crie talhões para ver o relatório</div>';return;}
-    var totalGeralPeso=0,totalGeralFrete=0;
-    var html=DB.talhoes.map(t=>{
-      var vs=DB.frets.filter(f=>f.talhaoId===t._id);
-      var totalPeso=vs.reduce((s,f)=>s+parseFloat(f.peso||0),0);
-      var totalFrete=totalPeso*(t.priceKg||0);
-      var totalSacas=totalPeso/60;
-      var media=calcMedia(totalPeso,t.ha);
-      totalGeralPeso+=totalPeso;totalGeralFrete+=totalFrete;
-      var porPlaca={};vs.forEach(f=>{if(!porPlaca[f.placa])porPlaca[f.placa]={tot:0,frete:0};porPlaca[f.placa].tot+=parseFloat(f.peso||0);porPlaca[f.placa].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});
-      var porMot={};vs.forEach(f=>{if(!porMot[f.mot])porMot[f.mot]={tot:0,frete:0};porMot[f.mot].tot+=parseFloat(f.peso||0);porMot[f.mot].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});
-      var porFaz={};vs.forEach(f=>{var fz=f.fazenda||'Nossa fazenda';if(!porFaz[fz])porFaz[fz]={tot:0,frete:0};porFaz[fz].tot+=parseFloat(f.peso||0);porFaz[fz].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});
-      return `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px">
-          <div><div style="font-weight:700;font-size:16px;color:var(--green)">📍 ${t.nome}</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div>
-          <span class="badge bp">${vs.length} viagens</span>
-        </div>
-        ${Object.keys(porPlaca).length?`<div class="slbl">Por placa</div>${Object.entries(porPlaca).map(([pl,x])=>`<div class="sr"><span style="font-weight:600">🚛 ${pl}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
-        ${Object.keys(porMot).length?`<div class="slbl">Por motorista</div>${Object.entries(porMot).map(([m,x])=>`<div class="sr"><span>👤 ${m}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
-        ${Object.keys(porFaz).length?`<div class="slbl">Por fazenda</div>${Object.entries(porFaz).map(([f,x])=>`<div class="sr"><span>🏡 ${f}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
+  function renderTalhoes(){var el=document.getElementById('talhaoList');if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">🗺️</div><p>Nenhum talhão criado ainda</p></div>';return;}el.innerHTML=DB.talhoes.map(t=>{var vs=DB.frets.filter(f=>f.talhaoId===t._id);var totalPeso=vs.reduce((s,f)=>s+parseFloat(f.peso||0),0);var media=calcMedia(totalPeso,t.ha);return `<div class="talhao-card"><div class="talhao-header"><div class="talhao-header-top"><div><div class="talhao-name">📍 ${t.nome}</div><div class="talhao-meta">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · Início: ${fd(t.inicio)}${t.fim?' · Fim: '+fd(t.fim):''}</div>${t.obs?`<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px">${t.obs}</div>`:''}</div><span class="badge bstraw">${vs.length} viagens</span></div></div><div class="talhao-body"><div class="talhao-stats"><div class="tstat"><div class="tstat-lbl">Peso total</div><div class="tstat-val">${num(totalPeso)} kg</div></div><div class="tstat"><div class="tstat-lbl">Sacas totais</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div><div class="tstat"><div class="tstat-lbl">Média bruta</div><div class="tstat-val" style="color:var(--sage)">${media!==null?num(media,2)+'sc/ha':'—'}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="irParaViagens('${t._id}','${t.nome}')">+ Registrar viagem</button><button class="btn btn-rust btn-sm" onclick="del('talhoes','${t._id}')">Remover</button></div></div></div>`;}).join('');}
+  function irParaViagens(id,nome){setFretTab('viagens');document.getElementById('vTalhao').value=id;var bar=document.getElementById('talhaoInfoBar');bar.style.display='block';bar.textContent='📍 Talhão selecionado: '+nome;renderViagens();}
+  function populateTalhaoSelect(){var sel=document.getElementById('vTalhao'),cur=sel.value;sel.innerHTML='<option value="">Selecione o talhão...</option>';DB.talhoes.forEach(t=>{var o=document.createElement('option');o.value=t._id;o.textContent=t.nome+' ('+t.cultura+')';sel.appendChild(o);});if(cur)sel.value=cur;}
+  function onTalhaoChange(){var id=document.getElementById('vTalhao').value,t=DB.talhoes.find(x=>x._id===id);var bar=document.getElementById('talhaoInfoBar');if(t){bar.style.display='block';bar.textContent='📍 Talhão: '+t.nome+(t.ha?' ('+t.ha+' ha)':'');}else bar.style.display='none';renderViagens();}
+  function setFO(o){fOwn=o;document.getElementById('fOwnBtn').className='tb'+(o==='proprio'?' on-sage':'');document.getElementById('fOthBtn').className='tb'+(o==='outro'?' on-sage':'');document.getElementById('fOthWrap').style.display=o==='outro'?'block':'none';}
+  async function addFret(){var talhaoId=document.getElementById('vTalhao').value,pl=document.getElementById('fPlaca').value.toUpperCase().trim(),mo=document.getElementById('fMot').value.trim(),pe=parseFloat(document.getElementById('fPeso').value)||0,da=document.getElementById('fData').value,fz=fOwn==='proprio'?'Nossa fazenda':(document.getElementById('fOthName').value.trim()||'Outra fazenda');if(!talhaoId){toast('Selecione o talhão');return;}if(!pl||!mo||!pe||!da){toast('Preencha todos os campos');return;}var talhao=DB.talhoes.find(t=>t._id===talhaoId);await window.FB.add(uc('fretes'),{talhaoId,talhaoNome:talhao?talhao.nome:'',placa:pl,mot:mo,peso:pe,data:da,priceKg:talhao?talhao.priceKg:0,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});document.getElementById('fPeso').value='';toast('Viagem registrada ✓');}
+  function renderViagens(){var el=document.getElementById('fGrps');var talhaoId=document.getElementById('vTalhao')?document.getElementById('vTalhao').value:'';var vs=talhaoId?DB.frets.filter(f=>f.talhaoId===talhaoId):DB.frets;if(!vs.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div><p>Nenhuma viagem registrada ainda</p></div>';return;}var g={};vs.forEach(f=>{if(!g[f.placa])g[f.placa]={vs:[],tot:0};g[f.placa].vs.push(f);g[f.placa].tot+=parseFloat(f.peso||0);});el.innerHTML=Object.keys(g).map(pl=>{var x=g[pl];var vr=x.vs.map(v=>`<div class="viagem-row"><div><span style="font-weight:700;color:var(--bark)">${v.mot}</span><br><span style="font-size:12px;color:var(--text-muted);font-weight:500">${fd(v.data)} · ${v.fazenda}</span></div><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:800;color:var(--clay)">${num(v.peso)} kg</span> <button class="btn btn-rust btn-sm" onclick="del('fretes','${v._id}')">✕</button></span></div>`).join('');return `<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:16px;color:var(--bark)">${pl}</span><span class="badge bsky">${num(x.tot)} kg</span></div>${vr}</div>`;}).join('');}
+  function renderRelatorio(){var el=document.getElementById('relatorioContent');if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><p>Crie talhões para ver o relatório</p></div>';return;}var totalGeralPeso=0,totalGeralFrete=0;var html=DB.talhoes.map(t=>{var vs=DB.frets.filter(f=>f.talhaoId===t._id);var totalPeso=vs.reduce((s,f)=>s+parseFloat(f.peso||0),0);var totalFrete=totalPeso*(t.priceKg||0);var totalSacas=totalPeso/60;var media=calcMedia(totalPeso,t.ha);totalGeralPeso+=totalPeso;totalGeralFrete+=totalFrete;var porPlaca={};vs.forEach(f=>{if(!porPlaca[f.placa])porPlaca[f.placa]={tot:0,frete:0};porPlaca[f.placa].tot+=parseFloat(f.peso||0);porPlaca[f.placa].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});var porMot={};vs.forEach(f=>{if(!porMot[f.mot])porMot[f.mot]={tot:0,frete:0};porMot[f.mot].tot+=parseFloat(f.peso||0);porMot[f.mot].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});var porFaz={};vs.forEach(f=>{var fz=f.fazenda||'Nossa fazenda';if(!porFaz[fz])porFaz[fz]={tot:0,frete:0};porFaz[fz].tot+=parseFloat(f.peso||0);porFaz[fz].frete+=parseFloat(f.peso||0)*(f.priceKg||0);});return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:8px"><div><div style="font-weight:800;font-size:16px;color:var(--bark)">📍 ${t.nome}</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;font-weight:500">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div><span class="badge bstraw">${vs.length} viagens</span></div>${Object.keys(porPlaca).length?`<div class="slbl">Por placa</div>${Object.entries(porPlaca).map(([pl,x])=>`<div class="sr"><span style="font-weight:700">🚛 ${pl}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}${Object.keys(porMot).length?`<div class="slbl">Por motorista</div>${Object.entries(porMot).map(([m,x])=>`<div class="sr"><span>👤 ${m}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}${Object.keys(porFaz).length?`<div class="slbl">Por fazenda</div>${Object.entries(porFaz).map(([f,x])=>`<div class="sr"><span>🏡 ${f}</span><span>${num(x.tot)} kg · ${brl(x.frete)}</span></div>`).join('')}`:''}
         <hr class="dv">
-        <div class="sr"><span>Total de sacas</span><span style="font-weight:600">${num(totalSacas,1)} sacas</span></div>
-        <div class="sr"><span>Peso bruto total</span><span style="font-weight:600">${num(totalPeso)} kg</span></div>
+        <div class="sr"><span>Total de sacas</span><span style="font-weight:700">${num(totalSacas,1)} sacas</span></div>
+        <div class="sr"><span>Peso bruto total</span><span style="font-weight:700">${num(totalPeso)} kg</span></div>
         ${t.ha?`<div class="sr pos"><span>Média da lavoura (peso bruto)</span><span>${num(media,2)} sacas/ha</span></div>`:''}
         <div class="sr tot pos"><span>Total do frete</span><span>${brl(totalFrete)}</span></div>
-      </div>`;
-    }).join('');
-    html+=`<div class="card" style="border:1.5px solid var(--green);background:var(--green-light)">
-      <div class="card-title" style="color:var(--green)">Resumo Geral — Peso Bruto</div>
-      <div class="sr"><span>Total de viagens</span><span style="font-weight:600">${DB.frets.length}</span></div>
-      <div class="sr"><span>Peso bruto total</span><span style="font-weight:600">${num(totalGeralPeso)} kg</span></div>
-      <div class="sr"><span>Total em sacas</span><span style="font-weight:600">${num(totalGeralPeso/60,1)} sacas</span></div>
-      <div class="sr tot pos"><span>Total geral de fretes</span><span>${brl(totalGeralFrete)}</span></div>
-    </div>`;
-    el.innerHTML=html;
-  }
-  function gerarPDF(){
-    var conteudo=document.getElementById('relatorioContent').innerHTML;
-    var data=new Date().toLocaleDateString('pt-BR');
-    var win=window.open('','_blank');
-    win.document.write(pdfTemplate('🌾 Fazenda Manager — Relatório de Fretes (Peso Bruto)',data,conteudo,'#3B6D11'));
-    win.document.close();
-  }
+      </div>`;}).join('');html+=`<div class="card" style="border:2px solid var(--sage);background:var(--sage-light)"><div class="card-title" style="color:var(--leaf)">Resumo Geral — Peso Bruto</div><div class="sr"><span>Total de viagens</span><span style="font-weight:700">${DB.frets.length}</span></div><div class="sr"><span>Peso bruto total</span><span style="font-weight:700">${num(totalGeralPeso)} kg</span></div><div class="sr"><span>Total em sacas</span><span style="font-weight:700">${num(totalGeralPeso/60,1)} sacas</span></div><div class="sr tot pos"><span>Total geral de fretes</span><span>${brl(totalGeralFrete)}</span></div></div>`;el.innerHTML=html;}
+  function gerarPDF(){var conteudo=document.getElementById('relatorioContent').innerHTML;var data=new Date().toLocaleDateString('pt-BR');var win=window.open('','_blank');win.document.write(pdfTemplate('🌾 Fazenda Manager — Relatório de Fretes (Peso Bruto)',data,conteudo,'#2E5E2A'));win.document.close();}
 
-  // MÉDIA LÍQUIDA
-  function setLiqTab(t){
-    liqTab=t;
-    document.getElementById('liq-talhoes').style.display=t==='talhoes'?'block':'none';
-    document.getElementById('liq-relatorio').style.display=t==='relatorio'?'block':'none';
-    document.getElementById('lqTab1').className='fret-nav-btn'+(t==='talhoes'?' on-blue on':'');
-    document.getElementById('lqTab2').className='fret-nav-btn'+(t==='relatorio'?' on-blue on':'');
-    if(t==='relatorio')renderLiqRelatorio();
-  }
-  async function addLiqTalhao(){
-    var nome=document.getElementById('lqNome').value.trim(),cultura=document.getElementById('lqCultura').value,
-        ha=parseFloat(document.getElementById('lqHa').value)||0,inicio=document.getElementById('lqInicio').value,
-        fim=document.getElementById('lqFim').value,obs=document.getElementById('lqObs').value.trim();
-    if(!nome||!inicio){toast('Informe nome e data de início');return;}
-    await window.FB.add(uc('liqtalhoes'),{nome,cultura,ha,inicio,fim,obs,createdAt:window.FB.ts()});
-    ['lqNome','lqHa','lqObs','lqFim'].forEach(id=>document.getElementById(id).value='');
-    toast('Talhão criado ✓');
-  }
+  // LÍQUIDA
+  function setLiqTab(t){liqTab=t;document.getElementById('liq-talhoes').style.display=t==='talhoes'?'block':'none';document.getElementById('liq-relatorio').style.display=t==='relatorio'?'block':'none';document.getElementById('lqTab1').className='fret-nav-btn'+(t==='talhoes'?' on-blue on':'');document.getElementById('lqTab2').className='fret-nav-btn'+(t==='relatorio'?' on-blue on':'');if(t==='relatorio')renderLiqRelatorio();}
+  async function addLiqTalhao(){var nome=document.getElementById('lqNome').value.trim(),cultura=document.getElementById('lqCultura').value,ha=parseFloat(document.getElementById('lqHa').value)||0,inicio=document.getElementById('lqInicio').value,fim=document.getElementById('lqFim').value,obs=document.getElementById('lqObs').value.trim();if(!nome||!inicio){toast('Informe nome e data de início');return;}await window.FB.add(uc('liqtalhoes'),{nome,cultura,ha,inicio,fim,obs,createdAt:window.FB.ts()});['lqNome','lqHa','lqObs','lqFim'].forEach(id=>document.getElementById(id).value='');toast('Talhão criado ✓');}
   function showLiqEntregaForm(talhaoId){liqEntregaAberta=talhaoId;renderLiqTalhoes();}
-  async function saveLiqEntrega(talhaoId){
-    var peso=parseFloat(document.getElementById('lqEPeso_'+talhaoId).value)||0;
-    var data=document.getElementById('lqEData_'+talhaoId).value;
-    var secador=document.getElementById('lqESec_'+talhaoId).value.trim();
-    if(!peso||!data){toast('Preencha peso e data');return;}
-    var talhao=DB.liqtalhoes.find(t=>t._id===talhaoId);
-    await window.FB.add(uc('liqentregas'),{talhaoId,talhaoNome:talhao?talhao.nome:'',peso,data,secador,createdAt:window.FB.ts()});
-    liqEntregaAberta=null;toast('Entrega registrada ✓');
-  }
-  function renderLiqTalhoes(){
-    var el=document.getElementById('liqTalhaoList');
-    if(!DB.liqtalhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">💧</div>Nenhum talhão criado ainda</div>';return;}
-    el.innerHTML=DB.liqtalhoes.map(t=>{
-      var entregas=DB.liqentregas.filter(e=>e.talhaoId===t._id);
-      var totalPeso=entregas.reduce((s,e)=>s+parseFloat(e.peso||0),0);
-      var media=calcMedia(totalPeso,t.ha);
-      var formAberta=liqEntregaAberta===t._id;
-      return `<div class="talhao-card">
-        <div class="talhao-header blue">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start">
-            <div><div class="talhao-name blue">💧 ${t.nome}</div>
-            <div class="talhao-meta">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div>
-            ${t.obs?`<div style="font-size:12px;color:var(--text-muted);margin-top:3px">${t.obs}</div>`:''}</div>
-            <span class="badge bb">${entregas.length} entregas</span>
-          </div>
-        </div>
-        <div class="talhao-body">
-          <div class="talhao-stats">
-            <div class="tstat"><div class="tstat-lbl">Peso líquido</div><div class="tstat-val">${num(totalPeso)} kg</div></div>
-            <div class="tstat"><div class="tstat-lbl">Sacas líquidas</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div>
-            <div class="tstat"><div class="tstat-lbl">Média líq. sc/ha</div><div class="tstat-val" style="color:var(--blue)">${media!==null?num(media,2):'—'}</div></div>
-          </div>
-          ${entregas.length?'<div class="slbl">Entregas</div>'+entregas.map(e=>`<div class="viagem-row"><div><span style="font-weight:500">${e.secador||'Secador'}</span><br><span style="font-size:12px;color:var(--text-muted)">${fd(e.data)}</span></div><span style="display:flex;align-items:center;gap:8px;font-weight:600">${num(e.peso)} kg <button class="btn btn-r btn-sm" onclick="del('liqentregas','${e._id}')">✕</button></span></div>`).join(''):''}
-          ${formAberta?`<div class="entrega-form"><div class="slbl" style="margin-top:0">Nova entrega</div>
-            <label>Peso líquido (kg)</label><input type="number" id="lqEPeso_${t._id}" placeholder="0" inputmode="decimal">
-            <label>Data</label><input type="date" id="lqEData_${t._id}" value="${td()}">
-            <label>Nome do secador</label><input type="text" id="lqESec_${t._id}" placeholder="Ex: Secador São João">
-            <div style="display:flex;gap:8px;margin-top:10px">
-              <button class="btn btn-b btn-sm" onclick="saveLiqEntrega('${t._id}')">Salvar</button>
-              <button class="btn btn-sm" onclick="liqEntregaAberta=null;renderLiqTalhoes()">Cancelar</button>
-            </div></div>`:`<button class="btn btn-b btn-sm" style="margin-top:10px" onclick="showLiqEntregaForm('${t._id}')">+ Adicionar entrega</button>`}
-          <button class="btn btn-r btn-sm" style="margin-top:8px" onclick="del('liqtalhoes','${t._id}')">Remover talhão</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  function renderLiqRelatorio(){
-    var el=document.getElementById('liqRelContent');
-    if(!DB.liqtalhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">💧</div>Crie talhões para ver o relatório</div>';return;}
-    var totalAreaGeral=0,totalPesoGeral=0;
-    var html=DB.liqtalhoes.map(t=>{
-      var entregas=DB.liqentregas.filter(e=>e.talhaoId===t._id);
-      var totalPeso=entregas.reduce((s,e)=>s+parseFloat(e.peso||0),0);
-      var media=calcMedia(totalPeso,t.ha);
-      totalAreaGeral+=parseFloat(t.ha||0);totalPesoGeral+=totalPeso;
-      return `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px">
-          <div><div style="font-weight:700;font-size:16px;color:var(--blue)">💧 ${t.nome}</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div>
-          <span class="badge bb">${entregas.length} entregas</span>
-        </div>
-        ${entregas.length?`<div class="slbl">Entregas por secador</div>${entregas.map(e=>`<div class="sr"><span>📦 ${e.secador||'Secador'} · ${fd(e.data)}</span><span>${num(e.peso)} kg</span></div>`).join('')}`:'<div style="font-size:13px;color:var(--text-muted)">Sem entregas</div>'}
-        <hr class="dv">
-        <div class="sr"><span>Total de sacas líquidas</span><span style="font-weight:600">${num(totalPeso/60,1)} sacas</span></div>
-        <div class="sr"><span>Peso líquido total</span><span style="font-weight:600">${num(totalPeso)} kg</span></div>
-        ${t.ha?`<div class="sr pos-blue tot"><span>Média da lavoura (peso líquido)</span><span>${num(media,2)} sacas/ha</span></div>`:`<div class="sr warn"><span>⚠️ Informe o tamanho em ha</span></div>`}
-      </div>`;
-    }).join('');
-    var mediaGeral=totalAreaGeral&&totalPesoGeral?totalPesoGeral/60/totalAreaGeral:null;
-    html+=`<div class="card" style="border:1.5px solid var(--blue);background:var(--blue-light)">
-      <div class="card-title" style="color:var(--blue)">Resumo Geral — Média Líquida</div>
-      <div class="sr"><span>Área total</span><span style="font-weight:600">${num(totalAreaGeral,1)} ha</span></div>
-      <div class="sr"><span>Peso líquido total</span><span style="font-weight:600">${num(totalPesoGeral)} kg</span></div>
-      <div class="sr"><span>Total em sacas líquidas</span><span style="font-weight:600">${num(totalPesoGeral/60,1)} sacas</span></div>
-      <div class="sr tot pos-blue"><span>Média geral da área (peso líquido)</span><span>${mediaGeral!==null?num(mediaGeral,2)+' sacas/ha':'—'}</span></div>
-    </div>`;
-    el.innerHTML=html;
-  }
-  function gerarPDFLiq(){
-    var conteudo=document.getElementById('liqRelContent').innerHTML;
-    var data=new Date().toLocaleDateString('pt-BR');
-    var win=window.open('','_blank');
-    win.document.write(pdfTemplate('💧 Fazenda Manager — Relatório de Média Líquida',data,conteudo,'#185FA5'));
-    win.document.close();
-  }
+  async function saveLiqEntrega(talhaoId){var peso=parseFloat(document.getElementById('lqEPeso_'+talhaoId).value)||0;var data=document.getElementById('lqEData_'+talhaoId).value;var secador=document.getElementById('lqESec_'+talhaoId).value.trim();if(!peso||!data){toast('Preencha peso e data');return;}var talhao=DB.liqtalhoes.find(t=>t._id===talhaoId);await window.FB.add(uc('liqentregas'),{talhaoId,talhaoNome:talhao?talhao.nome:'',peso,data,secador,createdAt:window.FB.ts()});liqEntregaAberta=null;toast('Entrega registrada ✓');}
+  function renderLiqTalhoes(){var el=document.getElementById('liqTalhaoList');if(!DB.liqtalhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">💧</div><p>Nenhum talhão criado ainda</p></div>';return;}el.innerHTML=DB.liqtalhoes.map(t=>{var entregas=DB.liqentregas.filter(e=>e.talhaoId===t._id);var totalPeso=entregas.reduce((s,e)=>s+parseFloat(e.peso||0),0);var media=calcMedia(totalPeso,t.ha);var formAberta=liqEntregaAberta===t._id;return `<div class="talhao-card"><div class="talhao-header blue"><div class="talhao-header-top"><div><div class="talhao-name">💧 ${t.nome}</div><div class="talhao-meta">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div>${t.obs?`<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px">${t.obs}</div>`:''}</div><span class="badge bstraw">${entregas.length} entregas</span></div></div><div class="talhao-body"><div class="talhao-stats"><div class="tstat"><div class="tstat-lbl">Peso líquido</div><div class="tstat-val">${num(totalPeso)} kg</div></div><div class="tstat"><div class="tstat-lbl">Sacas líquidas</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div><div class="tstat"><div class="tstat-lbl">Média líq.</div><div class="tstat-val" style="color:var(--sky)">${media!==null?num(media,2)+'sc/ha':'—'}</div></div></div>${entregas.length?'<div class="slbl">Entregas</div>'+entregas.map(e=>`<div class="viagem-row"><div><span style="font-weight:700;color:var(--bark)">${e.secador||'Secador'}</span><br><span style="font-size:12px;color:var(--text-muted);font-weight:500">${fd(e.data)}</span></div><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:800;color:var(--sky)">${num(e.peso)} kg</span> <button class="btn btn-rust btn-sm" onclick="del('liqentregas','${e._id}')">✕</button></span></div>`).join(''):''}${formAberta?`<div class="entrega-form"><div class="slbl" style="margin-top:0">Nova entrega</div><label>Peso líquido (kg)</label><input type="number" id="lqEPeso_${t._id}" placeholder="0" inputmode="decimal"><label>Data</label><input type="date" id="lqEData_${t._id}" value="${td()}"><label>Secador</label><input type="text" id="lqESec_${t._id}" placeholder="Ex: Secador São João"><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-sky btn-sm" onclick="saveLiqEntrega('${t._id}')">Salvar</button><button class="btn btn-sm" onclick="liqEntregaAberta=null;renderLiqTalhoes()">Cancelar</button></div></div>`:`<button class="btn btn-sky btn-sm" style="margin-top:12px" onclick="showLiqEntregaForm('${t._id}')">+ Adicionar entrega</button>`}<button class="btn btn-rust btn-sm" style="margin-top:8px" onclick="del('liqtalhoes','${t._id}')">Remover talhão</button></div></div>`;}).join('');}
+  function renderLiqRelatorio(){var el=document.getElementById('liqRelContent');if(!DB.liqtalhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">💧</div><p>Crie talhões para ver o relatório</p></div>';return;}var totalAreaGeral=0,totalPesoGeral=0;var html=DB.liqtalhoes.map(t=>{var entregas=DB.liqentregas.filter(e=>e.talhaoId===t._id);var totalPeso=entregas.reduce((s,e)=>s+parseFloat(e.peso||0),0);var media=calcMedia(totalPeso,t.ha);totalAreaGeral+=parseFloat(t.ha||0);totalPesoGeral+=totalPeso;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:8px"><div><div style="font-weight:800;font-size:16px;color:var(--sky)">💧 ${t.nome}</div><div style="font-size:12px;color:var(--text-muted);margin-top:3px;font-weight:500">${t.cultura}${t.ha?' · '+t.ha+' ha':''} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div><span class="badge bsky">${entregas.length} entregas</span></div>${entregas.length?`<div class="slbl">Por secador</div>${entregas.map(e=>`<div class="sr"><span>📦 ${e.secador||'Secador'} · ${fd(e.data)}</span><span>${num(e.peso)} kg</span></div>`).join('')}`:'<div style="font-size:13px;color:var(--text-muted)">Sem entregas</div>'}<hr class="dv"><div class="sr"><span>Total de sacas líquidas</span><span style="font-weight:700">${num(totalPeso/60,1)} sacas</span></div><div class="sr"><span>Peso líquido total</span><span style="font-weight:700">${num(totalPeso)} kg</span></div>${t.ha?`<div class="sr pos-blue tot"><span>Média da lavoura (peso líquido)</span><span>${num(media,2)} sacas/ha</span></div>`:`<div class="sr warn"><span>⚠️ Informe o tamanho em ha</span></div>`}</div>`;}).join('');var mediaGeral=totalAreaGeral&&totalPesoGeral?totalPesoGeral/60/totalAreaGeral:null;html+=`<div class="card" style="border:2px solid var(--sky);background:var(--sky-light)"><div class="card-title" style="color:var(--sky)">Resumo Geral — Média Líquida</div><div class="sr"><span>Área total</span><span style="font-weight:700">${num(totalAreaGeral,1)} ha</span></div><div class="sr"><span>Peso líquido total</span><span style="font-weight:700">${num(totalPesoGeral)} kg</span></div><div class="sr"><span>Total em sacas líquidas</span><span style="font-weight:700">${num(totalPesoGeral/60,1)} sacas</span></div><div class="sr tot pos-blue"><span>Média geral (peso líquido)</span><span>${mediaGeral!==null?num(mediaGeral,2)+' sacas/ha':'—'}</span></div></div>`;el.innerHTML=html;}
+  function gerarPDFLiq(){var conteudo=document.getElementById('liqRelContent').innerHTML;var data=new Date().toLocaleDateString('pt-BR');var win=window.open('','_blank');win.document.write(pdfTemplate('💧 Fazenda Manager — Relatório de Média Líquida',data,conteudo,'#3B6FA0'));win.document.close();}
 
-  function pdfTemplate(titulo,data,conteudo,cor){
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titulo}</title>
-    <style>body{font-family:Arial,sans-serif;padding:20px;color:#1a1a1a;max-width:800px;margin:0 auto}h1{color:${cor};font-size:18px;margin-bottom:4px}.sub{color:#888;font-size:12px;margin-bottom:24px}.card{border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:14px;page-break-inside:avoid}.card-title{font-size:15px;font-weight:700;margin-bottom:12px}.sr{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:.5px solid #eee}.sr:last-child{border-bottom:none}.sr.tot{font-weight:700;font-size:14px;border-top:2px solid #ccc;border-bottom:none;padding-top:10px;margin-top:4px;color:${cor}}.sr.pos,.sr.pos-blue{color:${cor};font-weight:700}.sr.neg{color:#A32D2D;font-weight:700}.sr.warn{color:#854F0B;font-size:12px}.slbl{font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px}.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#eee;color:#333}.compare-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid #eee}.compare-label{font-size:13px;color:#666}.compare-val{font-size:15px;font-weight:700}hr.dv{border:none;border-top:.5px solid #ddd;margin:8px 0}@media print{.card{page-break-inside:avoid}}</style>
-    </head><body><h1>${titulo}</h1><div class="sub">Gerado em ${data}</div>${conteudo}<script>window.onload=function(){window.print();}<\/script></body></html>`;
-  }
+  function pdfTemplate(titulo,data,conteudo,cor){return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titulo}</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#1A1208;max-width:800px;margin:0 auto}h1{color:${cor};font-size:18px;margin-bottom:4px;font-weight:800}.sub{color:#7A6248;font-size:12px;margin-bottom:24px;font-weight:500}.card{border:1px solid #ddd;border-radius:10px;padding:18px;margin-bottom:16px;page-break-inside:avoid}.card-title{font-size:13px;font-weight:800;margin-bottom:14px;color:${cor};text-transform:uppercase;letter-spacing:.5px}.sr{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:.5px solid #eee}.sr:last-child{border-bottom:none}.sr.tot{font-weight:800;font-size:14px;border-top:2px solid #ccc;border-bottom:none;padding-top:10px;margin-top:6px;color:${cor}}.sr.pos,.sr.pos-blue{color:#2E5E2A;font-weight:700}.sr.neg{color:#8B3A2A;font-weight:700}.sr.warn{color:#8B5E00;font-size:12px}.slbl{font-size:10px;font-weight:800;color:#A89070;text-transform:uppercase;letter-spacing:.8px;margin:12px 0 6px}.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#F5EDE0;color:#5C3D1E}.compare-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid #eee}.compare-label{font-size:13px;color:#7A6248}.compare-val{font-size:15px;font-weight:800}hr.dv{border:none;border-top:.5px solid #ddd;margin:8px 0}@media print{.card{page-break-inside:avoid}}</style></head><body><h1>${titulo}</h1><div class="sub">Gerado em ${data}</div>${conteudo}<script>window.onload=function(){window.print();}<\/script></body></html>`;}
 
   // CUSTOS
-  function setCult(c,b){
-    cult=c;document.querySelectorAll('#pg-cust .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-    document.getElementById('cultTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Configuração';
-    loadCultConf();renderCosts();updCultSum();
-  }
-  function loadCultConf(){
-    var cd=DB.cd[cult]||{};
-    document.getElementById('cHa').value=cd.ha||'';
-    document.getElementById('cProd').value=cd.prod||'';
-    document.getElementById('cSaca').value=cd.sacaPrice||'';
-  }
-  async function saveCultConf(){
-    var ha=parseFloat(document.getElementById('cHa').value)||0,
-        prod=parseFloat(document.getElementById('cProd').value)||0,
-        sacaPrice=parseFloat(document.getElementById('cSaca').value)||0;
-    DB.cd[cult]={ha,prod,sacaPrice};
-    await window.FB.set(window.FB.ref(window.FB.db,'users',uid(),'cultdata',cult),{ha,prod,sacaPrice},{merge:true});
-    updCultSum();
-  }
-  function updCultSum(){
-    var cd=DB.cd[cult]||{},ha=parseFloat(cd.ha)||0,prod=parseFloat(cd.prod)||0,sp=parseFloat(cd.sacaPrice)||0;
-    var cs=DB.costs.filter(c=>c.culture===cult),tc=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
-    var ts=ha*prod,tr=ts*sp,lu=tr-tc,card=document.getElementById('cultSum');
-    if(!ha&&!sp){card.style.display='none';return;}
-    card.style.display='block';
-    document.getElementById('cultSumC').innerHTML=`
-      <div class="sr"><span>Área cultivada</span><span>${ha.toFixed(1)} ha</span></div>
-      <div class="sr"><span>Produção estimada</span><span>${num(ts,0)} sacas</span></div>
-      <div class="sr"><span>Preço por saca</span><span>${brl(sp)}</span></div>
-      <hr class="dv">
-      <div class="sr neg"><span>Total de custos</span><span>${brl(tc)}</span></div>
-      <div class="sr"><span>Custo por hectare</span><span>${brl(ha>0?tc/ha:0)}</span></div>
-      <hr class="dv">
-      <div class="sr pos"><span>Receita estimada</span><span>${brl(tr)}</span></div>
-      <div class="sr pos"><span>Receita em sacas</span><span>${num(ts,0)} sacas</span></div>
-      <hr class="dv">
-      <div class="sr tot ${lu>=0?'pos':'neg'}"><span>Resultado estimado</span><span>${brl(lu)}</span></div>`;
-  }
-  async function addCost(){
-    var cat=document.getElementById('cCat').value,desc=document.getElementById('cDesc').value.trim(),
-        val=parseFloat(document.getElementById('cVal').value)||0,safra=document.getElementById('cSafra').value.trim();
-    if(!val){toast('Informe o valor');return;}
-    await window.FB.add(uc('costs'),{culture:cult,cat,desc,val,safra,createdAt:window.FB.ts()});
-    document.getElementById('cVal').value='';document.getElementById('cDesc').value='';toast('Custo adicionado ✓');
-  }
-  function renderCosts(){
-    var el=document.getElementById('cList'),items=DB.costs.filter(c=>c.culture===cult);
-    if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div>Nenhum custo para esta cultura</div>';return;}
-    var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});
-    el.innerHTML=Object.entries(bc).map(([cat,cs])=>{
-      var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
-      return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-weight:600;font-size:15px">${cat}</span><span class="badge ba">${brl(tot)}</span></div>${cs.map(c=>`<div class="cr"><span style="color:var(--text-muted);flex:1;line-height:1.3">${c.desc||c.cat}${c.safra?' ('+c.safra+')':''}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;white-space:nowrap">${brl(c.val)}</span><button class="btn btn-r btn-sm" onclick="del('costs','${c._id}')">✕</button></span></div>`).join('')}</div>`;
-    }).join('');
-  }
+  function setCult(c,b){cult=c;document.querySelectorAll('#pg-cust .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('cultTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Configuração';loadCultConf();renderCosts();updCultSum();}
+  function loadCultConf(){var cd=DB.cd[cult]||{};document.getElementById('cHa').value=cd.ha||'';document.getElementById('cProd').value=cd.prod||'';document.getElementById('cSaca').value=cd.sacaPrice||'';}
+  async function saveCultConf(){var ha=parseFloat(document.getElementById('cHa').value)||0,prod=parseFloat(document.getElementById('cProd').value)||0,sacaPrice=parseFloat(document.getElementById('cSaca').value)||0;DB.cd[cult]={ha,prod,sacaPrice};await window.FB.set(window.FB.ref(window.FB.db,'users',uid(),'cultdata',cult),{ha,prod,sacaPrice},{merge:true});updCultSum();}
+  function updCultSum(){var cd=DB.cd[cult]||{},ha=parseFloat(cd.ha)||0,prod=parseFloat(cd.prod)||0,sp=parseFloat(cd.sacaPrice)||0;var cs=DB.costs.filter(c=>c.culture===cult),tc=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);var ts=ha*prod,tr=ts*sp,lu=tr-tc,card=document.getElementById('cultSum');if(!ha&&!sp){card.style.display='none';return;}card.style.display='block';document.getElementById('cultSumC').innerHTML=`<div class="sr"><span>Área cultivada</span><span>${ha.toFixed(1)} ha</span></div><div class="sr"><span>Produção estimada</span><span>${num(ts,0)} sacas</span></div><div class="sr"><span>Preço por saca</span><span>${brl(sp)}</span></div><hr class="dv"><div class="sr neg"><span>Total de custos</span><span>${brl(tc)}</span></div><div class="sr"><span>Custo por hectare</span><span>${brl(ha>0?tc/ha:0)}</span></div><hr class="dv"><div class="sr pos"><span>Receita estimada</span><span>${brl(tr)}</span></div><div class="sr pos"><span>Receita em sacas</span><span>${num(ts,0)} sacas</span></div><hr class="dv"><div class="sr tot ${lu>=0?'pos':'neg'}"><span>Resultado estimado</span><span>${brl(lu)}</span></div>`;}
+  async function addCost(){var cat=document.getElementById('cCat').value,desc=document.getElementById('cDesc').value.trim(),val=parseFloat(document.getElementById('cVal').value)||0,safra=document.getElementById('cSafra').value.trim();if(!val){toast('Informe o valor');return;}await window.FB.add(uc('costs'),{culture:cult,cat,desc,val,safra,createdAt:window.FB.ts()});document.getElementById('cVal').value='';document.getElementById('cDesc').value='';toast('Custo adicionado ✓');}
+  function renderCosts(){var el=document.getElementById('cList'),items=DB.costs.filter(c=>c.culture===cult);if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div><p>Nenhum custo para esta cultura</p></div>';return;}var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});el.innerHTML=Object.entries(bc).map(([cat,cs])=>{var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:700;font-size:14px;color:var(--bark)">${cat}</span><span class="badge bamber">${brl(tot)}</span></div>${cs.map(c=>`<div class="cr"><span style="color:var(--text-muted);flex:1;line-height:1.3;font-size:13px">${c.desc||c.cat}${c.safra?' ('+c.safra+')':''}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;white-space:nowrap;color:var(--bark)">${brl(c.val)}</span><button class="btn btn-rust btn-sm" onclick="del('costs','${c._id}')">✕</button></span></div>`).join('')}</div>`;}).join('');}
 
   // FINANCEIRO
-  function setFT(t){
-    finT=t;
-    document.getElementById('fRecBtn').className='tb'+(t==='receita'?' on-g':'');
-    document.getElementById('fDespBtn').className='tb'+(t==='despesa'?' on-r':'');
-  }
-  async function addFin(){
-    var desc=document.getElementById('fDesc').value.trim(),cat=document.getElementById('fCat').value,
-        val=parseFloat(document.getElementById('fVal').value)||0,date=document.getElementById('fDate').value;
-    if(!desc||!val||!date){toast('Preencha todos os campos');return;}
-    await window.FB.add(uc('fins'),{type:finT,desc,cat,val,date,createdAt:window.FB.ts()});
-    document.getElementById('fDesc').value='';document.getElementById('fVal').value='';toast('Registrado ✓');
-  }
-  function updFinStats(){
-    var r=DB.fins.filter(f=>f.type==='receita').reduce((s,f)=>s+parseFloat(f.val||0),0);
-    var d=DB.fins.filter(f=>f.type==='despesa').reduce((s,f)=>s+parseFloat(f.val||0),0);
-    var sl=r-d;
-    document.getElementById('sRec').textContent=brl(r);
-    document.getElementById('sDesp').textContent=brl(d);
-    document.getElementById('sSaldo').textContent=brl(sl);
-    document.getElementById('sSaldo').style.color=sl>=0?'var(--green)':'var(--red)';
-    document.getElementById('sAtiv').textContent=DB.invCosts.filter(c=>c.culture).length>0?Object.keys(DB.invData).filter(k=>DB.invData[k].nome).length:0;
-  }
-  function renderFin(){
-    var el=document.getElementById('fList');updFinStats();
-    if(!DB.fins.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div>Nenhuma movimentação registrada</div>';return;}
-    el.innerHTML=DB.fins.map(f=>`<div class="item"><div class="item-head"><span class="item-title">${f.desc}</span><span class="badge ${f.type==='receita'?'bg':'br'}">${f.type==='receita'?'+':'-'} ${brl(f.val)}</span></div><div class="item-meta">${f.cat} — ${fd(f.date)}</div><div class="item-actions"><button class="btn btn-r btn-sm" onclick="del('fins','${f._id}')">Remover</button></div></div>`).join('');
-  }
+  function setFT(t){finT=t;document.getElementById('fRecBtn').className='tb'+(t==='receita'?' on-sage':'');document.getElementById('fDespBtn').className='tb'+(t==='despesa'?' on-rust':'');}
+  async function addFin(){var desc=document.getElementById('fDesc').value.trim(),cat=document.getElementById('fCat').value,val=parseFloat(document.getElementById('fVal').value)||0,date=document.getElementById('fDate').value;if(!desc||!val||!date){toast('Preencha todos os campos');return;}await window.FB.add(uc('fins'),{type:finT,desc,cat,val,date,createdAt:window.FB.ts()});document.getElementById('fDesc').value='';document.getElementById('fVal').value='';toast('Registrado ✓');}
+  function updFinStats(){var r=DB.fins.filter(f=>f.type==='receita').reduce((s,f)=>s+parseFloat(f.val||0),0);var d=DB.fins.filter(f=>f.type==='despesa').reduce((s,f)=>s+parseFloat(f.val||0),0);var sl=r-d;document.getElementById('sRec').textContent=brl(r);document.getElementById('sDesp').textContent=brl(d);document.getElementById('sSaldo').textContent=brl(sl);document.getElementById('sSaldo').style.color=sl>=0?'var(--leaf)':'var(--rust)';document.getElementById('sAtiv').textContent=Object.keys(DB.invData).filter(k=>DB.invData[k]&&DB.invData[k].nome).length;}
+  function renderFin(){var el=document.getElementById('fList');updFinStats();if(!DB.fins.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div><p>Nenhuma movimentação registrada</p></div>';return;}el.innerHTML=DB.fins.map(f=>`<div class="item"><div class="item-head"><span class="item-title">${f.desc}</span><span class="badge ${f.type==='receita'?'bsage':'brust'}">${f.type==='receita'?'+':'-'} ${brl(f.val)}</span></div><div class="item-meta">${f.cat} — ${fd(f.date)}</div><div class="item-actions"><button class="btn btn-rust btn-sm" onclick="del('fins','${f._id}')">Remover</button></div></div>`).join('');}
 
-  async function del(col,id){
-    if(!confirm('Remover este item?'))return;
-    await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),col,id));
-    toast('Removido ✓');
-  }
+  async function del(col,id){if(!confirm('Remover este item?'))return;await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),col,id));toast('Removido ✓');}
 </script>
 </body>
 </html>
