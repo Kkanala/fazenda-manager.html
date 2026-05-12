@@ -14,6 +14,7 @@
       --amber: #854F0B; --amber-light: #FAEEDA;
       --red: #A32D2D; --red-light: #FCEBEB;
       --teal: #0F6E56; --teal-light: #E1F5EE;
+      --purple: #5B3FA6; --purple-light: #EDE9FB;
       --text: #1a1a1a; --text-muted: #5F5E5A; --text-hint: #999;
       --bg: #ffffff; --bg-surface: #F8F7F4;
       --border: rgba(0,0,0,0.12); --border-mid: rgba(0,0,0,0.22);
@@ -26,6 +27,7 @@
         --border: rgba(255,255,255,0.10); --border-mid: rgba(255,255,255,0.20);
         --green-light: #173404; --blue-light: #042C53;
         --amber-light: #412402; --red-light: #501313; --teal-light: #04342C;
+        --purple-light: #1E1540;
       }
     }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-surface); color: var(--text); min-height: 100vh; }
@@ -36,14 +38,13 @@
     .login-title { font-size: 26px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
     .login-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
     .login-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 24px; width: 100%; max-width: 380px; box-shadow: var(--shadow); }
-    .login-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .ltab-row { display: flex; gap: 8px; margin-bottom: 20px; }
     .ltab { flex:1; padding:9px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:500; cursor:pointer; color:var(--text-muted); font-family:inherit; }
     .ltab.on { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
     .lform { display:flex; flex-direction:column; gap:12px; }
     .lform input { padding:12px 14px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; background:var(--bg); color:var(--text); }
     .lform input:focus { outline:none; border-color:var(--green-mid); box-shadow:0 0 0 3px rgba(99,153,34,0.15); }
     .btn-login { padding:13px; border:none; border-radius:var(--radius-sm); background:var(--green); color:white; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
-    .btn-login:active { opacity:.85; }
     .div-or { text-align:center; color:var(--text-hint); font-size:13px; margin:4px 0; position:relative; }
     .div-or::before,.div-or::after { content:''; position:absolute; top:50%; width:40%; height:.5px; background:var(--border-mid); }
     .div-or::before { left:0; } .div-or::after { right:0; }
@@ -73,6 +74,7 @@
     .btn-g { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
     .btn-b { background:var(--blue-light); color:var(--blue); border-color:rgba(24,95,165,0.3); }
     .btn-r { background:var(--red-light); color:var(--red); border-color:rgba(163,45,45,0.3); }
+    .btn-p { background:var(--purple-light); color:var(--purple); border-color:rgba(91,63,166,0.3); }
     .btn-sm { width:auto; padding:6px 12px; font-size:12px; margin-top:0; display:inline-block; }
     .tg { display:flex; gap:8px; margin-top:10px; }
     .tb { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; color:var(--text-muted); font-size:14px; font-weight:500; cursor:pointer; font-family:inherit; }
@@ -82,13 +84,14 @@
     .item-head { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
     .item-title { font-size:15px; font-weight:600; color:var(--text); flex:1; }
     .item-meta { font-size:13px; color:var(--text-muted); margin-top:5px; line-height:1.4; }
-    .item-actions { display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:0.5px solid var(--border); }
+    .item-actions { display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:0.5px solid var(--border); flex-wrap:wrap; }
     .badge { display:inline-block; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
     .bg { background:var(--green-light); color:var(--green); }
     .bb { background:var(--blue-light); color:var(--blue); }
     .ba { background:var(--amber-light); color:var(--amber); }
     .br { background:var(--red-light); color:var(--red); }
     .bt { background:var(--teal-light); color:var(--teal); }
+    .bp { background:var(--purple-light); color:var(--purple); }
     .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
     .stat { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); padding:14px; text-align:center; box-shadow:var(--shadow); }
     .stat-lbl { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
@@ -102,11 +105,6 @@
     .cal-day.today { background:var(--green-light); color:var(--green); font-weight:700; }
     .cal-day.has-event::after { content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--green-mid); }
     .cal-day.empty { pointer-events:none; }
-    .pg { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); margin-bottom:12px; overflow:hidden; box-shadow:var(--shadow); }
-    .ph { padding:12px 16px; background:var(--bg-surface); display:flex; justify-content:space-between; align-items:center; border-bottom:0.5px solid var(--border); }
-    .pb { padding:14px 16px; }
-    .pr { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:0.5px solid var(--border); font-size:13px; }
-    .pr:last-child { border-bottom:none; }
     .ctabs { display:flex; gap:8px; margin-bottom:14px; }
     .ct { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; }
     .ct.on { background:var(--green-light); color:var(--green); border-color:rgba(59,109,17,0.3); }
@@ -123,6 +121,28 @@
     .loading { text-align:center; padding:24px; color:var(--text-muted); font-size:14px; }
     .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a1a; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:500; opacity:0; transition:all .3s; z-index:999; white-space:nowrap; pointer-events:none; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* TALHÕES */
+    .talhao-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--radius-md); margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow); }
+    .talhao-header { padding:14px 16px; background:var(--green-light); border-bottom:0.5px solid var(--border); }
+    .talhao-header-top { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .talhao-name { font-size:16px; font-weight:700; color:var(--green); }
+    .talhao-dates { font-size:12px; color:var(--text-muted); margin-top:4px; }
+    .talhao-body { padding:14px 16px; }
+    .talhao-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+    .talhao-stat { background:var(--bg-surface); border-radius:var(--radius-sm); padding:10px 8px; text-align:center; }
+    .talhao-stat-lbl { font-size:10px; font-weight:700; color:var(--text-hint); text-transform:uppercase; letter-spacing:.3px; margin-bottom:4px; }
+    .talhao-stat-val { font-size:15px; font-weight:700; color:var(--text); }
+    .placa-group { background:var(--bg-surface); border-radius:var(--radius-sm); margin-bottom:8px; overflow:hidden; }
+    .placa-header { padding:10px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:0.5px solid var(--border); }
+    .placa-name { font-size:14px; font-weight:700; color:var(--text); }
+    .placa-body { padding:8px 12px; }
+    .viagem-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:0.5px solid var(--border); font-size:13px; gap:8px; }
+    .viagem-row:last-child { border-bottom:none; }
+    .fret-nav { display:flex; gap:8px; margin-bottom:14px; }
+    .fret-nav-btn { flex:1; padding:10px; border:0.5px solid var(--border-mid); border-radius:var(--radius-sm); background:transparent; font-size:13px; font-weight:600; cursor:pointer; color:var(--text-muted); font-family:inherit; text-align:center; }
+    .fret-nav-btn.on { background:var(--purple-light); color:var(--purple); border-color:rgba(91,63,166,0.3); }
+    .talhao-select-info { background:var(--purple-light); border:0.5px solid rgba(91,63,166,0.3); border-radius:var(--radius-sm); padding:10px 14px; font-size:13px; color:var(--purple); margin-bottom:12px; font-weight:500; }
   </style>
 </head>
 <body>
@@ -133,7 +153,7 @@
   <div class="login-title">Fazenda Manager</div>
   <div class="login-sub">Gerencie sua fazenda de qualquer lugar</div>
   <div class="login-card">
-    <div class="login-tabs">
+    <div class="ltab-row">
       <button class="ltab on" onclick="setLTab('in',this)">Entrar</button>
       <button class="ltab" onclick="setLTab('up',this)">Criar conta</button>
     </div>
@@ -228,26 +248,68 @@
 
   <!-- FRETES -->
   <div id="pg-fret" class="page">
-    <div class="card">
-      <div class="card-title">Registrar viagem</div>
-      <div class="row2">
-        <div><label>Placa</label><input type="text" id="fPlaca" placeholder="ABC1234" style="text-transform:uppercase"></div>
-        <div><label>Motorista</label><input type="text" id="fMot" placeholder="Nome"></div>
-      </div>
-      <div class="row2">
-        <div><label>Peso (kg)</label><input type="number" id="fPeso" placeholder="0" inputmode="decimal"></div>
-        <div><label>Data</label><input type="date" id="fData"></div>
-      </div>
-      <label>Preço por kg (R$)</label><input type="number" id="fPkg" placeholder="0.000" step="0.001" inputmode="decimal">
-      <label>Destinado a</label>
-      <div class="tg">
-        <button class="tb on-g" id="fOwnBtn" onclick="setFO('proprio')">Nossa fazenda</button>
-        <button class="tb" id="fOthBtn" onclick="setFO('outro')">Outra fazenda</button>
-      </div>
-      <div id="fOthWrap" style="display:none"><label>Nome da fazenda</label><input type="text" id="fOthName" placeholder="Nome da fazenda vizinha"></div>
-      <button class="btn btn-g" onclick="addFret()">+ Registrar viagem</button>
+    <div class="fret-nav">
+      <button class="fret-nav-btn on" id="fnTab1" onclick="setFretTab('talhoes')">&#128209; Talhões</button>
+      <button class="fret-nav-btn" id="fnTab2" onclick="setFretTab('viagens')">&#128666; Viagens</button>
+      <button class="fret-nav-btn" id="fnTab3" onclick="setFretTab('relatorio')">&#128202; Relatório</button>
     </div>
-    <div id="fGrps"><div class="loading">Carregando...</div></div>
+
+    <!-- SUB: TALHÕES -->
+    <div id="fret-talhoes">
+      <div class="card">
+        <div class="card-title">Novo talhão</div>
+        <label>Nome do talhão</label>
+        <input type="text" id="tNome" placeholder="Ex: Talhão Norte, Gleba A...">
+        <label>Cultura</label>
+        <select id="tCultura">
+          <option>Café</option><option>Milho</option><option>Soja</option><option>Outro</option>
+        </select>
+        <div class="row2">
+          <div><label>Data início</label><input type="date" id="tInicio"></div>
+          <div><label>Data fim (previsão)</label><input type="date" id="tFim"></div>
+        </div>
+        <label>Preço por kg (R$)</label>
+        <input type="number" id="tPriceKg" placeholder="0.000" step="0.001" inputmode="decimal">
+        <label>Observações</label>
+        <textarea id="tObs" placeholder="Informações adicionais..." style="min-height:50px"></textarea>
+        <button class="btn btn-p" onclick="addTalhao()">+ Criar talhão</button>
+      </div>
+      <div id="talhaoList"><div class="loading">Carregando...</div></div>
+    </div>
+
+    <!-- SUB: VIAGENS -->
+    <div id="fret-viagens" style="display:none">
+      <div id="talhaoSelectInfo" class="talhao-select-info" style="display:none"></div>
+      <div class="card">
+        <div class="card-title">Registrar viagem</div>
+        <label>Talhão</label>
+        <select id="vTalhao"><option value="">Selecione o talhão...</option></select>
+        <div class="row2">
+          <div><label>Placa</label><input type="text" id="fPlaca" placeholder="ABC1234" style="text-transform:uppercase"></div>
+          <div><label>Motorista</label><input type="text" id="fMot" placeholder="Nome"></div>
+        </div>
+        <div class="row2">
+          <div><label>Peso (kg)</label><input type="number" id="fPeso" placeholder="0" inputmode="decimal"></div>
+          <div><label>Data</label><input type="date" id="fData"></div>
+        </div>
+        <label>Destinado a</label>
+        <div class="tg">
+          <button class="tb on-g" id="fOwnBtn" onclick="setFO('proprio')">Nossa fazenda</button>
+          <button class="tb" id="fOthBtn" onclick="setFO('outro')">Outra fazenda</button>
+        </div>
+        <div id="fOthWrap" style="display:none">
+          <label>Nome da fazenda</label>
+          <input type="text" id="fOthName" placeholder="Nome da fazenda vizinha">
+        </div>
+        <button class="btn btn-g" onclick="addFret()">+ Registrar viagem</button>
+      </div>
+      <div id="fGrps"><div class="loading">Carregando...</div></div>
+    </div>
+
+    <!-- SUB: RELATÓRIO -->
+    <div id="fret-relatorio" style="display:none">
+      <div id="relatorioContent"><div class="loading">Carregando...</div></div>
+    </div>
   </div>
 
   <!-- CUSTOS -->
@@ -263,7 +325,8 @@
         <div><label>Área (ha)</label><input type="number" id="cHa" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
         <div><label>Prod. (sacas/ha)</label><input type="number" id="cProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
       </div>
-      <label>Preço da saca (R$)</label><input type="number" id="cSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveCultConf()">
+      <label>Preço da saca (R$)</label>
+      <input type="number" id="cSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveCultConf()">
     </div>
     <div class="card">
       <div class="card-title">Adicionar custo</div>
@@ -276,7 +339,10 @@
       </div>
       <button class="btn btn-g" onclick="addCost()">+ Adicionar custo</button>
     </div>
-    <div class="card" id="cultSum" style="display:none"><div class="card-title">Resumo da safra</div><div id="cultSumC"></div></div>
+    <div class="card" id="cultSum" style="display:none">
+      <div class="card-title">Resumo da safra</div>
+      <div id="cultSumC"></div>
+    </div>
     <div id="cList"><div class="loading">Carregando...</div></div>
   </div>
 
@@ -334,9 +400,9 @@
 
 <script>
   var CU=null, unsubs=[];
-  var DB={ativ:[],evs:[],frets:[],costs:[],fins:[],cd:{cafe:{},milho:{},soja:{}}};
+  var DB={ativ:[],evs:[],talhoes:[],frets:[],costs:[],fins:[],cd:{cafe:{},milho:{},soja:{}}};
   var calY=new Date().getFullYear(), calM=new Date().getMonth();
-  var cult='cafe', finT='receita', fOwn='proprio';
+  var cult='cafe', finT='receita', fOwn='proprio', fretTab='talhoes', selTalhaoId=null;
 
   function td(){return new Date().toISOString().split('T')[0];}
   function fd(ds){if(!ds)return '';var p=ds.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
@@ -344,8 +410,8 @@
   function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
   function uid(){return CU.uid;}
   function uc(n){return window.FB.col(window.FB.db,'users',uid(),n);}
-  function ud(n,i){return window.FB.ref(window.FB.db,'users',uid(),n,i);}
 
+  // AUTH
   function setLTab(t,b){
     document.querySelectorAll('.ltab').forEach(x=>x.classList.remove('on'));b.classList.add('on');
     document.getElementById('formIn').style.display=t==='in'?'flex':'none';
@@ -355,8 +421,7 @@
   async function doSignIn(){
     var e=document.getElementById('inEmail').value.trim(),p=document.getElementById('inPass').value;
     if(!e||!p){document.getElementById('inErr').textContent='Preencha e-mail e senha';return;}
-    try{await window.FB.signIn(window.FB.auth,e,p);}
-    catch(err){document.getElementById('inErr').textContent=aerr(err.code);}
+    try{await window.FB.signIn(window.FB.auth,e,p);}catch(err){document.getElementById('inErr').textContent=aerr(err.code);}
   }
   async function doSignUp(){
     var n=document.getElementById('upName').value.trim(),e=document.getElementById('upEmail').value.trim(),
@@ -390,6 +455,7 @@
     document.getElementById('evDate').value=td();
     document.getElementById('fData').value=td();
     document.getElementById('fDate').value=td();
+    document.getElementById('tInicio').value=td();
     startSnaps();
   }
 
@@ -397,9 +463,13 @@
     unsubs.forEach(u=>u());unsubs=[];
     var o=(n,k,r)=>unsubs.push(window.FB.snap(window.FB.q(uc(n),window.FB.ob('createdAt','desc')),s=>{DB[k]=s.docs.map(d=>({...d.data(),_id:d.id}));r();}));
     o('atividades','ativ',()=>{renderAtiv();updFinStats();});
-    o('fretes','frets',renderFrets);
+    o('fretes','frets',()=>{renderViagens();renderRelatorio();});
     o('costs','costs',()=>{renderCosts();updCultSum();});
     o('fins','fins',()=>{renderFin();updFinStats();});
+    unsubs.push(window.FB.snap(window.FB.q(uc('talhoes'),window.FB.ob('createdAt','desc')),s=>{
+      DB.talhoes=s.docs.map(d=>({...d.data(),_id:d.id}));
+      renderTalhoes();renderViagens();renderRelatorio();populateTalhaoSelect();
+    }));
     unsubs.push(window.FB.snap(window.FB.q(uc('events'),window.FB.ob('date','asc')),s=>{DB.evs=s.docs.map(d=>({...d.data(),_id:d.id}));renderCal();renderEvList();}));
     unsubs.push(window.FB.snap(window.FB.col(window.FB.db,'users',uid(),'cultdata'),s=>{s.docs.forEach(d=>{DB.cd[d.id]=d.data();});loadCultConf();updCultSum();}));
   }
@@ -420,6 +490,7 @@
     if(id==='pg-fin')updFinStats();
   }
 
+  // ATIVIDADES
   async function addAtiv(){
     var t=document.getElementById('aType').value,d=document.getElementById('aDate').value,desc=document.getElementById('aDesc').value.trim();
     if(!d||!desc){toast('Preencha data e descrição');return;}
@@ -432,6 +503,7 @@
     el.innerHTML=DB.ativ.map(a=>`<div class="item"><div class="item-head"><span class="item-title">${a.type}</span><span class="badge bg">${fd(a.date)}</span></div><div class="item-meta">${a.desc}</div><div class="item-actions"><button class="btn btn-r btn-sm" onclick="del('atividades','${a._id}')">Remover</button></div></div>`).join('');
   }
 
+  // CALENDÁRIO
   function renderCal(){
     var ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     document.getElementById('calTitle').textContent=ms[calM]+' '+calY;
@@ -479,40 +551,204 @@
     window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(e.title)+'&dates='+dt+'/'+dt+'&details='+encodeURIComponent(e.desc||''),'_blank');
   }
 
+  // ============ FRETES / TALHÕES ============
+  function setFretTab(t){
+    fretTab=t;
+    ['talhoes','viagens','relatorio'].forEach(x=>{
+      document.getElementById('fret-'+x).style.display=x===t?'block':'none';
+    });
+    document.getElementById('fnTab1').className='fret-nav-btn'+(t==='talhoes'?' on':'');
+    document.getElementById('fnTab2').className='fret-nav-btn'+(t==='viagens'?' on':'');
+    document.getElementById('fnTab3').className='fret-nav-btn'+(t==='relatorio'?' on':'');
+    if(t==='relatorio')renderRelatorio();
+  }
+
+  // TALHÕES
+  async function addTalhao(){
+    var nome=document.getElementById('tNome').value.trim(),
+        cultura=document.getElementById('tCultura').value,
+        inicio=document.getElementById('tInicio').value,
+        fim=document.getElementById('tFim').value,
+        priceKg=parseFloat(document.getElementById('tPriceKg').value)||0,
+        obs=document.getElementById('tObs').value.trim();
+    if(!nome||!inicio){toast('Informe o nome e a data de início');return;}
+    await window.FB.add(uc('talhoes'),{nome,cultura,inicio,fim,priceKg,obs,createdAt:window.FB.ts()});
+    document.getElementById('tNome').value='';
+    document.getElementById('tObs').value='';
+    document.getElementById('tFim').value='';
+    document.getElementById('tPriceKg').value='';
+    toast('Talhão criado ✓');
+  }
+
+  function renderTalhoes(){
+    var el=document.getElementById('talhaoList');
+    if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">🗺️</div>Nenhum talhão criado ainda</div>';return;}
+    el.innerHTML=DB.talhoes.map(t=>{
+      var viagens=DB.frets.filter(f=>f.talhaoId===t._id);
+      var totalPeso=viagens.reduce((s,f)=>s+parseFloat(f.peso||0),0);
+      var totalFrete=totalPeso*(t.priceKg||0);
+      var nViagens=viagens.length;
+      return `<div class="talhao-card">
+        <div class="talhao-header">
+          <div class="talhao-header-top">
+            <div>
+              <div class="talhao-name">📍 ${t.nome}</div>
+              <div class="talhao-dates">${t.cultura} · Início: ${fd(t.inicio)}${t.fim?' · Previsão fim: '+fd(t.fim):''}</div>
+              ${t.obs?`<div style="font-size:12px;color:var(--text-muted);margin-top:4px">${t.obs}</div>`:''}
+            </div>
+            <span class="badge bp">R$ ${(t.priceKg||0).toFixed(3)}/kg</span>
+          </div>
+        </div>
+        <div class="talhao-body">
+          <div class="talhao-stats">
+            <div class="talhao-stat"><div class="talhao-stat-lbl">Viagens</div><div class="talhao-stat-val">${nViagens}</div></div>
+            <div class="talhao-stat"><div class="talhao-stat-lbl">Peso total</div><div class="talhao-stat-val" style="font-size:12px">${totalPeso.toLocaleString('pt-BR')} kg</div></div>
+            <div class="talhao-stat"><div class="talhao-stat-lbl">Total frete</div><div class="talhao-stat-val" style="font-size:12px;color:var(--green)">${brl(totalFrete)}</div></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-p btn-sm" onclick="irParaViagens('${t._id}','${t.nome}')">+ Registrar viagem</button>
+            <button class="btn btn-r btn-sm" onclick="del('talhoes','${t._id}')">Remover</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function irParaViagens(id, nome){
+    selTalhaoId=id;
+    setFretTab('viagens');
+    document.getElementById('vTalhao').value=id;
+    var info=document.getElementById('talhaoSelectInfo');
+    info.style.display='block';
+    info.textContent='📍 Registrando viagens para: '+nome;
+  }
+
+  function populateTalhaoSelect(){
+    var sel=document.getElementById('vTalhao');
+    var cur=sel.value;
+    sel.innerHTML='<option value="">Selecione o talhão...</option>';
+    DB.talhoes.forEach(t=>{
+      var o=document.createElement('option');
+      o.value=t._id; o.textContent=t.nome+' ('+t.cultura+')';
+      sel.appendChild(o);
+    });
+    if(cur)sel.value=cur;
+  }
+
+  // VIAGENS
   function setFO(o){
     fOwn=o;
     document.getElementById('fOwnBtn').className='tb'+(o==='proprio'?' on-g':'');
     document.getElementById('fOthBtn').className='tb'+(o==='outro'?' on-g':'');
     document.getElementById('fOthWrap').style.display=o==='outro'?'block':'none';
   }
+
   async function addFret(){
+    var talhaoId=document.getElementById('vTalhao').value;
     var pl=document.getElementById('fPlaca').value.toUpperCase().trim(),
         mo=document.getElementById('fMot').value.trim(),
         pe=parseFloat(document.getElementById('fPeso').value)||0,
         da=document.getElementById('fData').value,
-        pk=parseFloat(document.getElementById('fPkg').value)||0,
         fz=fOwn==='proprio'?'Nossa fazenda':(document.getElementById('fOthName').value.trim()||'Outra fazenda');
+    if(!talhaoId){toast('Selecione o talhão');return;}
     if(!pl||!mo||!pe||!da){toast('Preencha todos os campos');return;}
-    await window.FB.add(uc('fretes'),{placa:pl,mot:mo,peso:pe,data:da,priceKg:pk,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});
+    var talhao=DB.talhoes.find(t=>t._id===talhaoId);
+    var priceKg=talhao?talhao.priceKg:0;
+    await window.FB.add(uc('fretes'),{talhaoId,talhaoNome:talhao?talhao.nome:'',placa:pl,mot:mo,peso:pe,data:da,priceKg,fazenda:fz,owner:fOwn,createdAt:window.FB.ts()});
     document.getElementById('fPeso').value='';toast('Viagem registrada ✓');
   }
-  function renderFrets(){
+
+  function renderViagens(){
     var el=document.getElementById('fGrps');
-    if(!DB.frets.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div>Nenhuma viagem registrada</div>';return;}
+    var talhaoId=document.getElementById('vTalhao')?document.getElementById('vTalhao').value:'';
+    var viagens=talhaoId?DB.frets.filter(f=>f.talhaoId===talhaoId):DB.frets;
+    if(!viagens.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div>Nenhuma viagem'+(talhaoId?' neste talhão':'')+' ainda</div>';return;}
     var g={};
-    DB.frets.forEach(f=>{
+    viagens.forEach(f=>{
       if(!g[f.placa])g[f.placa]={vs:[],tot:0,pk:f.priceKg,faz:{}};
       g[f.placa].vs.push(f);g[f.placa].tot+=parseFloat(f.peso||0);
       var fz=f.fazenda||'Nossa fazenda';g[f.placa].faz[fz]=(g[f.placa].faz[fz]||0)+parseFloat(f.peso||0);
     });
     el.innerHTML=Object.keys(g).map(pl=>{
       var x=g[pl],tf=x.tot*x.pk;
-      var fr=Object.entries(x.faz).map(([k,v])=>`<div class="pr"><span style="color:var(--text-muted)">${k}</span><span style="font-weight:600">${v.toLocaleString('pt-BR')} kg</span></div>`).join('');
-      var vr=x.vs.map(v=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border);font-size:13px;gap:8px"><span style="color:var(--text-muted)">${v.mot} — ${fd(v.data)}<br><small>${v.fazenda}</small></span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600">${parseFloat(v.peso).toLocaleString('pt-BR')} kg</span><button class="btn btn-r btn-sm" onclick="del('fretes','${v._id}')">✕</button></span></div>`).join('');
-      return `<div class="pg"><div class="ph"><span style="font-weight:700;font-size:16px">${pl}</span><span class="badge bb">${x.tot.toLocaleString('pt-BR')} kg</span></div><div class="pb"><div class="slbl">Por fazenda</div>${fr}<div class="slbl" style="margin-top:14px">Viagens</div>${vr}<hr class="dv"><div class="sr"><span>Preço por kg</span><span>R$ ${x.pk.toFixed(3)}</span></div><div class="sr pos"><span>Total do frete</span><span>${brl(tf)}</span></div></div></div>`;
+      var fr=Object.entries(x.faz).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:var(--text-muted)"><span>${k}</span><span style="font-weight:600">${v.toLocaleString('pt-BR')} kg</span></div>`).join('');
+      var vr=x.vs.map(v=>`<div class="viagem-row"><span style="color:var(--text-muted)">${v.mot} — ${fd(v.data)}<br><small>${v.talhaoNome||v.fazenda}</small></span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600">${parseFloat(v.peso).toLocaleString('pt-BR')} kg</span><button class="btn btn-r btn-sm" onclick="del('fretes','${v._id}')">✕</button></span></div>`).join('');
+      return `<div class="placa-group"><div class="placa-header"><span class="placa-name">${pl}</span><span class="badge bb">${x.tot.toLocaleString('pt-BR')} kg · ${brl(tf)}</span></div><div class="placa-body">${fr}<hr class="dv" style="margin:6px 0">${vr}</div></div>`;
     }).join('');
   }
 
+  // RELATÓRIO
+  function renderRelatorio(){
+    var el=document.getElementById('relatorioContent');
+    if(!DB.talhoes.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div>Crie talhões para ver o relatório</div>';return;}
+
+    // Relatório por talhão
+    var talhaoHTML=DB.talhoes.map(t=>{
+      var viagens=DB.frets.filter(f=>f.talhaoId===t._id);
+      var totalPeso=viagens.reduce((s,f)=>s+parseFloat(f.peso||0),0);
+      var totalFrete=totalPeso*(t.priceKg||0);
+
+      // Por placa neste talhão
+      var porPlaca={};
+      viagens.forEach(f=>{
+        if(!porPlaca[f.placa])porPlaca[f.placa]={tot:0,faz:{}};
+        porPlaca[f.placa].tot+=parseFloat(f.peso||0);
+        var fz=f.fazenda||'Nossa fazenda';
+        porPlaca[f.placa].faz[fz]=(porPlaca[f.placa].faz[fz]||0)+parseFloat(f.peso||0);
+      });
+
+      var placaRows=Object.entries(porPlaca).map(([pl,x])=>{
+        var fazRows=Object.entries(x.faz).map(([k,v])=>`<span style="font-size:11px;color:var(--text-muted)">${k}: ${v.toLocaleString('pt-BR')} kg</span>`).join(' · ');
+        return `<div class="sr"><span style="font-weight:600">${pl}</span><span>${x.tot.toLocaleString('pt-BR')} kg</span></div><div style="margin-top:-4px;margin-bottom:6px">${fazRows}</div>`;
+      }).join('');
+
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div><div style="font-weight:700;font-size:15px;color:var(--green)">📍 ${t.nome}</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${t.cultura} · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div></div>
+          <span class="badge bp">${viagens.length} viagens</span>
+        </div>
+        ${placaRows.length?'<div class="slbl">Por placa</div>'+placaRows:'<div style="color:var(--text-muted);font-size:13px">Sem viagens registradas</div>'}
+        <hr class="dv">
+        <div class="sr"><span>Peso total</span><span style="font-weight:600">${totalPeso.toLocaleString('pt-BR')} kg</span></div>
+        <div class="sr pos tot"><span>Total frete</span><span>${brl(totalFrete)}</span></div>
+      </div>`;
+    }).join('');
+
+    // Resumo geral por placa (todos os talhões)
+    var porPlacaGeral={};
+    DB.frets.forEach(f=>{
+      if(!porPlacaGeral[f.placa])porPlacaGeral[f.placa]={tot:0,totalFrete:0,talhoes:{}};
+      porPlacaGeral[f.placa].tot+=parseFloat(f.peso||0);
+      porPlacaGeral[f.placa].totalFrete+=parseFloat(f.peso||0)*(f.priceKg||0);
+      var tn=f.talhaoNome||'Sem talhão';
+      porPlacaGeral[f.placa].talhoes[tn]=(porPlacaGeral[f.placa].talhoes[tn]||0)+parseFloat(f.peso||0);
+    });
+
+    var geralHTML='';
+    if(Object.keys(porPlacaGeral).length){
+      geralHTML=`<div class="card">
+        <div class="card-title">Resumo geral por placa</div>
+        ${Object.entries(porPlacaGeral).map(([pl,x])=>`
+          <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:.5px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-weight:700;font-size:15px">${pl}</span>
+              <span class="badge bg">${x.tot.toLocaleString('pt-BR')} kg</span>
+            </div>
+            <div style="margin-top:6px">
+              ${Object.entries(x.talhoes).map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);padding:2px 0"><span>${k}</span><span>${v.toLocaleString('pt-BR')} kg</span></div>`).join('')}
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:var(--green);margin-top:6px;padding-top:6px;border-top:.5px solid var(--border)">
+              <span>Total frete</span><span>${brl(x.totalFrete)}</span>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    }
+
+    el.innerHTML='<div class="slbl">Por talhão</div>'+talhaoHTML+geralHTML;
+  }
+
+  // CUSTOS
   function setCult(c,b){
     cult=c;document.querySelectorAll('.ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');
     document.getElementById('cultTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Configuração';
@@ -561,14 +797,14 @@
   function renderCosts(){
     var el=document.getElementById('cList'),items=DB.costs.filter(c=>c.culture===cult);
     if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div>Nenhum custo para esta cultura</div>';return;}
-    var bc={};
-    items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});
+    var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});
     el.innerHTML=Object.entries(bc).map(([cat,cs])=>{
       var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);
       return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-weight:600;font-size:15px">${cat}</span><span class="badge ba">${brl(tot)}</span></div>${cs.map(c=>`<div class="cr"><span style="color:var(--text-muted);flex:1;line-height:1.3">${c.desc||c.cat}${c.safra?' ('+c.safra+')':''}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;white-space:nowrap">${brl(c.val)}</span><button class="btn btn-r btn-sm" onclick="del('costs','${c._id}')">✕</button></span></div>`).join('')}</div>`;
     }).join('');
   }
 
+  // FINANCEIRO
   function setFT(t){
     finT=t;
     document.getElementById('fRecBtn').className='tb'+(t==='receita'?' on-g':'');
@@ -602,6 +838,17 @@
     await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),col,id));
     toast('Removido ✓');
   }
+
+  // Atualiza viagens ao mudar talhão no select
+  document.addEventListener('change',function(e){
+    if(e.target.id==='vTalhao'){
+      var t=DB.talhoes.find(x=>x._id===e.target.value);
+      var info=document.getElementById('talhaoSelectInfo');
+      if(t){info.style.display='block';info.textContent='📍 Registrando viagens para: '+t.nome;}
+      else info.style.display='none';
+      renderViagens();
+    }
+  });
 </script>
 </body>
 </html>
