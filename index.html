@@ -391,9 +391,14 @@
         <input type="text" id="mNome" placeholder="Ex: João Silva">
         <label>Placa do caminhão</label>
         <input type="text" id="mPlaca" placeholder="ABC1234" style="text-transform:uppercase">
+        <label>Unidade de cobrança do frete</label>
+        <div class="tg">
+          <button class="tb on" id="mTipoKg" onclick="setMPrecoTipo('kg')">Por Kg</button>
+          <button class="tb" id="mTipoSaca" onclick="setMPrecoTipo('saca')">Por Saca (60kg)</button>
+        </div>
         <div class="row2">
           <div><label>Data início</label><input type="date" id="mInicio"></div>
-          <div><label>Preço por kg (R$)</label><input type="number" id="mPreco" placeholder="0.000" step="0.001" inputmode="decimal"></div>
+          <div><label id="mPrecoLbl">Preço por kg (R$)</label><input type="number" id="mPreco" placeholder="0.0000" step="0.0001" inputmode="decimal"></div>
         </div>
         <label>Observações</label>
         <textarea id="mObs" placeholder="Informações adicionais..." style="min-height:50px"></textarea>
@@ -533,6 +538,7 @@
   var cult='cafe', finT='receita', invCult='cafe', invSubTab=0;
   var colTab='fretes', rendCult='cafe', relTab=0;
   var cargaAberta=null;
+  var mPrecoTipo='kg';
 
   var isDark = localStorage.getItem('fz_theme') === 'dark';
   function applyTheme(){document.documentElement.setAttribute('data-theme', isDark?'dark':'light');document.getElementById('themeBtn').textContent=isDark?'☀️':'🌙';}
@@ -541,12 +547,20 @@
 
   function td(){return new Date().toISOString().split('T')[0];}
   function fd(ds){if(!ds)return '';var p=ds.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
-  function brl(v){return 'R$ '+parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-  function num(v,dec){return parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0});}
-  function pct(v){return parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';}
+  function brl(v){return 'R$ '+parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4});}
+  function num(v,dec){return parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:4});}
+  function pct(v){return parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4})+'%';}
   function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
   function uid(){return CU.uid;}
   function uc(n){return window.FB.col(window.FB.db,'users',uid(),n);}
+
+  // Preço efetivo por kg, considerando se a cobrança do perfil/carga é por kg ou por saca (60kg)
+  function precoKg(o){
+    if(!o)return 0;
+    var tipo=o.precoTipo||'kg';
+    var p=parseFloat(o.preco)||0;
+    return tipo==='saca' ? p/60 : p;
+  }
 
   function setLTab(t,b){document.querySelectorAll('.ltab').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('formIn').style.display=t==='in'?'flex':'none';document.getElementById('formUp').style.display=t==='up'?'flex':'none';document.getElementById('inErr').textContent='';document.getElementById('upErr').textContent='';}
   async function doSignIn(){var e=document.getElementById('inEmail').value.trim(),p=document.getElementById('inPass').value;if(!e||!p){document.getElementById('inErr').textContent='Preencha e-mail e senha';return;}try{await window.FB.signIn(window.FB.auth,e,p);}catch(err){document.getElementById('inErr').textContent=aerr(err.code);}}
@@ -579,16 +593,25 @@
   function setColTab(t){colTab=t;['fretes','rendimento','relatorio'].forEach(x=>document.getElementById('col-'+x).style.display=x===t?'block':'none');['colTab1','colTab2','colTab3'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',i===['fretes','rendimento','relatorio'].indexOf(t)));if(t==='relatorio')renderRelCol();}
 
   // ---- FRETES: MOTORISTAS ----
+  function setMPrecoTipo(t){
+    mPrecoTipo=t;
+    document.getElementById('mTipoKg').classList.toggle('on',t==='kg');
+    document.getElementById('mTipoSaca').classList.toggle('on',t==='saca');
+    document.getElementById('mPrecoLbl').textContent = t==='kg' ? 'Preço por kg (R$)' : 'Preço por saca (R$)';
+  }
+
   async function addMotorista(){
     var nome=document.getElementById('mNome').value.trim(),
         placa=document.getElementById('mPlaca').value.toUpperCase().trim(),
         inicio=document.getElementById('mInicio').value,
         preco=parseFloat(document.getElementById('mPreco').value)||0,
+        precoTipo=mPrecoTipo,
         obs=document.getElementById('mObs').value.trim();
     if(!nome||!placa||!inicio){toast('Preencha nome, placa e data de início');return;}
-    await window.FB.add(uc('motoristas'),{nome,placa,inicio,preco,obs,createdAt:window.FB.ts()});
+    await window.FB.add(uc('motoristas'),{nome,placa,inicio,preco,precoTipo,obs,createdAt:window.FB.ts()});
     ['mNome','mPlaca','mPreco','mObs'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('mInicio').value=td();
+    setMPrecoTipo('kg');
     toast('Perfil criado ✓');
   }
 
@@ -599,7 +622,7 @@
         etiq=document.getElementById('cgE_'+mid).value.trim();
     if(!peso||!data){toast('Preencha peso e data');return;}
     var mot=DB.motoristas.find(m=>m._id===mid);
-    await window.FB.add(uc('cargas'),{motoristaId:mid,motoristaNome:mot?mot.nome:'',placa:mot?mot.placa:'',preco:mot?mot.preco:0,peso,data,etiqueta:etiq,createdAt:window.FB.ts()});
+    await window.FB.add(uc('cargas'),{motoristaId:mid,motoristaNome:mot?mot.nome:'',placa:mot?mot.placa:'',preco:mot?mot.preco:0,precoTipo:mot?(mot.precoTipo||'kg'):'kg',peso,data,etiqueta:etiq,createdAt:window.FB.ts()});
     cargaAberta=null;
     toast('Carga registrada ✓');
   }
@@ -610,14 +633,15 @@
     el.innerHTML=DB.motoristas.map(m=>{
       var cargas=DB.cargas.filter(c=>c.motoristaId===m._id);
       var totalPeso=cargas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
-      var totalFrete=cargas.reduce((s,c)=>s+parseFloat(c.peso||0)*(c.preco||m.preco||0),0);
+      var totalFrete=cargas.reduce((s,c)=>s+parseFloat(c.peso||0)*precoKg(c.preco!==undefined?c:m),0);
       var formAberta=cargaAberta===m._id;
+      var unidLbl = (m.precoTipo==='saca') ? 'saca' : 'kg';
       return `<div class="driver-card">
         <div class="driver-head">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
             <div>
               <div class="driver-name">👤 ${m.nome}<span class="driver-placa">${m.placa}</span></div>
-              <div class="driver-meta">Início: ${fd(m.inicio)} · ${brl(m.preco)}/kg</div>
+              <div class="driver-meta">Início: ${fd(m.inicio)} · ${brl(m.preco)}/${unidLbl}</div>
               ${m.obs?`<div class="driver-meta">${m.obs}</div>`:''}
             </div>
             <span class="badge b-neutral">${cargas.length} cargas</span>
@@ -626,7 +650,7 @@
         <div class="driver-body">
           <div class="talhao-stats">
             <div class="tstat"><div class="tstat-lbl">Peso total</div><div class="tstat-val">${num(totalPeso)} kg</div></div>
-            <div class="tstat"><div class="tstat-lbl">Sacas</div><div class="tstat-val">${num(totalPeso/60,1)}</div></div>
+            <div class="tstat"><div class="tstat-lbl">Sacas</div><div class="tstat-val">${num(totalPeso/60)}</div></div>
             <div class="tstat"><div class="tstat-lbl">Frete total</div><div class="tstat-val" style="color:var(--accent)">${brl(totalFrete)}</div></div>
           </div>
           ${cargas.length?'<div class="slbl">Cargas</div>'+cargas.map(c=>`<div class="carga-row"><div class="carga-info">${c.etiqueta?`<span class="carga-etiq">${c.etiqueta}</span>`:''}<span style="font-weight:600">${fd(c.data)}</span></div><span style="display:flex;align-items:center;gap:8px;font-weight:600">${num(c.peso)} kg <button class="btn btn-ghost-red btn-sm" onclick="del('cargas','${c._id}')">—</button></span></div>`).join(''):''}
@@ -679,13 +703,13 @@
             <div class="talhao-meta">${r.ha} ha · ${fd(r.inicio)}${r.fim?' → '+fd(r.fim):''}</div>
             ${r.obs?`<div class="driver-meta">${r.obs}</div>`:''}
           </div>
-          <span class="badge b-blue">${num(r.peso/60,1)} sacas</span>
+          <span class="badge b-blue">${num(r.peso/60)} sacas</span>
         </div>
         <div class="talhao-body">
           <div class="talhao-stats">
             <div class="tstat"><div class="tstat-lbl">Peso líquido</div><div class="tstat-val">${num(r.peso)} kg</div></div>
-            <div class="tstat"><div class="tstat-lbl">Sacas</div><div class="tstat-val">${num(r.peso/60,1)}</div></div>
-            <div class="tstat"><div class="tstat-lbl">Média sc/ha</div><div class="tstat-val" style="color:var(--blue)">${num(media,2)}</div></div>
+            <div class="tstat"><div class="tstat-lbl">Sacas</div><div class="tstat-val">${num(r.peso/60)}</div></div>
+            <div class="tstat"><div class="tstat-lbl">Média sc/ha</div><div class="tstat-val" style="color:var(--blue)">${num(media)}</div></div>
           </div>
           <button class="btn btn-ghost-red btn-sm" onclick="del('rendimentos','${r._id}')">Remover</button>
         </div>
@@ -709,21 +733,22 @@
     var totalGeralPeso=0,totalGeralFrete=0;
     var html=DB.motoristas.map(m=>{
       var cargas=DB.cargas.filter(c=>c.motoristaId===m._id);
+      var unidLbl=(m.precoTipo==='saca')?'saca':'kg';
       var tp=cargas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
-      var tf=cargas.reduce((s,c)=>s+parseFloat(c.peso||0)*(c.preco||m.preco||0),0);
+      var tf=cargas.reduce((s,c)=>s+parseFloat(c.peso||0)*precoKg(c),0);
       totalGeralPeso+=tp;totalGeralFrete+=tf;
       return `<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px">
           <div>
             <div style="font-weight:700;font-size:15px;color:var(--text-1)">👤 ${m.nome}<span class="driver-placa" style="margin-left:6px">${m.placa}</span></div>
-            <div style="font-size:12px;color:var(--text-3);margin-top:3px">Início: ${fd(m.inicio)} · ${brl(m.preco)}/kg</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:3px">Início: ${fd(m.inicio)} · ${brl(m.preco)}/${unidLbl}</div>
           </div>
           <span class="badge b-neutral">${cargas.length} cargas</span>
         </div>
-        ${cargas.length?`<div class="slbl">Cargas</div>${cargas.map(c=>`<div class="sr"><span class="sr-label">${c.etiqueta?'['+c.etiqueta+'] ':''}${fd(c.data)}</span><span class="sr-val">${num(c.peso)} kg · ${brl(parseFloat(c.peso||0)*(c.preco||m.preco||0))}</span></div>`).join('')}`:''}
+        ${cargas.length?`<div class="slbl">Cargas</div>${cargas.map(c=>`<div class="sr"><span class="sr-label">${c.etiqueta?'['+c.etiqueta+'] ':''}${fd(c.data)}</span><span class="sr-val">${num(c.peso)} kg · ${brl(parseFloat(c.peso||0)*precoKg(c))}</span></div>`).join('')}`:''}
         <hr class="dv">
         <div class="sr"><span class="sr-label">Peso total transportado</span><span class="sr-val">${num(tp)} kg</span></div>
-        <div class="sr"><span class="sr-label">Sacas transportadas</span><span class="sr-val">${num(tp/60,1)} sacas</span></div>
+        <div class="sr"><span class="sr-label">Sacas transportadas</span><span class="sr-val">${num(tp/60)} sacas</span></div>
         <div class="sr tot pos"><span>Total do frete</span><span>${brl(tf)}</span></div>
       </div>`;
     }).join('');
@@ -732,7 +757,7 @@
       <div class="sr"><span class="sr-label">Total de motoristas</span><span class="sr-val">${DB.motoristas.length}</span></div>
       <div class="sr"><span class="sr-label">Total de cargas</span><span class="sr-val">${DB.cargas.length}</span></div>
       <div class="sr"><span class="sr-label">Peso bruto transportado</span><span class="sr-val">${num(totalGeralPeso)} kg</span></div>
-      <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totalGeralPeso/60,1)} sacas</span></div>
+      <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totalGeralPeso/60)} sacas</span></div>
       <div class="sr tot pos"><span>Total geral de fretes</span><span>${brl(totalGeralFrete)}</span></div>
     </div>`;
     return html;
@@ -758,24 +783,24 @@
         ${items.map(r=>{
           var m=r.ha?r.peso/60/r.ha:0;
           return `<div style="padding:8px 0;border-bottom:1px solid var(--border)">
-            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${r.nome}</span><span>${num(r.peso)} kg · ${num(m,2)} sc/ha</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${r.nome}</span><span>${num(r.peso)} kg · ${num(m)} sc/ha</span></div>
             <div style="font-size:11px;color:var(--text-3);margin-top:2px">${r.ha} ha · ${fd(r.inicio)}${r.fim?' → '+fd(r.fim):''}</div>
           </div>`;
         }).join('')}
         <hr class="dv">
-        <div class="sr"><span class="sr-label">Área total</span><span class="sr-val">${num(totArea,1)} ha</span></div>
+        <div class="sr"><span class="sr-label">Área total</span><span class="sr-val">${num(totArea)} ha</span></div>
         <div class="sr"><span class="sr-label">Peso líquido total</span><span class="sr-val">${num(totPeso)} kg</span></div>
-        <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totPeso/60,1)} sacas</span></div>
-        <div class="sr tot pos"><span>Média da cultura</span><span>${num(media,2)} sc/ha</span></div>
+        <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totPeso/60)} sacas</span></div>
+        <div class="sr tot pos"><span>Média da cultura</span><span>${num(media)} sc/ha</span></div>
       </div>`;
     }).filter(x=>x).join('');
     var mediaG=totAreaG?totPesoG/60/totAreaG:0;
     html+=`<div class="card" style="border-color:var(--border-strong)">
       <div class="card-title">Resumo Geral — Rendimento</div>
-      <div class="sr"><span class="sr-label">Área total (todas culturas)</span><span class="sr-val">${num(totAreaG,1)} ha</span></div>
+      <div class="sr"><span class="sr-label">Área total (todas culturas)</span><span class="sr-val">${num(totAreaG)} ha</span></div>
       <div class="sr"><span class="sr-label">Peso líquido total</span><span class="sr-val">${num(totPesoG)} kg</span></div>
-      <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totPesoG/60,1)} sacas</span></div>
-      <div class="sr tot pos"><span>Média geral (peso líquido)</span><span>${num(mediaG,2)} sc/ha</span></div>
+      <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totPesoG/60)} sacas</span></div>
+      <div class="sr tot pos"><span>Média geral (peso líquido)</span><span>${num(mediaG)} sc/ha</span></div>
     </div>`;
     return html;
   }
@@ -783,7 +808,7 @@
   function buildRelConsolidado(){
     if(!DB.motoristas.length&&!DB.rendimentos.length){return '<div class="empty"><div class="empty-icon">📊</div><p>Sem dados para consolidar</p></div>';}
     var totalPesoFretes=DB.cargas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
-    var totalFrete=DB.cargas.reduce((s,c)=>{var m=DB.motoristas.find(x=>x._id===c.motoristaId);return s+parseFloat(c.peso||0)*(c.preco||(m?m.preco:0)||0);},0);
+    var totalFrete=DB.cargas.reduce((s,c)=>{return s+parseFloat(c.peso||0)*precoKg(c);},0);
     var totalPesoLiq=DB.rendimentos.reduce((s,r)=>s+parseFloat(r.peso||0),0);
     var totalAreaLiq=DB.rendimentos.reduce((s,r)=>s+parseFloat(r.ha||0),0);
     var mediaLiq=totalAreaLiq?totalPesoLiq/60/totalAreaLiq:0;
@@ -795,16 +820,16 @@
       <div class="sr"><span class="sr-label">Motoristas ativos</span><span class="sr-val">${DB.motoristas.length}</span></div>
       <div class="sr"><span class="sr-label">Cargas transportadas</span><span class="sr-val">${DB.cargas.length}</span></div>
       <div class="sr"><span class="sr-label">Peso bruto total</span><span class="sr-val">${num(totalPesoFretes)} kg</span></div>
-      <div class="sr"><span class="sr-label">Sacas brutas</span><span class="sr-val">${num(totalPesoFretes/60,1)} sacas</span></div>
+      <div class="sr"><span class="sr-label">Sacas brutas</span><span class="sr-val">${num(totalPesoFretes/60)} sacas</span></div>
       <div class="sr tot pos"><span>Total pago em fretes</span><span>${brl(totalFrete)}</span></div>
     </div>
     <div class="card">
       <div class="card-title">Rendimento (peso líquido)</div>
       <div class="sr"><span class="sr-label">Registros</span><span class="sr-val">${DB.rendimentos.length}</span></div>
-      <div class="sr"><span class="sr-label">Área total</span><span class="sr-val">${num(totalAreaLiq,1)} ha</span></div>
+      <div class="sr"><span class="sr-label">Área total</span><span class="sr-val">${num(totalAreaLiq)} ha</span></div>
       <div class="sr"><span class="sr-label">Peso líquido total</span><span class="sr-val">${num(totalPesoLiq)} kg</span></div>
-      <div class="sr"><span class="sr-label">Sacas líquidas</span><span class="sr-val">${num(totalPesoLiq/60,1)} sacas</span></div>
-      <div class="sr tot pos"><span>Média geral</span><span>${num(mediaLiq,2)} sc/ha</span></div>
+      <div class="sr"><span class="sr-label">Sacas líquidas</span><span class="sr-val">${num(totalPesoLiq/60)} sacas</span></div>
+      <div class="sr tot pos"><span>Média geral</span><span>${num(mediaLiq)} sc/ha</span></div>
     </div>
     ${totalPesoFretes>0&&totalPesoLiq>0?`<div class="card" style="border-color:var(--border-strong)">
       <div class="card-title">Comparativo Bruto vs. Líquido</div>
@@ -820,8 +845,8 @@
     </div>`:''}
     <div class="card" style="background:var(--accent-dim);border-color:rgba(201,168,76,0.25)">
       <div class="card-title" style="color:var(--accent-hover)">Resumo Geral da Colheita</div>
-      <div class="sr"><span class="sr-label">Total de sacas brutas</span><span class="sr-val">${num(totalPesoFretes/60,1)}</span></div>
-      <div class="sr"><span class="sr-label">Total de sacas líquidas</span><span class="sr-val">${num(totalPesoLiq/60,1)}</span></div>
+      <div class="sr"><span class="sr-label">Total de sacas brutas</span><span class="sr-val">${num(totalPesoFretes/60)}</span></div>
+      <div class="sr"><span class="sr-label">Total de sacas líquidas</span><span class="sr-val">${num(totalPesoLiq/60)}</span></div>
       <div class="sr tot"><span>Custo total do frete</span><span>${brl(totalFrete)}</span></div>
     </div>`;
   }
@@ -847,7 +872,7 @@
   function renderInvCosts(){var el=document.getElementById('invCostList');var items=DB.invCosts.filter(c=>c.culture===invCult);if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div><p>Nenhum custo adicionado</p></div>';return;}var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});el.innerHTML=Object.entries(bc).map(([cat,cs])=>{var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:600;color:var(--text-1)">${cat}</span><span class="badge b-accent">${brl(tot)}</span></div>${cs.map(c=>{var dep=c.depAnos?`<br><span style="font-size:11px;color:var(--text-3)">Dep: ${brl((c.val-(c.depResidual||0))/(c.depAnos||1))}/ano · ${c.depAnos} anos</span>`:'';return `<div class="cr"><span style="color:var(--text-3);flex:1;font-size:13px">${c.desc||c.cat} — Ano ${c.ano}${dep}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600">${brl(c.val)}</span><button class="btn btn-ghost-red btn-sm" onclick="del('invCosts','${c._id}')">—</button></span></div>`;}).join('')}</div>`;}).join('');}
   function calcFin(pv,ta,pr,s){if(!pv||!ta||!pr)return null;var i=ta/100,sd=pv,am=pv/pr,tj=0,tp=0,ps=[];for(var a=1;a<=pr;a++){var j=sd*i,pmt=s==='SAC'?am+j:pv*i*Math.pow(1+i,pr)/(Math.pow(1+i,pr)-1),am2=s==='SAC'?am:pmt-j;tj+=j;tp+=pmt;ps.push({ano:a,pmt,juros:j,saldo:Math.max(0,sd-am2)});sd=Math.max(0,sd-am2);}return{parcelas:ps,totalJuros:tj,totalPago:tp,sistema:s};}
   function renderInvFin(){var d=DB.invData[invCult]||{};var el=document.getElementById('invFinResumoContent');if(!d.finVal||!d.finTaxa||!d.finPrazo){el.innerHTML='<p style="font-size:13px;color:var(--text-3)">Preencha os dados acima para ver o resumo.</p>';return;}var f=calcFin(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC');if(!f)return;el.innerHTML=`<div class="slbl">Resumo — ${f.sistema}</div><div class="sr"><span class="sr-label">Valor financiado</span><span class="sr-val">${brl(d.finVal)}</span></div><div class="sr"><span class="sr-label">Taxa de juros</span><span class="sr-val">${pct(d.finTaxa)} a.a.</span></div><div class="sr neg"><span class="sr-label">Total de juros</span><span>${brl(f.totalJuros)}</span></div><div class="sr tot"><span>Total a pagar</span><span>${brl(f.totalPago)}</span></div><div class="slbl" style="margin-top:16px">Pagamento por ano</div>${f.parcelas.map(p=>`<div class="sr"><span class="sr-label">Ano ${p.ano}</span><span style="font-size:13px"><span class="sr-val">${brl(p.pmt)}</span> <span style="color:var(--text-3)">(juros: ${brl(p.juros)})</span></span></div>`).join('')}`;}
-  function renderInvRel(){var el=document.getElementById('invRelContent');var d=DB.invData[invCult]||{};var items=DB.invCosts.filter(c=>c.culture===invCult);if(!d.ha&&!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><p>Configure o projeto e adicione custos</p></div>';return;}var ha=parseFloat(d.ha)||0,prod=parseFloat(d.prod)||0,saca=parseFloat(d.saca)||0,anos=parseInt(d.anos)||1,selic=parseFloat(d.selic)||0;var ti=items.reduce((s,c)=>s+parseFloat(c.val||0),0);var td2=items.filter(c=>c.depAnos).reduce((s,c)=>s+(c.val-(c.depResidual||0))/(c.depAnos||1),0);var fin=d.finVal&&d.finTaxa&&d.finPrazo?calcFin(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC'):null;var tj=fin?fin.totalJuros:0;var ct=ti+tj;var ra=ha*prod*saca;var rt=ra*anos;var cph=ha>0?ti/ha:0;var rph=ha>0?ra/ha:0;var roi=ct>0?(rt-ct)/ct*100:0;var pb=ra>0?ti/ra:null;var rs=selic>0?ti*Math.pow(1+selic/100,anos)-ti:null;var rp=rt-ct;var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});var catR=Object.entries(bc).map(([cat,cs])=>`<div class="sr"><span class="sr-label">${cat}</span><span class="sr-val">${brl(cs.reduce((s,c)=>s+parseFloat(c.val||0),0))}</span></div>`).join('');el.innerHTML=`<div class="card"><div class="card-title">Dados do projeto</div><div class="sr"><span class="sr-label">Área</span><span class="sr-val">${ha} ha</span></div><div class="sr"><span class="sr-label">Produtividade</span><span class="sr-val">${prod} sacas/ha</span></div><div class="sr"><span class="sr-label">Preço da saca</span><span class="sr-val">${brl(saca)}</span></div><div class="sr"><span class="sr-label">Horizonte</span><span class="sr-val">${anos} anos</span></div></div><div class="card"><div class="card-title">Custos</div>${catR||'<p style="font-size:13px;color:var(--text-3)">Sem custos</p>'}<hr class="dv"><div class="sr"><span class="sr-label">Investimento total</span><span class="sr-val">${brl(ti)}</span></div><div class="sr"><span class="sr-label">Custo por hectare</span><span class="sr-val">${brl(cph)}</span></div>${td2>0?`<div class="sr warn"><span>Depreciação anual</span><span>${brl(td2)}/ano</span></div>`:''}${fin?`<div class="sr neg"><span class="sr-label">Juros do financiamento</span><span>${brl(tj)}</span></div><div class="sr neg tot"><span>Custo total</span><span>${brl(ct)}</span></div>`:''}</div><div class="card"><div class="card-title">Projeção de receita</div><div class="sr"><span class="sr-label">Receita anual</span><span class="sr-val">${brl(ra)}</span></div><div class="sr"><span class="sr-label">Receita por ha/ano</span><span class="sr-val">${brl(rph)}</span></div><div class="sr pos"><span class="sr-label">Receita total (${anos} anos)</span><span>${brl(rt)}</span></div>${pb!==null?`<div class="sr"><span class="sr-label">Payback estimado</span><span class="sr-val">${pb.toFixed(1)} anos</span></div>`:''}<hr class="dv"><div class="sr ${rp>=0?'pos':'neg'} tot"><span>Resultado líquido</span><span>${brl(rp)}</span></div><div class="sr"><span class="sr-label">ROI</span><span style="font-weight:700;font-size:16px;color:${roi>=0?'var(--green)':'var(--red)'}">${pct(roi)}</span></div></div>${selic>0&&rs!==null?`<div class="card"><div class="card-title">vs. Selic ${pct(selic)} a.a.</div><div class="compare-row"><div><div class="compare-label">Retorno do projeto</div><div class="compare-val" style="color:${rp>=0?'var(--green)':'var(--red)'}">${brl(rp)}</div></div></div><div class="compare-row"><div><div class="compare-label">Rendimento Selic (${anos} anos)</div><div class="compare-val" style="color:var(--blue)">${brl(rs)}</div></div></div><hr class="dv"><div class="sr ${rp>=rs?'pos':'neg'} tot"><span>${rp>=rs?'Projeto supera a Selic':'Selic supera o projeto'}</span><span>${brl(Math.abs(rp-rs))}</span></div></div>`:''}${fin?`<div class="card"><div class="card-title">Cronograma do financiamento</div>${fin.parcelas.map(p=>`<div class="sr"><span class="sr-label">Ano ${p.ano}</span><span style="font-size:13px"><span class="sr-val">${brl(p.pmt)}</span> <span style="color:var(--text-3)">(juros: ${brl(p.juros)} · saldo: ${brl(p.saldo)})</span></span></div>`).join('')}</div>`:''}`;}
+  function renderInvRel(){var el=document.getElementById('invRelContent');var d=DB.invData[invCult]||{};var items=DB.invCosts.filter(c=>c.culture===invCult);if(!d.ha&&!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><p>Configure o projeto e adicione custos</p></div>';return;}var ha=parseFloat(d.ha)||0,prod=parseFloat(d.prod)||0,saca=parseFloat(d.saca)||0,anos=parseInt(d.anos)||1,selic=parseFloat(d.selic)||0;var ti=items.reduce((s,c)=>s+parseFloat(c.val||0),0);var td2=items.filter(c=>c.depAnos).reduce((s,c)=>s+(c.val-(c.depResidual||0))/(c.depAnos||1),0);var fin=d.finVal&&d.finTaxa&&d.finPrazo?calcFin(d.finVal,d.finTaxa,d.finPrazo,d.finSistema||'SAC'):null;var tj=fin?fin.totalJuros:0;var ct=ti+tj;var ra=ha*prod*saca;var rt=ra*anos;var cph=ha>0?ti/ha:0;var rph=ha>0?ra/ha:0;var roi=ct>0?(rt-ct)/ct*100:0;var pb=ra>0?ti/ra:null;var rs=selic>0?ti*Math.pow(1+selic/100,anos)-ti:null;var rp=rt-ct;var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});var catR=Object.entries(bc).map(([cat,cs])=>`<div class="sr"><span class="sr-label">${cat}</span><span class="sr-val">${brl(cs.reduce((s,c)=>s+parseFloat(c.val||0),0))}</span></div>`).join('');el.innerHTML=`<div class="card"><div class="card-title">Dados do projeto</div><div class="sr"><span class="sr-label">Área</span><span class="sr-val">${ha} ha</span></div><div class="sr"><span class="sr-label">Produtividade</span><span class="sr-val">${prod} sacas/ha</span></div><div class="sr"><span class="sr-label">Preço da saca</span><span class="sr-val">${brl(saca)}</span></div><div class="sr"><span class="sr-label">Horizonte</span><span class="sr-val">${anos} anos</span></div></div><div class="card"><div class="card-title">Custos</div>${catR||'<p style="font-size:13px;color:var(--text-3)">Sem custos</p>'}<hr class="dv"><div class="sr"><span class="sr-label">Investimento total</span><span class="sr-val">${brl(ti)}</span></div><div class="sr"><span class="sr-label">Custo por hectare</span><span class="sr-val">${brl(cph)}</span></div>${td2>0?`<div class="sr warn"><span>Depreciação anual</span><span>${brl(td2)}/ano</span></div>`:''}${fin?`<div class="sr neg"><span class="sr-label">Juros do financiamento</span><span>${brl(tj)}</span></div><div class="sr neg tot"><span>Custo total</span><span>${brl(ct)}</span></div>`:''}</div><div class="card"><div class="card-title">Projeção de receita</div><div class="sr"><span class="sr-label">Receita anual</span><span class="sr-val">${brl(ra)}</span></div><div class="sr"><span class="sr-label">Receita por ha/ano</span><span class="sr-val">${brl(rph)}</span></div><div class="sr pos"><span class="sr-label">Receita total (${anos} anos)</span><span>${brl(rt)}</span></div>${pb!==null?`<div class="sr"><span class="sr-label">Payback estimado</span><span class="sr-val">${num(pb)} anos</span></div>`:''}<hr class="dv"><div class="sr ${rp>=0?'pos':'neg'} tot"><span>Resultado líquido</span><span>${brl(rp)}</span></div><div class="sr"><span class="sr-label">ROI</span><span style="font-weight:700;font-size:16px;color:${roi>=0?'var(--green)':'var(--red)'}">${pct(roi)}</span></div></div>${selic>0&&rs!==null?`<div class="card"><div class="card-title">vs. Selic ${pct(selic)} a.a.</div><div class="compare-row"><div><div class="compare-label">Retorno do projeto</div><div class="compare-val" style="color:${rp>=0?'var(--green)':'var(--red)'}">${brl(rp)}</div></div></div><div class="compare-row"><div><div class="compare-label">Rendimento Selic (${anos} anos)</div><div class="compare-val" style="color:var(--blue)">${brl(rs)}</div></div></div><hr class="dv"><div class="sr ${rp>=rs?'pos':'neg'} tot"><span>${rp>=rs?'Projeto supera a Selic':'Selic supera o projeto'}</span><span>${brl(Math.abs(rp-rs))}</span></div></div>`:''}${fin?`<div class="card"><div class="card-title">Cronograma do financiamento</div>${fin.parcelas.map(p=>`<div class="sr"><span class="sr-label">Ano ${p.ano}</span><span style="font-size:13px"><span class="sr-val">${brl(p.pmt)}</span> <span style="color:var(--text-3)">(juros: ${brl(p.juros)} · saldo: ${brl(p.saldo)})</span></span></div>`).join('')}</div>`:''}`;}
   function gerarPDFInv(){var c=document.getElementById('invRelContent').innerHTML;var win=window.open('','_blank');win.document.write(pdfTpl('Fazenda Manager — Análise de Investimento',c));win.document.close();}
 
   // CALENDÁRIO
@@ -866,7 +891,7 @@
   function setCult(c,b){cult=c;document.querySelectorAll('#pg-cust .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('cultTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Configuração';loadCultConf();renderCosts();updCultSum();}
   function loadCultConf(){var cd=DB.cd[cult]||{};document.getElementById('cHa').value=cd.ha||'';document.getElementById('cProd').value=cd.prod||'';document.getElementById('cSaca').value=cd.sacaPrice||'';}
   async function saveCultConf(){var ha=parseFloat(document.getElementById('cHa').value)||0,prod=parseFloat(document.getElementById('cProd').value)||0,sacaPrice=parseFloat(document.getElementById('cSaca').value)||0;DB.cd[cult]={ha,prod,sacaPrice};await window.FB.set(window.FB.ref(window.FB.db,'users',uid(),'cultdata',cult),{ha,prod,sacaPrice},{merge:true});updCultSum();}
-  function updCultSum(){var cd=DB.cd[cult]||{},ha=parseFloat(cd.ha)||0,prod=parseFloat(cd.prod)||0,sp=parseFloat(cd.sacaPrice)||0;var cs=DB.costs.filter(c=>c.culture===cult),tc=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);var ts=ha*prod,tr=ts*sp,lu=tr-tc,card=document.getElementById('cultSum');if(!ha&&!sp){card.style.display='none';return;}card.style.display='block';document.getElementById('cultSumC').innerHTML=`<div class="sr"><span class="sr-label">Área cultivada</span><span class="sr-val">${ha.toFixed(1)} ha</span></div><div class="sr"><span class="sr-label">Produção estimada</span><span class="sr-val">${num(ts,0)} sacas</span></div><div class="sr"><span class="sr-label">Preço por saca</span><span class="sr-val">${brl(sp)}</span></div><hr class="dv"><div class="sr neg"><span class="sr-label">Total de custos</span><span>${brl(tc)}</span></div><div class="sr"><span class="sr-label">Custo por hectare</span><span class="sr-val">${brl(ha>0?tc/ha:0)}</span></div><hr class="dv"><div class="sr pos"><span class="sr-label">Receita estimada</span><span>${brl(tr)}</span></div><div class="sr pos"><span class="sr-label">Receita em sacas</span><span>${num(ts,0)} sacas</span></div><hr class="dv"><div class="sr tot ${lu>=0?'pos':'neg'}"><span>Resultado estimado</span><span>${brl(lu)}</span></div>`;}
+  function updCultSum(){var cd=DB.cd[cult]||{},ha=parseFloat(cd.ha)||0,prod=parseFloat(cd.prod)||0,sp=parseFloat(cd.sacaPrice)||0;var cs=DB.costs.filter(c=>c.culture===cult),tc=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);var ts=ha*prod,tr=ts*sp,lu=tr-tc,card=document.getElementById('cultSum');if(!ha&&!sp){card.style.display='none';return;}card.style.display='block';document.getElementById('cultSumC').innerHTML=`<div class="sr"><span class="sr-label">Área cultivada</span><span class="sr-val">${num(ha)} ha</span></div><div class="sr"><span class="sr-label">Produção estimada</span><span class="sr-val">${num(ts)} sacas</span></div><div class="sr"><span class="sr-label">Preço por saca</span><span class="sr-val">${brl(sp)}</span></div><hr class="dv"><div class="sr neg"><span class="sr-label">Total de custos</span><span>${brl(tc)}</span></div><div class="sr"><span class="sr-label">Custo por hectare</span><span class="sr-val">${brl(ha>0?tc/ha:0)}</span></div><hr class="dv"><div class="sr pos"><span class="sr-label">Receita estimada</span><span>${brl(tr)}</span></div><div class="sr pos"><span class="sr-label">Receita em sacas</span><span>${num(ts)} sacas</span></div><hr class="dv"><div class="sr tot ${lu>=0?'pos':'neg'}"><span>Resultado estimado</span><span>${brl(lu)}</span></div>`;}
   async function addCost(){var cat=document.getElementById('cCat').value,desc=document.getElementById('cDesc').value.trim(),val=parseFloat(document.getElementById('cVal').value)||0,safra=document.getElementById('cSafra').value.trim();if(!val){toast('Informe o valor');return;}await window.FB.add(uc('costs'),{culture:cult,cat,desc,val,safra,createdAt:window.FB.ts()});document.getElementById('cVal').value='';document.getElementById('cDesc').value='';toast('Custo adicionado ✓');}
   function renderCosts(){var el=document.getElementById('cList'),items=DB.costs.filter(c=>c.culture===cult);if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">💸</div><p>Nenhum custo para esta cultura</p></div>';return;}var bc={};items.forEach(c=>{if(!bc[c.cat])bc[c.cat]=[];bc[c.cat].push(c);});el.innerHTML=Object.entries(bc).map(([cat,cs])=>{var tot=cs.reduce((s,c)=>s+parseFloat(c.val||0),0);return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:600;color:var(--text-1)">${cat}</span><span class="badge b-accent">${brl(tot)}</span></div>${cs.map(c=>`<div class="cr"><span style="color:var(--text-3);flex:1;font-size:13px">${c.desc||c.cat}${c.safra?' ('+c.safra+')':''}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-weight:600">${brl(c.val)}</span><button class="btn btn-ghost-red btn-sm" onclick="del('costs','${c._id}')">—</button></span></div>`).join('')}</div>`;}).join('');}
 
