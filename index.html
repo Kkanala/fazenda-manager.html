@@ -756,10 +756,12 @@
   }
 
   function buildRelFretes(){
-    if(!DB.motoristas.length&&!DB.cargas.length){return '<div class="empty"><div class="empty-icon">🚛</div><p>Sem dados de fretes</p></div>';}
+    var motoristaIds=DB.motoristas.map(m=>m._id);
+    var cargasValidas=DB.cargas.filter(c=>motoristaIds.includes(c.motoristaId));
+    if(!DB.motoristas.length&&!cargasValidas.length){return '<div class="empty"><div class="empty-icon">🚛</div><p>Sem dados de fretes</p></div>';}
     var totalGeralPeso=0,totalGeralFrete=0;
     var html=DB.motoristas.map(m=>{
-      var cargas=DB.cargas.filter(c=>c.motoristaId===m._id);
+      var cargas=cargasValidas.filter(c=>c.motoristaId===m._id);
       var unidLbl=(m.precoTipo==='saca')?'saca':'kg';
       var tp=cargas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
       var tf=cargas.reduce((s,c)=>s+parseFloat(c.peso||0)*precoKg(c),0);
@@ -782,7 +784,7 @@
     html+=`<div class="card" style="border-color:var(--border-strong)">
       <div class="card-title">Resumo Geral — Fretes</div>
       <div class="sr"><span class="sr-label">Total de motoristas</span><span class="sr-val">${DB.motoristas.length}</span></div>
-      <div class="sr"><span class="sr-label">Total de cargas</span><span class="sr-val">${DB.cargas.length}</span></div>
+      <div class="sr"><span class="sr-label">Total de cargas</span><span class="sr-val">${cargasValidas.length}</span></div>
       <div class="sr"><span class="sr-label">Peso bruto transportado</span><span class="sr-val">${num(totalGeralPeso)} kg</span></div>
       <div class="sr"><span class="sr-label">Total em sacas</span><span class="sr-val">${num(totalGeralPeso/60)} sacas</span></div>
       <div class="sr tot pos"><span>Total geral de fretes</span><span>${brl(totalGeralFrete)}</span></div>
@@ -836,9 +838,13 @@
 
   function buildRelConsolidado(){
     if(!DB.motoristas.length&&!DB.talhoes.length){return '<div class="empty"><div class="empty-icon">📊</div><p>Sem dados para consolidar</p></div>';}
-    var totalPesoFretes=DB.cargas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
-    var totalFrete=DB.cargas.reduce((s,c)=>{return s+parseFloat(c.peso||0)*precoKg(c);},0);
-    var totalPesoLiq=DB.talhaoNotas.reduce((s,n)=>s+parseFloat(n.peso||0),0);
+    var motoristaIds=DB.motoristas.map(m=>m._id);
+    var cargasValidas=DB.cargas.filter(c=>motoristaIds.includes(c.motoristaId));
+    var talhaoIds=DB.talhoes.map(t=>t._id);
+    var notasValidas=DB.talhaoNotas.filter(n=>talhaoIds.includes(n.talhaoId));
+    var totalPesoFretes=cargasValidas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
+    var totalFrete=cargasValidas.reduce((s,c)=>{return s+parseFloat(c.peso||0)*precoKg(c);},0);
+    var totalPesoLiq=notasValidas.reduce((s,n)=>s+parseFloat(n.peso||0),0);
     var totalAreaLiq=DB.talhoes.reduce((s,t)=>s+parseFloat(t.ha||0),0);
     var mediaLiq=totalAreaLiq?totalPesoLiq/60/totalAreaLiq:0;
     var quebra=totalPesoFretes-totalPesoLiq;
@@ -847,7 +853,7 @@
     return `<div class="card">
       <div class="card-title">Fretes (peso bruto)</div>
       <div class="sr"><span class="sr-label">Motoristas ativos</span><span class="sr-val">${DB.motoristas.length}</span></div>
-      <div class="sr"><span class="sr-label">Cargas transportadas</span><span class="sr-val">${DB.cargas.length}</span></div>
+      <div class="sr"><span class="sr-label">Cargas transportadas</span><span class="sr-val">${cargasValidas.length}</span></div>
       <div class="sr"><span class="sr-label">Peso bruto total</span><span class="sr-val">${num(totalPesoFretes)} kg</span></div>
       <div class="sr"><span class="sr-label">Sacas brutas</span><span class="sr-val">${num(totalPesoFretes/60)} sacas</span></div>
       <div class="sr tot pos"><span>Total pago em fretes</span><span>${brl(totalFrete)}</span></div>
@@ -930,7 +936,23 @@
   function updFinStats(){var r=DB.fins.filter(f=>f.type==='receita').reduce((s,f)=>s+parseFloat(f.val||0),0);var d=DB.fins.filter(f=>f.type==='despesa').reduce((s,f)=>s+parseFloat(f.val||0),0);var sl=r-d;document.getElementById('sRec').textContent=brl(r);document.getElementById('sDesp').textContent=brl(d);document.getElementById('sSaldo').textContent=brl(sl);document.getElementById('sSaldo').style.color=sl>=0?'var(--green)':'var(--red)';document.getElementById('sAtiv').textContent=Object.keys(DB.invData).filter(k=>DB.invData[k]&&DB.invData[k].nome).length;}
   function renderFin(){var el=document.getElementById('fList');updFinStats();if(!DB.fins.length){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div><p>Nenhuma movimentação</p></div>';return;}el.innerHTML=DB.fins.map(f=>`<div class="item"><div class="item-head"><span class="item-title">${f.desc}</span><span class="badge ${f.type==='receita'?'b-green':'b-red'}">${f.type==='receita'?'+':'-'} ${brl(f.val)}</span></div><div class="item-meta">${f.cat} — ${fd(f.date)}</div><div class="item-actions"><button class="btn btn-ghost-red btn-sm" onclick="del('fins','${f._id}')">Remover</button></div></div>`).join('');}
 
-  async function del(col,id){if(!confirm('Remover este item?'))return;await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),col,id));toast('Removido ✓');}
+  async function del(col,id){
+    if(!confirm('Remover este item?'))return;
+    if(col==='motoristas'){
+      var cargasDoMotorista=DB.cargas.filter(c=>c.motoristaId===id);
+      for(var i=0;i<cargasDoMotorista.length;i++){
+        await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),'cargas',cargasDoMotorista[i]._id));
+      }
+    }
+    if(col==='talhoes'){
+      var notasDoTalhao=DB.talhaoNotas.filter(n=>n.talhaoId===id);
+      for(var i=0;i<notasDoTalhao.length;i++){
+        await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),'talhaoNotas',notasDoTalhao[i]._id));
+      }
+    }
+    await window.FB.del(window.FB.ref(window.FB.db,'users',uid(),col,id));
+    toast('Removido ✓');
+  }
 </script>
 </body>
 </html>
