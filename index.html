@@ -415,20 +415,18 @@
         <button class="ct" onclick="setRendCult('soja',this)">🌿 Soja</button>
       </div>
       <div class="card">
-        <div class="card-title" id="rendTitle">Café — Novo registro</div>
-        <label>Nome / identificação</label>
-        <input type="text" id="rNome" placeholder="Ex: Talhão Norte, Safra 2025...">
+        <div class="card-title" id="rendTitle">Café — Novo perfil de talhão</div>
+        <label>Nome do talhão</label>
+        <input type="text" id="tNome" placeholder="Ex: Talhão Norte, Safra 2025...">
         <label>Tamanho da área (ha)</label>
-        <input type="number" id="rHa" placeholder="0.0" step="0.1" inputmode="decimal">
+        <input type="number" id="tHa" placeholder="0.0" step="0.1" inputmode="decimal">
         <div class="row2">
-          <div><label>Data início</label><input type="date" id="rInicio"></div>
-          <div><label>Data fim</label><input type="date" id="rFim"></div>
+          <div><label>Data início</label><input type="date" id="tInicio"></div>
+          <div><label>Data fim</label><input type="date" id="tFim"></div>
         </div>
-        <label>Grãos na armazenagem — peso líquido (kg)</label>
-        <input type="number" id="rPeso" placeholder="0" inputmode="decimal">
         <label>Observação</label>
-        <textarea id="rObs" placeholder="Informações importantes sobre a lavoura..." style="min-height:60px"></textarea>
-        <button class="btn btn-primary" onclick="addRendimento()">Registrar rendimento</button>
+        <textarea id="tObs" placeholder="Informações importantes sobre a lavoura..." style="min-height:60px"></textarea>
+        <button class="btn btn-primary" onclick="addTalhao()">Criar perfil de talhão</button>
       </div>
       <div id="rendList"><div class="loading">Carregando...</div></div>
     </div>
@@ -533,11 +531,12 @@
 
 <script>
   var CU=null, unsubs=[];
-  var DB={evs:[],motoristas:[],cargas:[],rendimentos:[],costs:[],fins:[],invCosts:[],invData:{cafe:{},milho:{},soja:{}},cd:{cafe:{},milho:{},soja:{}}};
+  var DB={evs:[],motoristas:[],cargas:[],talhoes:[],talhaoNotas:[],costs:[],fins:[],invCosts:[],invData:{cafe:{},milho:{},soja:{}},cd:{cafe:{},milho:{},soja:{}}};
   var calY=new Date().getFullYear(), calM=new Date().getMonth();
   var cult='cafe', finT='receita', invCult='cafe', invSubTab=0;
   var colTab='fretes', rendCult='cafe', relTab=0;
   var cargaAberta=null;
+  var talhaoAberto=null;
   var mPrecoTipo='kg';
 
   var isDark = localStorage.getItem('fz_theme') === 'dark';
@@ -569,7 +568,7 @@
   function doOut(){if(confirm('Sair da conta?')){unsubs.forEach(u=>u());unsubs=[];window.FB.signOut(window.FB.auth);}}
   function aerr(c){return({'auth/user-not-found':'Usuário não encontrado','auth/wrong-password':'Senha incorreta','auth/invalid-email':'E-mail inválido','auth/email-already-in-use':'E-mail já cadastrado','auth/weak-password':'Senha muito fraca','auth/invalid-credential':'E-mail ou senha incorretos','auth/popup-closed-by-user':'Cancelado','auth/network-request-failed':'Sem conexão'}[c])||'Erro ao autenticar';}
 
-  function initApp(u){CU=u;document.getElementById('loginScreen').style.display='none';document.getElementById('appScreen').style.display='block';document.getElementById('uName').textContent=u.displayName||u.email;['evDate','fDate','mInicio','rInicio'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=td();});startSnaps();}
+  function initApp(u){CU=u;document.getElementById('loginScreen').style.display='none';document.getElementById('appScreen').style.display='block';document.getElementById('uName').textContent=u.displayName||u.email;['evDate','fDate','mInicio','tInicio'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=td();});startSnaps();}
 
   function startSnaps(){
     unsubs.forEach(u=>u());unsubs=[];
@@ -579,7 +578,8 @@
     o('invCosts','invCosts',()=>{renderInvCosts();renderInvRel();});
     o('motoristas','motoristas',()=>{renderMotoristas();renderRelCol();});
     o('cargas','cargas',()=>{renderMotoristas();renderRelCol();});
-    o('rendimentos','rendimentos',()=>{renderRendimentos();renderRelCol();});
+    o('talhoes','talhoes',()=>{renderRendimentos();renderRelCol();});
+    o('talhaoNotas','talhaoNotas',()=>{renderRendimentos();renderRelCol();});
     unsubs.push(window.FB.snap(window.FB.q(uc('events'),window.FB.ob('date','asc')),s=>{DB.evs=s.docs.map(d=>({...d.data(),_id:d.id}));renderCal();renderEvList();}));
     unsubs.push(window.FB.snap(window.FB.col(window.FB.db,'users',uid(),'cultdata'),s=>{s.docs.forEach(d=>{DB.cd[d.id]=d.data();});loadCultConf();updCultSum();}));
     unsubs.push(window.FB.snap(window.FB.col(window.FB.db,'users',uid(),'invdata'),s=>{s.docs.forEach(d=>{DB.invData[d.id]=d.data();});loadInvConf();renderInvFin();renderInvRel();}));
@@ -674,44 +674,71 @@
   }
 
   // ---- RENDIMENTO ----
-  function setRendCult(c,b){rendCult=c;document.querySelectorAll('#col-rendimento .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('rendTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Novo registro';renderRendimentos();}
+  function setRendCult(c,b){rendCult=c;document.querySelectorAll('#col-rendimento .ct').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('rendTitle').textContent={cafe:'Café',milho:'Milho',soja:'Soja'}[c]+' — Novo perfil de talhão';renderRendimentos();}
 
-  async function addRendimento(){
-    var nome=document.getElementById('rNome').value.trim(),
-        ha=parseFloat(document.getElementById('rHa').value)||0,
-        inicio=document.getElementById('rInicio').value,
-        fim=document.getElementById('rFim').value,
-        peso=parseFloat(document.getElementById('rPeso').value)||0,
-        obs=document.getElementById('rObs').value.trim();
+  async function addTalhao(){
+    var nome=document.getElementById('tNome').value.trim(),
+        ha=parseFloat(document.getElementById('tHa').value)||0,
+        inicio=document.getElementById('tInicio').value,
+        fim=document.getElementById('tFim').value,
+        obs=document.getElementById('tObs').value.trim();
     if(!nome||!ha||!inicio){toast('Preencha nome, área e data de início');return;}
-    await window.FB.add(uc('rendimentos'),{culture:rendCult,nome,ha,inicio,fim,peso,obs,createdAt:window.FB.ts()});
-    ['rNome','rHa','rFim','rPeso','rObs'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('rInicio').value=td();
-    toast('Rendimento registrado ✓');
+    await window.FB.add(uc('talhoes'),{culture:rendCult,nome,ha,inicio,fim,obs,createdAt:window.FB.ts()});
+    ['tNome','tHa','tFim','tObs'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('tInicio').value=td();
+    toast('Talhão criado ✓');
+  }
+
+  function showNotaForm(tid){talhaoAberto=tid;renderRendimentos();}
+  async function saveNota(tid){
+    var peso=parseFloat(document.getElementById('ntP_'+tid).value)||0,
+        data=document.getElementById('ntD_'+tid).value,
+        etiq=document.getElementById('ntE_'+tid).value.trim();
+    if(!peso||!data){toast('Preencha peso e data');return;}
+    await window.FB.add(uc('talhaoNotas'),{talhaoId:tid,peso,data,etiqueta:etiq,createdAt:window.FB.ts()});
+    talhaoAberto=null;
+    toast('Nota de rendimento registrada ✓');
   }
 
   function renderRendimentos(){
     var el=document.getElementById('rendList');
-    var items=DB.rendimentos.filter(r=>r.culture===rendCult);
-    if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌱</div><p>Nenhum registro para esta cultura</p></div>';return;}
-    el.innerHTML=items.map(r=>{
-      var media=r.ha>0?r.peso/60/r.ha:0;
+    var items=DB.talhoes.filter(t=>t.culture===rendCult);
+    if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌱</div><p>Nenhum talhão cadastrado para esta cultura</p></div>';return;}
+    el.innerHTML=items.map(t=>{
+      var notas=DB.talhaoNotas.filter(n=>n.talhaoId===t._id);
+      var totalPeso=notas.reduce((s,n)=>s+parseFloat(n.peso||0),0);
+      var media=t.ha>0?totalPeso/60/t.ha:0;
+      var formAberta=talhaoAberto===t._id;
       return `<div class="talhao-card">
         <div class="talhao-head">
           <div>
-            <div class="talhao-name">🌱 ${r.nome}</div>
-            <div class="talhao-meta">${r.ha} ha · ${fd(r.inicio)}${r.fim?' → '+fd(r.fim):''}</div>
-            ${r.obs?`<div class="driver-meta">${r.obs}</div>`:''}
+            <div class="talhao-name">🌱 ${t.nome}</div>
+            <div class="talhao-meta">${t.ha} ha · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''}</div>
+            ${t.obs?`<div class="driver-meta">${t.obs}</div>`:''}
           </div>
-          <span class="badge b-blue">${num(r.peso/60)} sacas</span>
+          <span class="badge b-neutral">${notas.length} notas</span>
         </div>
         <div class="talhao-body">
           <div class="talhao-stats">
-            <div class="tstat"><div class="tstat-lbl">Peso líquido</div><div class="tstat-val">${num(r.peso)} kg</div></div>
-            <div class="tstat"><div class="tstat-lbl">Sacas</div><div class="tstat-val">${num(r.peso/60)}</div></div>
+            <div class="tstat"><div class="tstat-lbl">Peso líquido</div><div class="tstat-val">${num(totalPeso)} kg</div></div>
+            <div class="tstat"><div class="tstat-lbl">Sacas</div><div class="tstat-val">${num(totalPeso/60)}</div></div>
             <div class="tstat"><div class="tstat-lbl">Média sc/ha</div><div class="tstat-val" style="color:var(--blue)">${num(media)}</div></div>
           </div>
-          <button class="btn btn-ghost-red btn-sm" onclick="del('rendimentos','${r._id}')">Remover</button>
+          ${notas.length?'<div class="slbl">Notas registradas</div>'+notas.map(n=>`<div class="carga-row"><div class="carga-info">${n.etiqueta?`<span class="carga-etiq">${n.etiqueta}</span>`:''}<span style="font-weight:600">${fd(n.data)}</span></div><span style="display:flex;align-items:center;gap:8px;font-weight:600">${num(n.peso)} kg <button class="btn btn-ghost-red btn-sm" onclick="del('talhaoNotas','${n._id}')">—</button></span></div>`).join(''):''}
+          ${formAberta?`<div class="entrega-form">
+            <div class="slbl" style="margin-top:0;margin-bottom:10px">Nova nota de rendimento</div>
+            <label>Peso líquido (kg)</label>
+            <input type="number" id="ntP_${t._id}" placeholder="0" inputmode="decimal">
+            <div class="row2">
+              <div><label>Data</label><input type="date" id="ntD_${t._id}" value="${td()}"></div>
+              <div><label>Etiqueta / Nota</label><input type="text" id="ntE_${t._id}" placeholder="Ex: 001, Carga 1..."></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-primary btn-sm" onclick="saveNota('${t._id}')">Salvar</button>
+              <button class="btn btn-sm" onclick="talhaoAberto=null;renderRendimentos()">Cancelar</button>
+            </div>
+          </div>`:`<button class="btn btn-sm" style="margin-top:12px" onclick="showNotaForm('${t._id}')">+ Adicionar nota de rendimento</button>`}
+          <button class="btn btn-ghost-red btn-sm" style="margin-top:8px" onclick="del('talhoes','${t._id}')">Remover talhão</button>
         </div>
       </div>`;
     }).join('');
@@ -764,27 +791,29 @@
   }
 
   function buildRelRendimento(){
-    if(!DB.rendimentos.length){return '<div class="empty"><div class="empty-icon">🌱</div><p>Sem dados de rendimento</p></div>';}
+    if(!DB.talhoes.length){return '<div class="empty"><div class="empty-icon">🌱</div><p>Sem dados de rendimento</p></div>';}
     var totAreaG=0,totPesoG=0;
     var culturas=['cafe','milho','soja'];
     var names={cafe:'☕ Café',milho:'🌽 Milho',soja:'🌿 Soja'};
     var html=culturas.map(cu=>{
-      var items=DB.rendimentos.filter(r=>r.culture===cu);
+      var items=DB.talhoes.filter(t=>t.culture===cu);
       if(!items.length)return '';
-      var totArea=items.reduce((s,r)=>s+parseFloat(r.ha||0),0);
-      var totPeso=items.reduce((s,r)=>s+parseFloat(r.peso||0),0);
+      var totArea=items.reduce((s,t)=>s+parseFloat(t.ha||0),0);
+      var totPeso=items.reduce((s,t)=>{var notas=DB.talhaoNotas.filter(n=>n.talhaoId===t._id);return s+notas.reduce((s2,n)=>s2+parseFloat(n.peso||0),0);},0);
       var media=totArea?totPeso/60/totArea:0;
       totAreaG+=totArea;totPesoG+=totPeso;
       return `<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div style="font-weight:700;font-size:15px;color:var(--text-1)">${names[cu]}</div>
-          <span class="badge b-blue">${items.length} registros</span>
+          <span class="badge b-blue">${items.length} talhões</span>
         </div>
-        ${items.map(r=>{
-          var m=r.ha?r.peso/60/r.ha:0;
+        ${items.map(t=>{
+          var notas=DB.talhaoNotas.filter(n=>n.talhaoId===t._id);
+          var peso=notas.reduce((s,n)=>s+parseFloat(n.peso||0),0);
+          var m=t.ha?peso/60/t.ha:0;
           return `<div style="padding:8px 0;border-bottom:1px solid var(--border)">
-            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${r.nome}</span><span>${num(r.peso)} kg · ${num(m)} sc/ha</span></div>
-            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${r.ha} ha · ${fd(r.inicio)}${r.fim?' → '+fd(r.fim):''}</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">${t.nome}</span><span>${num(peso)} kg · ${num(m)} sc/ha</span></div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${t.ha} ha · ${fd(t.inicio)}${t.fim?' → '+fd(t.fim):''} · ${notas.length} notas</div>
           </div>`;
         }).join('')}
         <hr class="dv">
@@ -806,11 +835,11 @@
   }
 
   function buildRelConsolidado(){
-    if(!DB.motoristas.length&&!DB.rendimentos.length){return '<div class="empty"><div class="empty-icon">📊</div><p>Sem dados para consolidar</p></div>';}
+    if(!DB.motoristas.length&&!DB.talhoes.length){return '<div class="empty"><div class="empty-icon">📊</div><p>Sem dados para consolidar</p></div>';}
     var totalPesoFretes=DB.cargas.reduce((s,c)=>s+parseFloat(c.peso||0),0);
     var totalFrete=DB.cargas.reduce((s,c)=>{return s+parseFloat(c.peso||0)*precoKg(c);},0);
-    var totalPesoLiq=DB.rendimentos.reduce((s,r)=>s+parseFloat(r.peso||0),0);
-    var totalAreaLiq=DB.rendimentos.reduce((s,r)=>s+parseFloat(r.ha||0),0);
+    var totalPesoLiq=DB.talhaoNotas.reduce((s,n)=>s+parseFloat(n.peso||0),0);
+    var totalAreaLiq=DB.talhoes.reduce((s,t)=>s+parseFloat(t.ha||0),0);
     var mediaLiq=totalAreaLiq?totalPesoLiq/60/totalAreaLiq:0;
     var quebra=totalPesoFretes-totalPesoLiq;
     var pctQuebra=totalPesoFretes>0?quebra/totalPesoFretes*100:0;
@@ -825,7 +854,7 @@
     </div>
     <div class="card">
       <div class="card-title">Rendimento (peso líquido)</div>
-      <div class="sr"><span class="sr-label">Registros</span><span class="sr-val">${DB.rendimentos.length}</span></div>
+      <div class="sr"><span class="sr-label">Talhões</span><span class="sr-val">${DB.talhoes.length}</span></div>
       <div class="sr"><span class="sr-label">Área total</span><span class="sr-val">${num(totalAreaLiq)} ha</span></div>
       <div class="sr"><span class="sr-label">Peso líquido total</span><span class="sr-val">${num(totalPesoLiq)} kg</span></div>
       <div class="sr"><span class="sr-label">Sacas líquidas</span><span class="sr-val">${num(totalPesoLiq/60)} sacas</span></div>
