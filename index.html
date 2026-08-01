@@ -281,14 +281,14 @@
         <label>Nome do projeto</label>
         <input type="text" id="invNome" placeholder="Ex: Implantação Café Arábica 2025" oninput="saveInvConf()">
         <label>Área do projeto (ha)</label>
-        <input type="number" id="invHa" placeholder="0.0" step="0.1" inputmode="decimal" oninput="saveInvConf()">
+        <input type="number" min="0" onwheel="this.blur()" id="invHa" placeholder="0.0" step="0.1" inputmode="decimal" oninput="saveInvConf()">
         <div class="row2">
-          <div><label>Produtividade (sacas/ha)</label><input type="number" id="invProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveInvConf()"></div>
-          <div><label>Preço da saca (R$)</label><input type="number" id="invSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Produtividade (sacas/ha)</label><input type="number" min="0" onwheel="this.blur()" id="invProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Preço da saca (R$)</label><input type="number" min="0" onwheel="this.blur()" id="invSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
         </div>
         <div class="row2">
-          <div><label>Horizonte (anos)</label><input type="number" id="invAnos" placeholder="10" step="1" inputmode="decimal" oninput="saveInvConf()"></div>
-          <div><label>Taxa Selic (% a.a.)</label><input type="number" id="invSelic" placeholder="13.75" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Horizonte (anos)</label><input type="number" min="0" onwheel="this.blur()" id="invAnos" placeholder="10" step="1" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Taxa Selic (% a.a.)</label><input type="number" min="0" onwheel="this.blur()" id="invSelic" placeholder="13.75" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
         </div>
       </div>
     </div>
@@ -305,14 +305,14 @@
         <label>Descrição</label>
         <input type="text" id="invCostDesc" placeholder="Detalhe o custo">
         <div class="row2">
-          <div><label>Valor (R$)</label><input type="number" id="invCostVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
-          <div><label>Ano do custo</label><input type="number" id="invCostAno" placeholder="1" step="1" value="1" inputmode="decimal"></div>
+          <div><label>Valor (R$)</label><input type="number" min="0" onwheel="this.blur()" id="invCostVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+          <div><label>Ano do custo</label><input type="number" min="0" onwheel="this.blur()" id="invCostAno" placeholder="1" step="1" value="1" inputmode="decimal"></div>
         </div>
         <div id="invDepWrap" style="display:none">
           <div class="card-title" style="margin-bottom:10px">Depreciação</div>
           <div class="row2">
-            <div><label>Vida útil (anos)</label><input type="number" id="invDepAnos" placeholder="10" step="1" inputmode="decimal"></div>
-            <div><label>Valor residual (R$)</label><input type="number" id="invDepResidual" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+            <div><label>Vida útil (anos)</label><input type="number" min="0" onwheel="this.blur()" id="invDepAnos" placeholder="10" step="1" inputmode="decimal"></div>
+            <div><label>Valor residual (R$)</label><input type="number" min="0" onwheel="this.blur()" id="invDepResidual" placeholder="0.00" step="0.01" inputmode="decimal"></div>
           </div>
         </div>
         <button class="btn btn-primary" onclick="addInvCost()">Adicionar custo</button>
@@ -323,10 +323,10 @@
       <div class="card">
         <div class="card-title">Financiamento</div>
         <label>Valor financiado (R$)</label>
-        <input type="number" id="invFinVal" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()">
+        <input type="number" min="0" onwheel="this.blur()" id="invFinVal" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveInvConf()">
         <div class="row2">
-          <div><label>Taxa (% a.a.)</label><input type="number" id="invFinTaxa" placeholder="7.5" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
-          <div><label>Prazo (anos)</label><input type="number" id="invFinPrazo" placeholder="5" step="1" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Taxa (% a.a.)</label><input type="number" min="0" onwheel="this.blur()" id="invFinTaxa" placeholder="7.5" step="0.01" inputmode="decimal" oninput="saveInvConf()"></div>
+          <div><label>Prazo (anos)</label><input type="number" min="0" onwheel="this.blur()" id="invFinPrazo" placeholder="5" step="1" inputmode="decimal" oninput="saveInvConf()"></div>
         </div>
         <label>Sistema de amortização</label>
         <select id="invFinSistema" onchange="saveInvConf()">
@@ -398,7 +398,7 @@
         </div>
         <div class="row2">
           <div><label>Data início</label><input type="date" id="mInicio"></div>
-          <div><label id="mPrecoLbl">Preço por kg (R$)</label><input type="number" id="mPreco" placeholder="0.0000" step="0.0001" inputmode="decimal"></div>
+          <div><label id="mPrecoLbl">Preço por kg (R$)</label><input type="number" min="0" onwheel="this.blur()" id="mPreco" placeholder="0.0000" step="0.0001" inputmode="decimal"></div>
         </div>
         <label>Observações</label>
         <textarea id="mObs" placeholder="Informações adicionais..." style="min-height:50px"></textarea>
@@ -419,7 +419,7 @@
         <label>Nome do talhão</label>
         <input type="text" id="tNome" placeholder="Ex: Talhão Norte, Safra 2025...">
         <label>Tamanho da área (ha)</label>
-        <input type="number" id="tHa" placeholder="0.0" step="0.1" inputmode="decimal">
+        <input type="number" min="0" onwheel="this.blur()" id="tHa" placeholder="0.0" step="0.1" inputmode="decimal">
         <div class="row2">
           <div><label>Data início</label><input type="date" id="tInicio"></div>
           <div><label>Data fim</label><input type="date" id="tFim"></div>
@@ -454,11 +454,11 @@
     <div class="card">
       <div class="card-title" id="cultTitle">Café — Configuração</div>
       <div class="row2">
-        <div><label>Área (ha)</label><input type="number" id="cHa" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
-        <div><label>Prod. (sacas/ha)</label><input type="number" id="cProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
+        <div><label>Área (ha)</label><input type="number" min="0" onwheel="this.blur()" id="cHa" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
+        <div><label>Prod. (sacas/ha)</label><input type="number" min="0" onwheel="this.blur()" id="cProd" placeholder="0" step="0.1" inputmode="decimal" oninput="saveCultConf()"></div>
       </div>
       <label>Preço da saca (R$)</label>
-      <input type="number" id="cSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveCultConf()">
+      <input type="number" min="0" onwheel="this.blur()" id="cSaca" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveCultConf()">
     </div>
     <div class="card">
       <div class="card-title">Adicionar custo</div>
@@ -466,7 +466,7 @@
       <select id="cCat"><option>Semente / Muda</option><option>Fertilizante</option><option>Defensivo</option><option>Combustível</option><option>Mão de obra</option><option>Maquinário</option><option>Irrigação</option><option>Outro</option></select>
       <label>Descrição</label><input type="text" id="cDesc" placeholder="Detalhe o custo">
       <div class="row2">
-        <div><label>Valor (R$)</label><input type="number" id="cVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+        <div><label>Valor (R$)</label><input type="number" min="0" onwheel="this.blur()" id="cVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
         <div><label>Safra</label><input type="text" id="cSafra" placeholder="2024/25"></div>
       </div>
       <button class="btn btn-primary" onclick="addCost()">Adicionar custo</button>
@@ -498,7 +498,7 @@
       <label>Categoria</label>
       <select id="fCat"><option>Venda de produção</option><option>Fertilizante</option><option>Defensivo</option><option>Combustível</option><option>Manutenção</option><option>Frete</option><option>Outro</option></select>
       <div class="row2">
-        <div><label>Valor (R$)</label><input type="number" id="fVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+        <div><label>Valor (R$)</label><input type="number" min="0" onwheel="this.blur()" id="fVal" placeholder="0.00" step="0.01" inputmode="decimal"></div>
         <div><label>Data</label><input type="date" id="fDate"></div>
       </div>
       <button class="btn btn-primary" onclick="addFin()">Registrar</button>
@@ -657,7 +657,7 @@
           ${formAberta?`<div class="entrega-form">
             <div class="slbl" style="margin-top:0;margin-bottom:10px">Nova carga</div>
             <label>Peso bruto (kg)</label>
-            <input type="number" id="cgP_${m._id}" placeholder="0" inputmode="decimal">
+            <input type="number" min="0" onwheel="this.blur()" id="cgP_${m._id}" placeholder="0" inputmode="decimal">
             <div class="row2">
               <div><label>Data</label><input type="date" id="cgD_${m._id}" value="${td()}"></div>
               <div><label>Etiqueta</label><input type="text" id="cgE_${m._id}" placeholder="Ex: 001, Manhã..."></div>
@@ -728,7 +728,7 @@
           ${formAberta?`<div class="entrega-form">
             <div class="slbl" style="margin-top:0;margin-bottom:10px">Nova nota de rendimento</div>
             <label>Peso líquido (kg)</label>
-            <input type="number" id="ntP_${t._id}" placeholder="0" inputmode="decimal">
+            <input type="number" min="0" onwheel="this.blur()" id="ntP_${t._id}" placeholder="0" inputmode="decimal">
             <div class="row2">
               <div><label>Data</label><input type="date" id="ntD_${t._id}" value="${td()}"></div>
               <div><label>Etiqueta / Nota</label><input type="text" id="ntE_${t._id}" placeholder="Ex: 001, Carga 1..."></div>
