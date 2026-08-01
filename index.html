@@ -627,7 +627,29 @@
     toast('Carga registrada ✓');
   }
 
+  // Preserva valor, foco e posição do cursor de um input dinâmico (ex: peso de carga)
+  // durante um redesenho (innerHTML) disparado por atualização em tempo real do Firestore,
+  // evitando perder o que o usuário está digitando no meio da digitação.
+  function preserveInputFocus(containerId, doRender){
+    var container=document.getElementById(containerId);
+    var active=document.activeElement;
+    var keepId=(active && container && container.contains(active) && active.id) ? active.id : null;
+    var keepVal=keepId ? active.value : null;
+    var selStart=(keepId && active.selectionStart!=null) ? active.selectionStart : null;
+    var selEnd=(keepId && active.selectionEnd!=null) ? active.selectionEnd : null;
+    doRender();
+    if(keepId){
+      var re=document.getElementById(keepId);
+      if(re){
+        re.value=keepVal;
+        re.focus();
+        if(selStart!=null && re.setSelectionRange){ try{ re.setSelectionRange(selStart,selEnd); }catch(e){} }
+      }
+    }
+  }
+
   function renderMotoristas(){
+    preserveInputFocus('motoristaList',function(){
     var el=document.getElementById('motoristaList');
     if(!DB.motoristas.length){el.innerHTML='<div class="empty"><div class="empty-icon">🚛</div><p>Nenhum perfil de motorista criado</p></div>';return;}
     el.innerHTML=DB.motoristas.map(m=>{
@@ -671,6 +693,7 @@
         </div>
       </div>`;
     }).join('');
+    });
   }
 
   // ---- RENDIMENTO ----
@@ -701,6 +724,7 @@
   }
 
   function renderRendimentos(){
+    preserveInputFocus('rendList',function(){
     var el=document.getElementById('rendList');
     var items=DB.talhoes.filter(t=>t.culture===rendCult);
     if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">🌱</div><p>Nenhum talhão cadastrado para esta cultura</p></div>';return;}
@@ -742,6 +766,7 @@
         </div>
       </div>`;
     }).join('');
+    });
   }
 
   // ---- RELATÓRIO CONSOLIDADO ----
